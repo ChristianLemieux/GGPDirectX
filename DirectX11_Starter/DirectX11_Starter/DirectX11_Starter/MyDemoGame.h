@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "GameEntity.h"
 #include "SamplerState.h"
+#include "Camera.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -48,6 +49,7 @@ public:
 	void OnResize();
 	void UpdateScene(float dt);
 	void DrawScene(); 
+	void UpdateCamera();
 
 	// For handing mouse input
 	void OnMouseDown(WPARAM btnState, int x, int y);
@@ -96,7 +98,15 @@ private:
 	XMFLOAT4X4 viewMatrix;
 	XMFLOAT4X4 projectionMatrix;
 
+	Camera gameCam;
+	XMVECTOR cameraPosition;
+	XMVECTOR cameraRotation;
+	XMVECTOR cameraCrossProduct;
+	XMVECTOR upDirection;
+
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
+	int moveDistanceMouseX;
+	int moveDistanceMouseY;
 };

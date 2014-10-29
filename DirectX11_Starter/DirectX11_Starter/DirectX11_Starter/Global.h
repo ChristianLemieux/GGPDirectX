@@ -13,4 +13,12 @@ struct Vertex
 	XMFLOAT2 uv;
 };
 
+//Vector struct for our camera class
+struct Vector
+{
+	float x;
+	float y;
+	float z;
+};
+
 #endif

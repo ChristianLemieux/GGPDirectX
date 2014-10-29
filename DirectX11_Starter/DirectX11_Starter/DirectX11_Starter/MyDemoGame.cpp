@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 {
 	// Set up our custom caption and window size
-	windowCaption = L"Alyssa's Textures/Materials";
+	windowCaption = L"Graphics Programming Project";
 	windowWidth = 800;
 	windowHeight = 600;
 }
@@ -90,6 +90,7 @@ bool MyDemoGame::Init()
 	XMVECTOR target		= XMVectorSet(0, 0, 0, 0);
 	XMVECTOR up			= XMVectorSet(0, 1, 0, 0);
 	XMMATRIX V			= XMMatrixLookAtLH(position, target, up);
+
 	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
 
 	// Set up world matrix
@@ -97,6 +98,10 @@ bool MyDemoGame::Init()
 	XMMATRIX W = XMMatrixIdentity();
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
 
+	cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+	cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+	upDirection = XMVectorSet(0, 1, 0, 0);
+	cameraCrossProduct = XMVector3Cross(cameraPosition, upDirection);
 	return true;
 }
 
@@ -232,6 +237,8 @@ void MyDemoGame::OnResize()
 // push it to the buffer on the device
 void MyDemoGame::UpdateScene(float dt)
 {
+	UpdateCamera();
+
 	//move triangle right
 	if (GetAsyncKeyState('L') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
@@ -319,6 +326,104 @@ void MyDemoGame::UpdateScene(float dt)
 
 }
 
+//Updates our viewMatrix based on the camera's position
+void MyDemoGame::UpdateCamera()
+{
+	//Left ad right arrow keys alter X position
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	{
+		gameCam.setDistanceX(-.001);
+		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
+
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	{
+		gameCam.setDistanceX(+.001);
+		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
+	}
+
+	//Up/Down arrow keys alter Y position
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+	{
+		gameCam.setDistanceY(-.001);
+		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
+	}
+	if (GetAsyncKeyState(VK_UP) & 0x8000)
+	{
+		gameCam.setDistanceY(+.001);
+		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
+	}
+
+	//5 and 0 on the numpad alter the Z position
+	if (GetAsyncKeyState(VK_NUMPAD0) & 0x8000)
+	{
+		gameCam.setDistanceZ(-.001);
+		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
+	}
+	if (GetAsyncKeyState(VK_NUMPAD5) & 0x8000)
+	{
+		gameCam.setDistanceZ(+.001);
+		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
+	}
+
+	//4 and 6 on the numpad will rotate along the X axis
+	if (GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
+	{
+		gameCam.setRotationDistanceX(-.01);
+		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+	}
+	if (GetAsyncKeyState(VK_NUMPAD6) & 0x8000)
+	{
+		gameCam.setRotationDistanceX(+.01);
+		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+	}
+
+	//8 ad 2 on the unmpad will rotate along the y axis
+	if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
+	{
+		gameCam.setRotationDistanceY(+.01);
+		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+	}
+	if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
+	{
+		gameCam.setRotationDistanceY(-.01);
+		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+	}
+
+	//reset camera back to original position
+	if (GetAsyncKeyState('R') & 0x8000)
+	{
+		gameCam.reset();
+		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
+		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
+	}
+
+	XMMATRIX V = XMMatrixLookToLH(cameraPosition, cameraRotation, upDirection);
+	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
+
+}
 // Clear the screen, redraw everything, present
 void MyDemoGame::DrawScene()
 {
@@ -383,7 +488,6 @@ void MyDemoGame::DrawScene()
 #pragma region Mouse Input
 
 // These methods don't do much currently, but can be used for mouse-related input
-
 void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	prevMousePos.x = x;
