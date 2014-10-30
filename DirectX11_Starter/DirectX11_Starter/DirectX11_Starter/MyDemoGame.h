@@ -75,6 +75,9 @@ private:
 	//Basic shapes!
 	Mesh* triangle;
 	Mesh* square;
+	Mesh* asteroid;
+
+	
 
 	//Game Entity
 	std::vector<GameEntity*> gameEntities;

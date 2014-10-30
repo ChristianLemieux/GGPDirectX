@@ -113,6 +113,7 @@ void MyDemoGame::CreateGeometryBuffers()
 	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	XMFLOAT4 orange = XMFLOAT4(1.0f, 0.5f, 0.0f, 1.0f);
+	XMFLOAT4 brown = XMFLOAT4(0.65f, 0.185f, 0.165f, 1.0f);
 
 	Vertex triangleVertices[] = {
 			{ XMFLOAT3(+0.0f, +1.0f, +0.0f), red, XMFLOAT2(0.5, 0) },
@@ -120,10 +121,28 @@ void MyDemoGame::CreateGeometryBuffers()
 			{ XMFLOAT3(+1.0f, -0.1f, +0.0f), blue, XMFLOAT2(1, 1) },
 	};
 	Vertex squareVertices[] = {
-			{ XMFLOAT3(-1.0f, +1.0f, +0.0f), red, XMFLOAT2(0, 0) },
-			{ XMFLOAT3(-1.0f, -1.0f, +0.0f), green, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+1.0f, +1.0f, +0.0f), blue, XMFLOAT2(1, 0) },
-			{ XMFLOAT3(+1.0f, -1.0f, +0.0f), orange, XMFLOAT2(1, 1) }
+			{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0) },
+			{ XMFLOAT3(-1.0f, -1.0f, +0.2f), green, XMFLOAT2(0, 1) },
+			{ XMFLOAT3(+1.0f, +1.0f, +0.2f), blue, XMFLOAT2(1, 0) },
+			{ XMFLOAT3(+1.0f, -1.0f, +0.2f), orange, XMFLOAT2(1, 1) }
+	};
+	Vertex asteroidVertices[] = {
+			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7, 1) },
+			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0, 1) },
+			{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3, 1) },
+			{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1, 1) },
+			{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0, 0.7) },
+			{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0, 1) },
+			{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0, 0.3) },
+			{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1, 1) },
+			{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3, 0) },
+			{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0, 1) },
+			{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7, 0) },
+			{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1, 1) },
+			{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1, 0.3) },
+			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0, 1) },
+			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1, 0.7) },
+			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1, 1) }
 	};
 	// Set up the indices
 	UINT triangleIndices[] = {0, 2, 1};
@@ -131,8 +150,14 @@ void MyDemoGame::CreateGeometryBuffers()
 	//Set up second set of the indices
 	UINT squareIndices[] = { 0, 2, 1, 2, 3, 1 };
 
+	//Set up set of asteroid indices
+	UINT asteroidIndices[] = { 0,12,6,2,10,8,2,0,10,2,8,4,0,14,12,8,6,4,2,12,10 };
 	triangle = new Mesh(triangleVertices, triangleIndices, 3, device);
 	square = new Mesh(squareVertices, squareIndices, 6, device);
+	asteroid = new Mesh(asteroidVertices, asteroidIndices, 21, device);
+
+	
+
 
 	ID3D11SamplerState* sample = nullptr;
 	//create sampler state
@@ -141,9 +166,16 @@ void MyDemoGame::CreateGeometryBuffers()
 	//create materials
 	materials.push_back(new Material(device, deviceContext, sample, L"bullet.png"));
 	materials.push_back(new Material(device, deviceContext, sample, L"120322_0001.jpg"));
+	materials.push_back(new Material(device, deviceContext, sample, L"asteroid.jpg"));
 	//create game entities
 	gameEntities.push_back(new GameEntity(triangle, materials[0]));
 	gameEntities.push_back(new GameEntity(square, materials[1]));
+	for (int i = 2; i < 20; i++)
+	{
+		gameEntities.push_back(new GameEntity(asteroid, materials[2]));
+		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
+		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
+	}
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -241,89 +273,146 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//move triangle right
 	if (GetAsyncKeyState('L') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
+		}
 	}
 	//move triangle left
 	if (GetAsyncKeyState('K') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
+		}
 	}
 	//move triangle up
 	if (GetAsyncKeyState('O') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
+		}
 	}
 	//move triangle down
 	if (GetAsyncKeyState('M') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
+		}
 	}
 	//move triangle forward
 	if (GetAsyncKeyState('U') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+		}
 	}
 	//move triangle back
 	if (GetAsyncKeyState('P') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
+		}
 	}
 
 	//rotate square in positive x
 	if (GetAsyncKeyState('S') & 0x8000){
-		gameEntities[1]->rotate(XMFLOAT3(0.001f, 0.0f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->rotate(XMFLOAT3(0.001f, 0.0f, 0.0f));
+		}
 	}
 	//rotate square in negative x
 	if (GetAsyncKeyState('W') & 0x8000){
-		gameEntities[1]->rotate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->rotate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
+		}
 	}
 	//rotate square in positive y
 	if (GetAsyncKeyState('D') & 0x8000){
-		gameEntities[1]->rotate(XMFLOAT3(0.0f, 0.001f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.001f, 0.0f));
+		}
 	}
 	//rotate square in negative y
 	if (GetAsyncKeyState('A') & 0x8000){
-		gameEntities[1]->rotate(XMFLOAT3(0.0f, -0.001f, 0.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->rotate(XMFLOAT3(0.0f, -0.001f, 0.0f));
+		}
 	}
 	//rotate square in positive z
 	if (GetAsyncKeyState('Q') & 0x8000){
-		gameEntities[1]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+		}
 	}
 	//rotate square in negative z
 	if (GetAsyncKeyState('F') & 0x8000){
-		gameEntities[1]->rotate(XMFLOAT3(0.0f, 0.0f, -0.001f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, -0.001f));
+		}
 	}
 
 	//Increase Scale of "x" acis
 	if (GetAsyncKeyState('C') & 0x8000){
-		gameEntities[0]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
-		gameEntities[1]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
+		}
 	}	
 	//Decrease Scale of "x" axis
 	if (GetAsyncKeyState('V') & 0x8000){
-		gameEntities[0]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
-		gameEntities[1]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
+		}
 	}
 
 
 	//Increase Scale of "y" axis
 	if (GetAsyncKeyState('B') & 0x8000){
-		gameEntities[0]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
-		gameEntities[1]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
+		}
 	}
 	//Decrease Scale of "y" axis
 	if (GetAsyncKeyState('N') & 0x8000){
-		gameEntities[0]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
-		gameEntities[1]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
+		}
 	}
 
 	//Increase Scale of "z" axis
 	if (GetAsyncKeyState('G') & 0x8000){
-		gameEntities[0]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
-		gameEntities[1]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
+		}
 	}
 	//Decrease Scale of "z" axis
 	if (GetAsyncKeyState('H') & 0x8000){
-		gameEntities[0]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
-		gameEntities[1]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
+		for (int i = 0; i < gameEntities.size(); i++)
+		{
+			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
+		}
 	}
 
-
+	for (int i = 2; i < 20; i++)
+	{
+		gameEntities[i]->translate(XMFLOAT3(-0.75f * dt, 0.0f, 0.0f));
+		if (gameEntities[i]->getPosition()._41 < -10)
+		{
+			gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 20.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
+		}
+		
+		//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+	}
 }
 
 //Updates our viewMatrix based on the camera's position
