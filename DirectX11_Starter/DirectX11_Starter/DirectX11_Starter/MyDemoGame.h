@@ -56,6 +56,20 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 
+	struct Light
+	{
+		Light()
+		{
+			ZeroMemory(this, sizeof(Light));
+		}
+		XMFLOAT3 dir;
+		float pad;
+		XMFLOAT4 ambient;
+		XMFLOAT4 diffuse;
+	};
+
+	Light light;
+
 private:
 	// Initialization for our "game" demo
 	void CreateGeometryBuffers();
@@ -67,6 +81,7 @@ private:
 	// Buffers to hold actual geometry
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
+	ID3D11Buffer* cbPerFrameBuffer;
 
 	//Second set of buffers to hold actual geometry
 	ID3D11Buffer* vertex2Buffer;
