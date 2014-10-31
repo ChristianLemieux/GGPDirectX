@@ -109,11 +109,16 @@ bool MyDemoGame::Init()
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::CreateGeometryBuffers()
 {
-	XMFLOAT4 red	= XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 orange = XMFLOAT4(1.0f, 0.5f, 0.0f, 1.0f);
-	XMFLOAT4 brown = XMFLOAT4(0.65f, 0.185f, 0.165f, 1.0f);
+	light.dir = XMFLOAT3(0.25f, 0.5f, -1.0f);
+	light.ambient = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
+	light.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	XMFLOAT4 red = XMFLOAT4(1.0f * light.ambient.x, 0.0f * light.ambient.y, 0.0f * light.ambient.z, 1.0f * light.ambient.w);
+	XMFLOAT4 green = XMFLOAT4(0.0f * light.ambient.x, 1.0f * light.ambient.y, 0.0f * light.ambient.z, 1.0f * light.ambient.w);
+	XMFLOAT4 blue = XMFLOAT4(0.0f * light.ambient.x, 0.0f * light.ambient.y, 1.0f * light.ambient.z, 1.0f * light.ambient.w);
+	XMFLOAT4 orange = XMFLOAT4(1.0f * light.ambient.x, 0.5f * light.ambient.y, 0.0f * light.ambient.z, 1.0f * light.ambient.w);
+	XMFLOAT4 brown = XMFLOAT4(0.65f * light.ambient.x, 0.185f * light.ambient.y, 0.165f * light.ambient.z, 1.0f * light.ambient.w);
+
 
 	Vertex triangleVertices[] = {
 			{ XMFLOAT3(+0.0f, +1.0f, +0.0f), red, XMFLOAT2(0.5, 0) },
