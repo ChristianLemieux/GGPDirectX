@@ -1,47 +1,47 @@
-﻿Build started 10/30/2014 2:38:50 PM.
-     1>Project "C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
+﻿Build started 11/3/2014 11:36:42 PM.
+     1>Project "C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         F:\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\\DirectXTK\inc /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MyDemoGame.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 13.0\VC\bin\CL.exe /c /IC:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\\DirectXTK\inc /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MyDemoGame.cpp
          MyDemoGame.cpp
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(130): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(132): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(134): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(136): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(138): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(140): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(142): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(144): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(276): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(283): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(290): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(297): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(304): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(311): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(319): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(326): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(333): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(340): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(347): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(354): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(362): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(369): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(378): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(385): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(393): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(400): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(424): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(433): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(443): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(451): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(461): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(469): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(479): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(485): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(493): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(499): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\dan\desktop\directxgame\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(536): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(135): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(137): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(139): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(141): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(143): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(145): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(147): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(149): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(287): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(294): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(301): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(308): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(315): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(322): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(330): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(337): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(344): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(351): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(358): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(365): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(373): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(380): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(389): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(396): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(404): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(411): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(435): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(444): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(454): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(462): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(472): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(480): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(490): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(496): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(504): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(510): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\christian\desktop\ggpdirectx\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(547): warning C4018: '<' : signed/unsigned mismatch
        Link:
-         F:\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.lib" /MACHINE:X86 Debug\Camera.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 13.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.lib" /MACHINE:X86 Debug\Camera.obj
          Debug\GameEntity.obj
          Debug\Material.obj
          Debug\Mesh.obj
@@ -49,11 +49,12 @@
          Debug\dxerr.obj
          Debug\DirectXGame.obj
          Debug\GameTimer.obj
+         Debug\ObjectLoader.obj
          Debug\SamplerState.obj
-         C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
-         DirectX11_Starter.vcxproj -> C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe
-     1>Done Building Project "C:\Users\Dan\Desktop\directxgame\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
+         C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
+         DirectX11_Starter.vcxproj -> C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe
+     1>Done Building Project "C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.46
+Time Elapsed 00:00:03.09

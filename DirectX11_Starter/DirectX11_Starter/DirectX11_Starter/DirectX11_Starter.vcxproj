@@ -83,6 +83,7 @@
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DirectXGame.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="SamplerState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +96,7 @@
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="DirectXGame.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="SamplerState.h" />
   </ItemGroup>
   <ItemGroup>
