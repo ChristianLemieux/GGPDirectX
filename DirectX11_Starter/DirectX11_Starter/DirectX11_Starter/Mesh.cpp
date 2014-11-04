@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <d3dcompiler.h>
+#include "Global.h"
 
 Mesh::Mesh(Vertex* vertices, UINT* indices, int size, ID3D11Device* device){
 	m_size = size;
@@ -12,15 +13,8 @@ Mesh::Mesh(Vertex* vertices, UINT* indices, int size, ID3D11Device* device){
 }
 
 Mesh::~Mesh(void){
-	if (m_vertices){
-		delete[] m_vertices;
-	}
-	if (m_indices){
-		delete[] m_indices;
-	}
-	if (m_device){
-		delete[] m_device;
-	}
+	ReleaseMacro(v_buffer);
+	ReleaseMacro(i_buffer);
 }
 
 void Mesh::createVertexBuffer(){

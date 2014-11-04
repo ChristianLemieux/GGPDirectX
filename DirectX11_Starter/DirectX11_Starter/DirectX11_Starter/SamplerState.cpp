@@ -1,13 +1,11 @@
 #include "SamplerState.h"
-
-SamplerState::SamplerState(ID3D11SamplerState &sample){
-	*sampler = sample;
+#include "Global.h"
+SamplerState::SamplerState(ID3D11SamplerState *&sample){
+	sampler = sample;
 }
 
 SamplerState::~SamplerState(void){
-	if (sampler){
-		delete[] sampler;
-	}
+	ReleaseMacro(sampler);
 }
 
 /**
@@ -19,7 +17,7 @@ SamplerState::~SamplerState(void){
 *MipLODBias: Offset from the calculated mipmap level
 *MaxAnisotropy: Clamping value used (if filter is D3D11_FILTER_ANISOTROPIC or D3D11_FILTER_COMPARISON_ANISOTROPIC)
 **/
-void SamplerState::createSamplerState(ID3D11Device* dev, D3D11_TEXTURE_ADDRESS_MODE mode, D3D11_FILTER filter, float MaxLOD, float MinLOD, float MipLODBias, float MaxAnisotropy){
+void SamplerState::createSamplerState(ID3D11Device* dev, D3D11_TEXTURE_ADDRESS_MODE mode, D3D11_FILTER filter, float MaxLOD, float MinLOD, float MipLODBias, UINT MaxAnisotropy){
 	D3D11_SAMPLER_DESC desc;
 	desc.AddressU = mode;
 	desc.AddressV = mode;

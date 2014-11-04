@@ -8,6 +8,8 @@
 #include "Material.h"
 #include "GameEntity.h"
 #include "SamplerState.h"
+#include "ShaderProgram.h"
+#include "ConstantBuffer.h"
 #include "Camera.h"
 
 // Include run-time memory checking in debug builds
@@ -91,7 +93,7 @@ private:
 	Mesh* triangle;
 	Mesh* square;
 	Mesh* asteroid;
-
+	ShaderProgram* shaderProgram;
 	
 
 	//Game Entity
@@ -108,8 +110,9 @@ private:
 	// A few more odds and ends we'll need
 	ID3D11InputLayout* inputLayout;
 	ID3D11Buffer* vsConstantBuffer;
-	VertexShaderConstantBufferLayout dataToSendToVSConstantBuffer;
+	ConstantBufferLayout dataToSendToVSConstantBuffer;
 
+	std::vector<ConstantBuffer*> constantBufferList;
 	// The matrices to go from model space
 	// to screen space
 	XMFLOAT4X4 worldMatrix;

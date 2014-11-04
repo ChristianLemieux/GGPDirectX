@@ -81,6 +81,8 @@ bool MyDemoGame::Init()
 		return false;
 
 	// Set up buffers and such
+	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device));
+	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
 	CreateGeometryBuffers();
 	LoadShadersAndInputLayout();
 
@@ -132,22 +134,22 @@ void MyDemoGame::CreateGeometryBuffers()
 			{ XMFLOAT3(+1.0f, -1.0f, +0.2f), orange, XMFLOAT2(1, 1) }
 	};
 	Vertex asteroidVertices[] = {
-			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7, 1) },
-			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3, 1) },
-			{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1, 1) },
-			{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0, 0.7) },
-			{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0, 0.3) },
-			{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1, 1) },
-			{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3, 0) },
-			{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7, 0) },
-			{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1, 1) },
-			{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1, 0.3) },
-			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1, 0.7) },
-			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1, 1) }
+			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f) },
+			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
+			{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3f, 1.0f) },
+			{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) },
+			{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0.0f, 0.7f) },
+			{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
+			{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0.0f, 0.3f) },
+			{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) },
+			{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3f, 0.0f) },
+			{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
+			{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7f, 0.0f) },
+			{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) },
+			{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1.0f, 0.3f) },
+			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
+			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f) },
+			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) }
 	};
 	// Set up the indices
 	UINT triangleIndices[] = {0, 2, 1};
@@ -166,12 +168,12 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	ID3D11SamplerState* sample = nullptr;
 	//create sampler state
-	samplerStates.push_back(new SamplerState(*sample));
+	samplerStates.push_back(new SamplerState(sample));
 	samplerStates[0]->createSamplerState(device);
 	//create materials
-	materials.push_back(new Material(device, deviceContext, sample, L"bullet.png"));
-	materials.push_back(new Material(device, deviceContext, sample, L"120322_0001.jpg"));
-	materials.push_back(new Material(device, deviceContext, sample, L"asteroid.jpg"));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"bullet.png", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"120322_0001.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
 	//create game entities
 	gameEntities.push_back(new GameEntity(triangle, materials[0]));
 	gameEntities.push_back(new GameEntity(square, materials[1]));
@@ -197,55 +199,6 @@ void MyDemoGame::LoadShadersAndInputLayout()
 		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,	D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
-
-	// Load Vertex Shader --------------------------------------
-	ID3DBlob* vsBlob;
-	D3DReadFileToBlob(L"VertexShader.cso", &vsBlob);
-
-	// Create the shader on the device
-	HR(device->CreateVertexShader(
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		NULL,
-		&vertexShader));
-
-	// Before cleaning up the data, create the input layout
-	HR(device->CreateInputLayout(
-		vertexDesc,
-		ARRAYSIZE(vertexDesc),
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		&inputLayout));
-
-	// Clean up
-	ReleaseMacro(vsBlob);
-
-	// Load Pixel Shader ---------------------------------------
-	ID3DBlob* psBlob;
-	D3DReadFileToBlob(L"PixelShader.cso", &psBlob);
-
-	// Create the shader on the device
-	HR(device->CreatePixelShader(
-		psBlob->GetBufferPointer(),
-		psBlob->GetBufferSize(),
-		NULL,
-		&pixelShader));
-
-	// Clean up
-	ReleaseMacro(psBlob);
-
-	// Constant buffers ----------------------------------------
-	D3D11_BUFFER_DESC cBufferDesc;
-	cBufferDesc.ByteWidth           = sizeof(dataToSendToVSConstantBuffer);
-	cBufferDesc.Usage				= D3D11_USAGE_DEFAULT;
-	cBufferDesc.BindFlags			= D3D11_BIND_CONSTANT_BUFFER;
-	cBufferDesc.CPUAccessFlags		= 0;
-	cBufferDesc.MiscFlags			= 0;
-	cBufferDesc.StructureByteStride = 0;
-	HR(device->CreateBuffer(
-		&cBufferDesc,
-		NULL,
-		&vsConstantBuffer));
 }
 
 #pragma endregion
@@ -278,42 +231,42 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//move triangle right
 	if (GetAsyncKeyState('L') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
 		}
 	}
 	//move triangle left
 	if (GetAsyncKeyState('K') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
 		}
 	}
 	//move triangle up
 	if (GetAsyncKeyState('O') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
 		}
 	}
 	//move triangle down
 	if (GetAsyncKeyState('M') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
 		}
 	}
 	//move triangle forward
 	if (GetAsyncKeyState('U') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 		}
 	}
 	//move triangle back
 	if (GetAsyncKeyState('P') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
 		}
@@ -321,42 +274,42 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//rotate square in positive x
 	if (GetAsyncKeyState('S') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->rotate(XMFLOAT3(0.001f, 0.0f, 0.0f));
 		}
 	}
 	//rotate square in negative x
 	if (GetAsyncKeyState('W') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->rotate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
 		}
 	}
 	//rotate square in positive y
 	if (GetAsyncKeyState('D') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.001f, 0.0f));
 		}
 	}
 	//rotate square in negative y
 	if (GetAsyncKeyState('A') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->rotate(XMFLOAT3(0.0f, -0.001f, 0.0f));
 		}
 	}
 	//rotate square in positive z
 	if (GetAsyncKeyState('Q') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 		}
 	}
 	//rotate square in negative z
 	if (GetAsyncKeyState('F') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, -0.001f));
 		}
@@ -364,14 +317,14 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//Increase Scale of "x" acis
 	if (GetAsyncKeyState('C') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
 		}
 	}	
 	//Decrease Scale of "x" axis
 	if (GetAsyncKeyState('V') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
 		}
@@ -380,14 +333,14 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//Increase Scale of "y" axis
 	if (GetAsyncKeyState('B') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
 		}
 	}
 	//Decrease Scale of "y" axis
 	if (GetAsyncKeyState('N') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
 		}
@@ -395,20 +348,20 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//Increase Scale of "z" axis
 	if (GetAsyncKeyState('G') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
 		}
 	}
 	//Decrease Scale of "z" axis
 	if (GetAsyncKeyState('H') & 0x8000){
-		for (int i = 0; i < gameEntities.size(); i++)
+		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
 			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
 		}
 	}
 
-	for (int i = 2; i < 20; i++)
+	for (unsigned int i = 2; i < 20; i++)
 	{
 		gameEntities[i]->translate(XMFLOAT3(-0.75f * dt, 0.0f, 0.0f));
 		if (gameEntities[i]->getPosition()._41 < -10)
@@ -426,7 +379,7 @@ void MyDemoGame::UpdateCamera()
 	//Left ad right arrow keys alter X position
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
-		gameCam.setDistanceX(-.001);
+		gameCam.setDistanceX(-.001f);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -435,7 +388,7 @@ void MyDemoGame::UpdateCamera()
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
-		gameCam.setDistanceX(+.001);
+		gameCam.setDistanceX(+.001f);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -445,7 +398,7 @@ void MyDemoGame::UpdateCamera()
 	//Up/Down arrow keys alter Y position
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 	{
-		gameCam.setDistanceY(-.001);
+		gameCam.setDistanceY(-.001f);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -453,7 +406,7 @@ void MyDemoGame::UpdateCamera()
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
-		gameCam.setDistanceY(+.001);
+		gameCam.setDistanceY(+.001f);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -463,7 +416,7 @@ void MyDemoGame::UpdateCamera()
 	//5 and 0 on the numpad alter the Z position
 	if (GetAsyncKeyState(VK_NUMPAD0) & 0x8000)
 	{
-		gameCam.setDistanceZ(-.001);
+		gameCam.setDistanceZ(-.001f);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -471,7 +424,7 @@ void MyDemoGame::UpdateCamera()
 	}
 	if (GetAsyncKeyState(VK_NUMPAD5) & 0x8000)
 	{
-		gameCam.setDistanceZ(+.001);
+		gameCam.setDistanceZ(+.001f);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -481,13 +434,13 @@ void MyDemoGame::UpdateCamera()
 	//4 and 6 on the numpad will rotate along the X axis
 	if (GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
 	{
-		gameCam.setRotationDistanceX(-.01);
+		gameCam.setRotationDistanceX(-.01f);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_NUMPAD6) & 0x8000)
 	{
-		gameCam.setRotationDistanceX(+.01);
+		gameCam.setRotationDistanceX(+.01f);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
@@ -495,13 +448,13 @@ void MyDemoGame::UpdateCamera()
 	//8 ad 2 on the unmpad will rotate along the y axis
 	if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
 	{
-		gameCam.setRotationDistanceY(+.01);
+		gameCam.setRotationDistanceY(+.01f);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
 	{
-		gameCam.setRotationDistanceY(-.01);
+		gameCam.setRotationDistanceY(-.01f);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
@@ -531,40 +484,40 @@ void MyDemoGame::DrawScene()
 		1.0f,
 		0);
 
-	// Set up the input assembler
-	deviceContext->IASetInputLayout(inputLayout);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// Set buffers in the input assembler
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	for (int i = 0; i < gameEntities.size(); i++){
-		dataToSendToVSConstantBuffer.world = gameEntities[i]->getWorld();
-		dataToSendToVSConstantBuffer.view = viewMatrix;
-		dataToSendToVSConstantBuffer.projection = projectionMatrix;
+	for (unsigned int i = 0; i < gameEntities.size(); i++){
+
+		// Set up the input assembler
+		deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
+		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
 
 		deviceContext->UpdateSubresource(
-			vsConstantBuffer,
+			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
 			0,
 			NULL,
-			&dataToSendToVSConstantBuffer,
+			&gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
 			0,
 			0);
+
 		deviceContext->IASetVertexBuffers(0, 1, &gameEntities[i]->g_mesh->v_buffer, &stride, &offset);
 		deviceContext->IASetIndexBuffer(gameEntities[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
 
 		deviceContext->PSSetSamplers(0, 1, &gameEntities[i]->g_mat->samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &gameEntities[i]->g_mat->resourceView);
 
-		
+
 
 		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-		deviceContext->VSSetShader(vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(
-			0,	// Corresponds to the constant buffer's register in the vertex shader
-			1,
-			&vsConstantBuffer);
-		deviceContext->PSSetShader(pixelShader, NULL, 0);
+		deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
+		deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+		deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
 
 		// Finally do the actual drawing
 		deviceContext->DrawIndexed(

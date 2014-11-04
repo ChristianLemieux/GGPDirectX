@@ -1,4 +1,5 @@
 #include "GameEntity.h"
+#include "Global.h"
 
 GameEntity::GameEntity(Mesh* mesh, Material* mat){
 	g_mesh = mesh;
@@ -9,10 +10,12 @@ GameEntity::GameEntity(Mesh* mesh, Material* mat){
 
 GameEntity::~GameEntity(void){
 	if (g_mesh){
-		delete[] g_mesh;
+		delete g_mesh;
+		g_mesh = nullptr;
 	}
 	if (g_mat){
-		delete[] g_mat;
+		delete g_mat;
+		g_mat = nullptr;
 	}
 }
 

@@ -20,7 +20,7 @@ bool ObjectLoader::CompareVertices(Vertex a, Vertex b){
 }
 
 UINT ObjectLoader::GetIndex(Vertex v){
-	for (int i = 0; i < vertices.size(); i++){
+	for (unsigned int i = 0; i < vertices.size(); i++){
 		if (CompareVertices(vertices[i], v)){
 			return i;
 		}
