@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include <d3dcompiler.h>
 #include "Global.h"
+#include <typeinfo>
 
 Mesh::Mesh(Vertex* vertices, UINT* indices, int size, ID3D11Device* device){
 	m_size = size;
@@ -8,9 +9,24 @@ Mesh::Mesh(Vertex* vertices, UINT* indices, int size, ID3D11Device* device){
 	m_indices = indices;
 	m_device = device;
 
+	sizeofvertex = sizeof(Vertex);
+
 	createVertexBuffer();
 	createIndexBuffer();
 }
+
+Mesh::Mesh(Phong* vertices, UINT* indices, int size, ID3D11Device* device){
+	m_size = size;
+	m_vertices = vertices;
+	m_indices = indices;
+	m_device = device;
+
+	sizeofvertex = sizeof(Phong);
+
+	createVertexBuffer();
+	createIndexBuffer();
+}
+
 
 Mesh::~Mesh(void){
 	ReleaseMacro(v_buffer);
@@ -20,7 +36,8 @@ Mesh::~Mesh(void){
 void Mesh::createVertexBuffer(){
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex) * m_size; // Number of vertices in the "model" you want to draw
+	vbd.ByteWidth = sizeofvertex * m_size;
+	// Number of vertices in the "model" you want to draw
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;

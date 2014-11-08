@@ -57,6 +57,7 @@ public:
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
+	XMFLOAT3 XMFLOAT3Cross(XMFLOAT3 a, XMFLOAT3 b);
 
 	struct Light
 	{
@@ -94,6 +95,7 @@ private:
 	Mesh* square;
 	Mesh* asteroid;
 	ShaderProgram* shaderProgram;
+	ShaderProgram* PhongProgram;
 	
 
 	//Game Entity

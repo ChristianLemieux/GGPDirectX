@@ -20,6 +20,10 @@
 //    - This was changed in Project Properties > Config Properties > Debugging > Working Directory
 //
 // ----------------------------------------------------------------------------
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define DEBUG
 
 #include <Windows.h>
 #include <d3dcompiler.h>
@@ -33,6 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 				   PSTR cmdLine, int showCmd)
 {
 	// Enable run-time memory check for debug builds.
+
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
@@ -43,7 +48,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	if( !game.Init() )
 		return 0;
 	
-	return game.Run();
+	int toReturn = game.Run();
+	
+	_CrtDumpMemoryLeaks();
+	return toReturn;
 }
 
 #pragma endregion
@@ -83,6 +91,7 @@ bool MyDemoGame::Init()
 	// Set up buffers and such
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device));
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
+	PhongProgram = new ShaderProgram(L"Phong.cso", L"PhongPixel.cso", device, constantBufferList[0], constantBufferList[0]);
 	CreateGeometryBuffers();
 	LoadShadersAndInputLayout();
 
@@ -107,6 +116,9 @@ bool MyDemoGame::Init()
 	return true;
 }
 
+XMFLOAT3 MyDemoGame::XMFLOAT3Cross(XMFLOAT3 a, XMFLOAT3 b){
+	return XMFLOAT3(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
+}
 
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::CreateGeometryBuffers()
@@ -122,34 +134,40 @@ void MyDemoGame::CreateGeometryBuffers()
 	XMFLOAT4 brown = XMFLOAT4(0.65f * light.ambient.x, 0.185f * light.ambient.y, 0.165f * light.ambient.z, 1.0f * light.ambient.w);
 
 
-	Vertex triangleVertices[] = {
-			{ XMFLOAT3(+0.0f, +1.0f, +0.0f), red, XMFLOAT2(0.5, 0) },
-			{ XMFLOAT3(-1.0f, -0.1f, +0.0f), green, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+1.0f, -0.1f, +0.0f), blue, XMFLOAT2(1, 1) },
+	XMFLOAT3 normal = XMFLOAT3(+0.0f, +0.0f, +1.0f);
+
+	Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +1.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
+											{XMFLOAT3(-1.0f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
+											{XMFLOAT3(+1.0f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
 	};
+
+	
+	
+	
+
 	Vertex squareVertices[] = {
-			{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0) },
-			{ XMFLOAT3(-1.0f, -1.0f, +0.2f), green, XMFLOAT2(0, 1) },
-			{ XMFLOAT3(+1.0f, +1.0f, +0.2f), blue, XMFLOAT2(1, 0) },
-			{ XMFLOAT3(+1.0f, -1.0f, +0.2f), orange, XMFLOAT2(1, 1) }
+			{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0)},
+			{ XMFLOAT3(-1.0f, -1.0f, +0.2f), red, XMFLOAT2(0, 1)},
+			{ XMFLOAT3(+1.0f, +1.0f, +0.2f), red, XMFLOAT2(1, 0)},
+			{ XMFLOAT3(+1.0f, -1.0f, +0.2f), red, XMFLOAT2(1, 1)}
 	};
-	Vertex asteroidVertices[] = {
-			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f) },
-			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
-			{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3f, 1.0f) },
-			{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0.0f, 0.7f) },
-			{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
-			{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0.0f, 0.3f) },
-			{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3f, 0.0f) },
-			{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
-			{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7f, 0.0f) },
-			{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1.0f, 0.3f) },
-			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f) },
-			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f) },
-			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f) }
+	Phong asteroidVertices[] = {
+			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0.0f, 0.7f), normal, light.dir },
+			{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0.0f, 0.3f), normal, light.dir },
+			{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3f, 0.0f), normal, light.dir },
+			{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7f, 0.0f), normal, light.dir },
+			{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1.0f, 0.3f), normal, light.dir },
+			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f), normal, light.dir },
+			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir }
 	};
 	// Set up the indices
 	UINT triangleIndices[] = {0, 2, 1};
@@ -171,9 +189,9 @@ void MyDemoGame::CreateGeometryBuffers()
 	samplerStates.push_back(new SamplerState(sample));
 	samplerStates[0]->createSamplerState(device);
 	//create materials
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"bullet.png", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"bullet.png", PhongProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"120322_0001.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", PhongProgram));
 	//create game entities
 	gameEntities.push_back(new GameEntity(triangle, materials[0]));
 	gameEntities.push_back(new GameEntity(square, materials[1]));
@@ -231,45 +249,27 @@ void MyDemoGame::UpdateScene(float dt)
 
 	//move triangle right
 	if (GetAsyncKeyState('L') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
-		}
+		gameEntities[0]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
 	}
 	//move triangle left
 	if (GetAsyncKeyState('K') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
-		}
+		gameEntities[0]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
 	}
 	//move triangle up
 	if (GetAsyncKeyState('O') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
-		}
+		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
 	}
 	//move triangle down
 	if (GetAsyncKeyState('M') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
-		}
+		gameEntities[0]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
 	}
 	//move triangle forward
-	if (GetAsyncKeyState('U') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
-		}
+	if (GetAsyncKeyState('U') & 0x8000){	
+		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 	}
 	//move triangle back
 	if (GetAsyncKeyState('P') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
-		}
+		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
 	}
 
 	//rotate square in positive x
@@ -366,7 +366,7 @@ void MyDemoGame::UpdateScene(float dt)
 		gameEntities[i]->translate(XMFLOAT3(-0.75f * dt, 0.0f, 0.0f));
 		if (gameEntities[i]->getPosition()._41 < -10)
 		{
-			gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 20.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
+			//gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 20.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
 		}
 		
 		//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
@@ -485,11 +485,12 @@ void MyDemoGame::DrawScene()
 		0);
 
 	// Set buffers in the input assembler
-	UINT stride = sizeof(Vertex);
+	//UINT stride = sizeof(PhongBlinnVertex);
 	UINT offset = 0;
-
+	UINT stride = sizeof(Vertex);
 	for (unsigned int i = 0; i < gameEntities.size(); i++){
-
+		//UINT offset = 0;
+		stride = gameEntities[i]->g_mesh->sizeofvertex;
 		// Set up the input assembler
 		deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

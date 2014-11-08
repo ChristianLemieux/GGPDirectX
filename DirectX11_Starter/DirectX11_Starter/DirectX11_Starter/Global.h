@@ -14,6 +14,14 @@ struct Vertex
 	XMFLOAT2 uv;
 };
 
+struct Phong{
+	XMFLOAT3 Position;
+	XMFLOAT4 Color;
+	XMFLOAT2 uv;
+	XMFLOAT3 Normal;
+	XMFLOAT3 lightPos;
+};
+
 //Vector struct for our camera class
 struct Vector
 {
@@ -28,5 +36,4 @@ struct ConstantBufferLayout
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 projection;
 };
-
 #endif

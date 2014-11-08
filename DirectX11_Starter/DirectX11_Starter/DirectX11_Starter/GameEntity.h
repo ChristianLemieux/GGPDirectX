@@ -5,6 +5,7 @@
 #include "Material.h"
 #include "ConstantBuffer.h"
 
+
 class GameEntity{
 public:
 	Mesh* g_mesh;
