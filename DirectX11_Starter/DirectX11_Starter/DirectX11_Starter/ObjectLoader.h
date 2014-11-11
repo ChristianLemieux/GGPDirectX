@@ -5,21 +5,25 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace DirectX;
 
 class ObjectLoader{
 
 public:
-	std::vector<Vertex> vertices;
+	std::vector<Vertex2> vertices;
 	std::vector<UINT> indices;
 	std::vector<XMFLOAT3> Positions;
 	std::vector<XMFLOAT2> UVs;
 	std::vector<XMFLOAT3> Normals;
-	ObjectLoader();
+	std::vector<UINT> splitString(std::string in);
+	ID3D11Device* m_device;
+	ObjectLoader(ID3D11Device* device);
 	~ObjectLoader();
-	bool CompareVertices(Vertex a, Vertex b);
-	UINT GetIndex(Vertex v);
-	void LoadModel(std::string file);
-	Vertex* VecToArray();
+	bool CompareVertices(Vertex2 a, Vertex2 b);
+	UINT GetIndex(Vertex2 v);
+	Mesh* LoadModel(std::string file);
+	Vertex2* VecToArray();
 };

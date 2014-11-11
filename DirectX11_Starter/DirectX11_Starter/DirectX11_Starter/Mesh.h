@@ -16,6 +16,7 @@ public:
 	ID3D11Buffer* i_buffer;
 	int sizeofvertex;
 	Mesh(Vertex* vertices, UINT* indices, int size, ID3D11Device* device);
+	Mesh(Vertex2* vertices, UINT* indices, int size, ID3D11Device* device);
 	Mesh(Phong* vertices, UINT* indices, int size, ID3D11Device* device);
 	~Mesh(void);
 	void createVertexBuffer();

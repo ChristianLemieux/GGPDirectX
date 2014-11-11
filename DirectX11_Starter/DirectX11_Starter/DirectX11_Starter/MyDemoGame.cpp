@@ -179,6 +179,10 @@ void MyDemoGame::CreateGeometryBuffers()
 	//square = new Mesh(squareVertices, squareIndices, 6, device);
 	asteroid = new Mesh(asteroidVertices, asteroidIndices, 21, device);
 
+	ObjectLoader *obj = new ObjectLoader(device);
+
+	Mesh *ship = obj->LoadModel("ship.obj");
+
 	ID3D11SamplerState* sample = nullptr;
 	//create sampler state
 	samplerStates.push_back(new SamplerState(sample));
@@ -191,8 +195,9 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	//create game entities
 	gameEntities.push_back(new GameEntity(triangle, materials[0]));
+	gameEntities.push_back(new GameEntity(ship, materials[0]));
 	//gameEntities.push_back(new GameEntity(square, materials[1]));
-	for (int i = 1; i < 20; i++)
+	for (int i = 2; i < 20; i++)
 	{
 		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
 		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));

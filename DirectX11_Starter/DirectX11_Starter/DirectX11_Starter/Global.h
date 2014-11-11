@@ -11,7 +11,14 @@ struct Vertex
 {
 	XMFLOAT3 Position;
 	XMFLOAT4 Color;
-	XMFLOAT2 uv;
+	XMFLOAT2 UVs;
+
+};
+
+struct Vertex2{
+	XMFLOAT3 Position;
+	XMFLOAT3 Normal;
+	XMFLOAT2 UVs;
 };
 
 struct Phong{
