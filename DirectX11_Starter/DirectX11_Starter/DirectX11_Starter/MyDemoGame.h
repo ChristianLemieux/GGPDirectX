@@ -124,7 +124,6 @@ private:
 	Camera gameCam;
 	XMVECTOR cameraPosition;
 	XMVECTOR cameraRotation;
-	XMVECTOR cameraCrossProduct;
 	XMVECTOR upDirection;
 
 	// Keeps track of the old mouse position.  Useful for 

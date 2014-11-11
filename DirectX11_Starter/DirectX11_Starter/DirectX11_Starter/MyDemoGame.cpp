@@ -112,7 +112,6 @@ bool MyDemoGame::Init()
 	cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 	cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	upDirection = XMVectorSet(0, 1, 0, 0);
-	cameraCrossProduct = XMVector3Cross(cameraPosition, upDirection);
 	return true;
 }
 
@@ -136,14 +135,10 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	XMFLOAT3 normal = XMFLOAT3(+0.0f, +0.0f, +1.0f);
 
-	Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +1.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
-											{XMFLOAT3(-1.0f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
-											{XMFLOAT3(+1.0f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
+	Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +0.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
+											{XMFLOAT3(-.5f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
+											{XMFLOAT3(+.5f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
 	};
-
-	
-	
-	
 
 	Vertex squareVertices[] = {
 			{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0)},
@@ -151,6 +146,7 @@ void MyDemoGame::CreateGeometryBuffers()
 			{ XMFLOAT3(+1.0f, +1.0f, +0.2f), red, XMFLOAT2(1, 0)},
 			{ XMFLOAT3(+1.0f, -1.0f, +0.2f), red, XMFLOAT2(1, 1)}
 	};
+
 	Phong asteroidVertices[] = {
 			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f), normal, light.dir },
 			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
@@ -173,31 +169,30 @@ void MyDemoGame::CreateGeometryBuffers()
 	UINT triangleIndices[] = {0, 2, 1};
 
 	//Set up second set of the indices
-	UINT squareIndices[] = { 0, 2, 1, 2, 3, 1 };
+	//UINT squareIndices[] = { 0, 2, 1, 2, 3, 1 };
 
 	//Set up set of asteroid indices
 	UINT asteroidIndices[] = { 0,12,6,2,10,8,2,0,10,2,8,4,0,14,12,8,6,4,2,12,10 };
 	triangle = new Mesh(triangleVertices, triangleIndices, 3, device);
-	square = new Mesh(squareVertices, squareIndices, 6, device);
+	//square = new Mesh(squareVertices, squareIndices, 6, device);
 	asteroid = new Mesh(asteroidVertices, asteroidIndices, 21, device);
-
-	
-
 
 	ID3D11SamplerState* sample = nullptr;
 	//create sampler state
 	samplerStates.push_back(new SamplerState(sample));
 	samplerStates[0]->createSamplerState(device);
+
 	//create materials
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"bullet.png", PhongProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"120322_0001.jpg", shaderProgram));
+	//materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"120322_0001.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", PhongProgram));
+
 	//create game entities
 	gameEntities.push_back(new GameEntity(triangle, materials[0]));
-	gameEntities.push_back(new GameEntity(square, materials[1]));
-	for (int i = 2; i < 20; i++)
+	//gameEntities.push_back(new GameEntity(square, materials[1]));
+	for (int i = 1; i < 20; i++)
 	{
-		gameEntities.push_back(new GameEntity(asteroid, materials[2]));
+		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
 		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
 		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
 	}
@@ -248,21 +243,22 @@ void MyDemoGame::UpdateScene(float dt)
 	UpdateCamera();
 
 	//move triangle right
-	if (GetAsyncKeyState('L') & 0x8000){
+	if (GetAsyncKeyState('D') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
 	}
 	//move triangle left
-	if (GetAsyncKeyState('K') & 0x8000){
+	if (GetAsyncKeyState('A') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
 	}
 	//move triangle up
-	if (GetAsyncKeyState('O') & 0x8000){
+	if (GetAsyncKeyState('W') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
 	}
 	//move triangle down
-	if (GetAsyncKeyState('M') & 0x8000){
+	if (GetAsyncKeyState('S') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
 	}
+	/*
 	//move triangle forward
 	if (GetAsyncKeyState('U') & 0x8000){	
 		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
@@ -360,7 +356,7 @@ void MyDemoGame::UpdateScene(float dt)
 			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
 		}
 	}
-
+	*/
 	for (unsigned int i = 2; i < 20; i++)
 	{
 		gameEntities[i]->translate(XMFLOAT3(-0.75f * dt, 0.0f, 0.0f));
@@ -383,8 +379,6 @@ void MyDemoGame::UpdateCamera()
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
-		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
-
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
@@ -392,7 +386,6 @@ void MyDemoGame::UpdateCamera()
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
-		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
 	}
 
 	//Up/Down arrow keys alter Y position
@@ -402,7 +395,6 @@ void MyDemoGame::UpdateCamera()
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
-		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
@@ -410,7 +402,6 @@ void MyDemoGame::UpdateCamera()
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
-		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
 	}
 
 	//5 and 0 on the numpad alter the Z position
@@ -420,7 +411,6 @@ void MyDemoGame::UpdateCamera()
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
-		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
 	}
 	if (GetAsyncKeyState(VK_NUMPAD5) & 0x8000)
 	{
@@ -428,7 +418,6 @@ void MyDemoGame::UpdateCamera()
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
-		cameraCrossProduct = XMVector3Cross(upDirection, cameraPosition);
 	}
 
 	//4 and 6 on the numpad will rotate along the X axis

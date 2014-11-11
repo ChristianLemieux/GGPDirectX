@@ -76,6 +76,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="GameEntity.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -85,9 +86,11 @@
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="SamplerState.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Material.h" />
@@ -98,6 +101,7 @@
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="SamplerState.h" />
+    <ClInclude Include="ShaderProgram.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">
