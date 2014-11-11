@@ -112,6 +112,8 @@ bool MyDemoGame::Init()
 	cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 	cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	upDirection = XMVectorSet(0, 1, 0, 0);
+
+
 	return true;
 }
 
@@ -516,8 +518,46 @@ void MyDemoGame::DrawScene()
 			0);
 	};
 
+	DrawUserInterface(0xff0099ff);
+
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
+}
+
+void MyDemoGame::DrawUserInterface(UINT32 textColor)
+{
+	if (!uiInitialized)
+	{
+		// set up the font factory
+		// The font wrapper used to actually draw the text
+		HRESULT hResult = FW1CreateFactory(FW1_VERSION, &pFW1Factory);
+		pFW1Factory->CreateFontWrapper(device, L"Arial", &pFontWrapper);
+		uiInitialized = true;
+	}
+
+	// The function to draw the actual text
+	pFontWrapper->DrawString(
+		deviceContext,
+		L"Hull Integrity: 100%",// String
+		24.0f,// Font size
+		25.0f,// X position
+		15.0f,// Y position
+		0xff0099ff,// Text color, 0xAaBbGgRr
+		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+		);
+
+
+	pFontWrapper->DrawString(
+		deviceContext,
+		L"Score: 0",// String
+		24.0f,// Font size
+		viewport.Width - 125.0f,// X position
+		15.0f,// Y position
+		0xff0099ff,// Text color, 0xAaBbGgRr
+		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+		);
+
+
 }
 
 #pragma endregion

@@ -11,6 +11,7 @@
 #include "ShaderProgram.h"
 #include "ConstantBuffer.h"
 #include "Camera.h"
+#include "FW1FontWrapper.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -73,10 +74,17 @@ public:
 
 	Light light;
 
+	IFW1Factory *pFW1Factory;
+
+	IFW1FontWrapper *pFontWrapper;
+
+	BOOL uiInitialized = false;
+
 private:
 	// Initialization for our "game" demo
 	void CreateGeometryBuffers();
 	void LoadShadersAndInputLayout();
+	void DrawUserInterface(UINT32);
 
 private:
 
