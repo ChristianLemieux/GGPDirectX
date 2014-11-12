@@ -137,7 +137,7 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	XMFLOAT3 normal = XMFLOAT3(+0.0f, +0.0f, +1.0f);
 
-	Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +0.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
+	/*Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +0.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
 											{XMFLOAT3(-.5f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
 											{XMFLOAT3(+.5f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
 	};
@@ -166,22 +166,18 @@ void MyDemoGame::CreateGeometryBuffers()
 			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
 			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f), normal, light.dir },
 			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir }
-	};
-	// Set up the indices
-	UINT triangleIndices[] = {0, 2, 1};
+	};*/
 
-	//Set up second set of the indices
-	//UINT squareIndices[] = { 0, 2, 1, 2, 3, 1 };
 
 	//Set up set of asteroid indices
-	UINT asteroidIndices[] = { 0,12,6,2,10,8,2,0,10,2,8,4,0,14,12,8,6,4,2,12,10 };
-	triangle = new Mesh(triangleVertices, triangleIndices, 3, device);
-	//square = new Mesh(squareVertices, squareIndices, 6, device);
-	asteroid = new Mesh(asteroidVertices, asteroidIndices, 21, device);
+	//UINT asteroidIndices[] = { 0,12,6,2,10,8,2,0,10,2,8,4,0,14,12,8,6,4,2,12,10 };
+	//asteroid = new Mesh(asteroidVertices, asteroidIndices, 21, device);
 
 	ObjectLoader *obj = new ObjectLoader(device);
+	ObjectLoader *asteroidObject = new ObjectLoader(device);
 
 	Mesh *ship = obj->LoadModel("ship.obj");
+	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
 
 	ID3D11SamplerState* sample = nullptr;
 	//create sampler state
@@ -190,17 +186,15 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	//create materials
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"bullet.png", PhongProgram));
-	//materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"120322_0001.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", PhongProgram));
 
 	//create game entities
-	gameEntities.push_back(new GameEntity(triangle, materials[0]));
 	gameEntities.push_back(new GameEntity(ship, materials[0]));
-	//gameEntities.push_back(new GameEntity(square, materials[1]));
-	for (int i = 2; i < 20; i++)
+
+	for (int i = 1; i < 20; i++)
 	{
 		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
-		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
+		//gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
 		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
 	}
 }
@@ -364,12 +358,12 @@ void MyDemoGame::UpdateScene(float dt)
 		}
 	}
 	*/
-	for (unsigned int i = 2; i < 20; i++)
+	for (unsigned int i = 1; i < 20; i++)
 	{
 		gameEntities[i]->translate(XMFLOAT3(-0.75f * dt, 0.0f, 0.0f));
 		if (gameEntities[i]->getPosition()._41 < -10)
 		{
-			//gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 20.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
+			gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 20.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
 		}
 		
 		//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
