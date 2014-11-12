@@ -85,6 +85,8 @@ MyDemoGame::~MyDemoGame()
 // sets up our geometry and loads the shaders (among other things)
 bool MyDemoGame::Init()
 {
+	stateManager = new StateManager();
+
 	if( !DirectXGame::Init() )
 		return false;
 
@@ -176,7 +178,7 @@ void MyDemoGame::CreateGeometryBuffers()
 	ObjectLoader *obj = new ObjectLoader(device);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 
-	Mesh *ship = obj->LoadModel("ship.obj");
+	Mesh *ship = obj->LoadModel("asteroid.obj");
 	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
 
 	ID3D11SamplerState* sample = nullptr;
@@ -185,16 +187,17 @@ void MyDemoGame::CreateGeometryBuffers()
 	samplerStates[0]->createSamplerState(device);
 
 	//create materials
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"bullet.png", PhongProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", PhongProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"spaceShipTexture.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
 
 	//create game entities
 	gameEntities.push_back(new GameEntity(ship, materials[0]));
 
+	//comment
 	for (int i = 1; i < 20; i++)
 	{
-		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
-		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
+		gameEntities.push_back(new GameEntity(ship, materials[1]));
+		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.5f));
 		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
 	}
 }
@@ -241,134 +244,137 @@ void MyDemoGame::OnResize()
 // push it to the buffer on the device
 void MyDemoGame::UpdateScene(float dt)
 {
-	UpdateCamera();
+	state = stateManager->changeState();
+	if (state == L"Game"){
+		UpdateCamera();
 
-	//move triangle right
-	if (GetAsyncKeyState('D') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.001f, 0.0f, 0.0f));
-	}
-	//move triangle left
-	if (GetAsyncKeyState('A') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
-	}
-	//move triangle up
-	if (GetAsyncKeyState('W') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.001f, 0.0f));
-	}
-	//move triangle down
-	if (GetAsyncKeyState('S') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, -0.001f, 0.0f));
-	}
-	/*
-	//move triangle forward
-	if (GetAsyncKeyState('U') & 0x8000){	
+		//move triangle right
+		if (GetAsyncKeyState('D') & 0x8000){
+			gameEntities[0]->translate(XMFLOAT3(0.3f * dt, 0.0f, 0.0f));
+		}
+		//move triangle left
+		if (GetAsyncKeyState('A') & 0x8000){
+			gameEntities[0]->translate(XMFLOAT3(-0.3f * dt, 0.0f, 0.0f));
+		}
+		//move triangle up
+		if (GetAsyncKeyState('W') & 0x8000){
+			gameEntities[0]->translate(XMFLOAT3(0.0f, 0.3f * dt, 0.0f));
+		}
+		//move triangle down
+		if (GetAsyncKeyState('S') & 0x8000){
+			gameEntities[0]->translate(XMFLOAT3(0.0f, -0.3f * dt, 0.0f));
+		}
+		/*
+		//move triangle forward
+		if (GetAsyncKeyState('U') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
-	}
-	//move triangle back
-	if (GetAsyncKeyState('P') & 0x8000){
+		}
+		//move triangle back
+		if (GetAsyncKeyState('P') & 0x8000){
 		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
-	}
+		}
 
-	//rotate square in positive x
-	if (GetAsyncKeyState('S') & 0x8000){
+		//rotate square in positive x
+		if (GetAsyncKeyState('S') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->rotate(XMFLOAT3(0.001f, 0.0f, 0.0f));
+		gameEntities[i]->rotate(XMFLOAT3(0.001f, 0.0f, 0.0f));
 		}
-	}
-	//rotate square in negative x
-	if (GetAsyncKeyState('W') & 0x8000){
+		}
+		//rotate square in negative x
+		if (GetAsyncKeyState('W') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->rotate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
+		gameEntities[i]->rotate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
 		}
-	}
-	//rotate square in positive y
-	if (GetAsyncKeyState('D') & 0x8000){
+		}
+		//rotate square in positive y
+		if (GetAsyncKeyState('D') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.001f, 0.0f));
+		gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.001f, 0.0f));
 		}
-	}
-	//rotate square in negative y
-	if (GetAsyncKeyState('A') & 0x8000){
+		}
+		//rotate square in negative y
+		if (GetAsyncKeyState('A') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->rotate(XMFLOAT3(0.0f, -0.001f, 0.0f));
+		gameEntities[i]->rotate(XMFLOAT3(0.0f, -0.001f, 0.0f));
 		}
-	}
-	//rotate square in positive z
-	if (GetAsyncKeyState('Q') & 0x8000){
+		}
+		//rotate square in positive z
+		if (GetAsyncKeyState('Q') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+		gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 		}
-	}
-	//rotate square in negative z
-	if (GetAsyncKeyState('F') & 0x8000){
+		}
+		//rotate square in negative z
+		if (GetAsyncKeyState('F') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, -0.001f));
+		gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, -0.001f));
 		}
-	}
+		}
 
-	//Increase Scale of "x" acis
-	if (GetAsyncKeyState('C') & 0x8000){
+		//Increase Scale of "x" acis
+		if (GetAsyncKeyState('C') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
+		gameEntities[i]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
 		}
-	}	
-	//Decrease Scale of "x" axis
-	if (GetAsyncKeyState('V') & 0x8000){
+		}
+		//Decrease Scale of "x" axis
+		if (GetAsyncKeyState('V') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
+		gameEntities[i]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
 		}
-	}
+		}
 
 
-	//Increase Scale of "y" axis
-	if (GetAsyncKeyState('B') & 0x8000){
+		//Increase Scale of "y" axis
+		if (GetAsyncKeyState('B') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
+		gameEntities[i]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
 		}
-	}
-	//Decrease Scale of "y" axis
-	if (GetAsyncKeyState('N') & 0x8000){
+		}
+		//Decrease Scale of "y" axis
+		if (GetAsyncKeyState('N') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
+		gameEntities[i]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
 		}
-	}
+		}
 
-	//Increase Scale of "z" axis
-	if (GetAsyncKeyState('G') & 0x8000){
+		//Increase Scale of "z" axis
+		if (GetAsyncKeyState('G') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
+		gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
 		}
-	}
-	//Decrease Scale of "z" axis
-	if (GetAsyncKeyState('H') & 0x8000){
+		}
+		//Decrease Scale of "z" axis
+		if (GetAsyncKeyState('H') & 0x8000){
 		for (unsigned int i = 0; i < gameEntities.size(); i++)
 		{
-			gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
+		gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
 		}
-	}
-	*/
-	//moves asteroids across screen and respawns them when they leave the screen
-	for (unsigned int i = 1; i < 20; i++)
-	{
-		gameEntities[i]->translate(XMFLOAT3(-0.85f * dt, 0.0f, 0.0f));
+		}
+		*/
+		//moves asteroids across screen and respawns them when they leave the screen
+		for (unsigned int i = 1; i < 20; i++)
+		{
+			gameEntities[i]->translate(XMFLOAT3(-0.85f * dt, 0.0f, 0.0f));
 
-		if (gameEntities[i]->getPosition()._41 < -10)
-		{
-			gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
+			if (gameEntities[i]->getPosition()._41 < -10)
+			{
+				gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
+			}
+
+			//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 		}
-		
-		//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 	}
 }
 
@@ -475,50 +481,50 @@ void MyDemoGame::DrawScene()
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
+	if (state == L"Game" || state == L"Pause"){
+		// Set buffers in the input assembler
+		//UINT stride = sizeof(PhongBlinnVertex);
+		UINT offset = 0;
+		UINT stride = sizeof(Vertex);
+		for (unsigned int i = 0; i < gameEntities.size(); i++){
+			//UINT offset = 0;
+			stride = gameEntities[i]->g_mesh->sizeofvertex;
+			// Set up the input assembler
+			deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Set buffers in the input assembler
-	//UINT stride = sizeof(PhongBlinnVertex);
-	UINT offset = 0;
-	UINT stride = sizeof(Vertex);
-	for (unsigned int i = 0; i < gameEntities.size(); i++){
-		//UINT offset = 0;
-		stride = gameEntities[i]->g_mesh->sizeofvertex;
-		// Set up the input assembler
-		deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
+			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
 
-		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
-		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+			deviceContext->UpdateSubresource(
+				gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+				0,
+				NULL,
+				&gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+				0,
+				0);
 
-		deviceContext->UpdateSubresource(
-			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
-			0,
-			NULL,
-			&gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
-			0,
-			0);
+			deviceContext->IASetVertexBuffers(0, 1, &gameEntities[i]->g_mesh->v_buffer, &stride, &offset);
+			deviceContext->IASetIndexBuffer(gameEntities[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
 
-		deviceContext->IASetVertexBuffers(0, 1, &gameEntities[i]->g_mesh->v_buffer, &stride, &offset);
-		deviceContext->IASetIndexBuffer(gameEntities[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-		deviceContext->PSSetSamplers(0, 1, &gameEntities[i]->g_mat->samplerState);
-		deviceContext->PSSetShaderResources(0, 1, &gameEntities[i]->g_mat->resourceView);
+			deviceContext->PSSetSamplers(0, 1, &gameEntities[i]->g_mat->samplerState);
+			deviceContext->PSSetShaderResources(0, 1, &gameEntities[i]->g_mat->resourceView);
 
 
 
-		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-		deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
-		deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
+			// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+			deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
+			deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+			deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
 
-		// Finally do the actual drawing
-		deviceContext->DrawIndexed(
-			gameEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
-			0,
-			0);
-	};
-
+			// Finally do the actual drawing
+			deviceContext->DrawIndexed(
+				gameEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
+				0,
+				0);
+		};
+	}
 	DrawUserInterface(0xff0099ff);
 
 	// Present the buffer
@@ -554,6 +560,16 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 		24.0f,// Font size
 		viewport.Width - 125.0f,// X position
 		15.0f,// Y position
+		0xff0099ff,// Text color, 0xAaBbGgRr
+		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+		);
+
+	pFontWrapper->DrawString(
+		deviceContext,
+		state,// String
+		24.0f,// Font size
+		viewport.Width - 125.0f,// X position
+		50.0f,// Y position
 		0xff0099ff,// Text color, 0xAaBbGgRr
 		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
 		);
