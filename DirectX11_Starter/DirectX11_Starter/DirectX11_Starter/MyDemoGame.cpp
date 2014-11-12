@@ -194,8 +194,8 @@ void MyDemoGame::CreateGeometryBuffers()
 	for (int i = 1; i < 20; i++)
 	{
 		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
-		//gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
-		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
+		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.0f));
+		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
 	}
 }
 
@@ -358,12 +358,14 @@ void MyDemoGame::UpdateScene(float dt)
 		}
 	}
 	*/
+	//moves asteroids across screen and respawns them when they leave the screen
 	for (unsigned int i = 1; i < 20; i++)
 	{
-		gameEntities[i]->translate(XMFLOAT3(-0.75f * dt, 0.0f, 0.0f));
+		gameEntities[i]->translate(XMFLOAT3(-0.85f * dt, 0.0f, 0.0f));
+
 		if (gameEntities[i]->getPosition()._41 < -10)
 		{
-			gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 20.0f, (((float)rand() / (float)(RAND_MAX))* 10.0f) - 5.0f, 0.0f));
+			gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
 		}
 		
 		//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
