@@ -85,7 +85,7 @@ MyDemoGame::~MyDemoGame()
 // sets up our geometry and loads the shaders (among other things)
 bool MyDemoGame::Init()
 {
-	
+
 	collision = L"Not Colliding";
 	stateManager = new StateManager();
 	notColliding = false;
@@ -108,7 +108,7 @@ bool MyDemoGame::Init()
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
 	PhongProgram = new ShaderProgram(L"Phong.cso", L"PhongPixel.cso", device, constantBufferList[0], constantBufferList[0]);
 	CreateGeometryBuffers();
-	
+
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
 	XMVECTOR position = XMVectorSet(0, 0, -5, 0);
@@ -128,7 +128,7 @@ bool MyDemoGame::Init()
 	upDirection = XMVectorSet(0, 1, 0, 0);
 
 	// create the buttons for the menus
-	Button tempButton = { {165, 320, 625, 375}, 0, 1 };
+	Button tempButton = { { 165, 320, 625, 375 }, 0, 1 };
 	buttons.push_back(tempButton);
 	tempButton = { { 145, 420, 660, 475 }, 0, 2 };
 	buttons.push_back(tempButton);
@@ -165,7 +165,7 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	Mesh *menu = menuObject->LoadModel("Menu.obj");
 
-	
+
 	//create materials
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
@@ -344,42 +344,42 @@ void MyDemoGame::DrawScene()
 	else if (state == L"Menu")
 	{
 		UINT offset = 0;
-			//UINT offset = 0;
-			UINT stride = menuEntities[0]->g_mesh->sizeofvertex;
-			// Set up the input assembler
-			deviceContext->IASetInputLayout(menuEntities[0]->g_mat->shaderProgram->vsInputLayout);
-			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//UINT offset = 0;
+		UINT stride = menuEntities[0]->g_mesh->sizeofvertex;
+		// Set up the input assembler
+		deviceContext->IASetInputLayout(menuEntities[0]->g_mat->shaderProgram->vsInputLayout);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[0]->getWorld();
-			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+		menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[0]->getWorld();
+		menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+		menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
 
-			deviceContext->UpdateSubresource(
-				menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
-				0,
-				NULL,
-				&menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
-				0,
-				0);
+		deviceContext->UpdateSubresource(
+			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			0,
+			NULL,
+			&menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			0,
+			0);
 
-			deviceContext->IASetVertexBuffers(0, 1, &menuEntities[0]->g_mesh->v_buffer, &stride, &offset);
-			deviceContext->IASetIndexBuffer(menuEntities[0]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+		deviceContext->IASetVertexBuffers(0, 1, &menuEntities[0]->g_mesh->v_buffer, &stride, &offset);
+		deviceContext->IASetIndexBuffer(menuEntities[0]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
 
-			deviceContext->PSSetSamplers(0, 1, &menuEntities[0]->g_mat->samplerState);
-			deviceContext->PSSetShaderResources(0, 1, &menuEntities[0]->g_mat->resourceView);
+		deviceContext->PSSetSamplers(0, 1, &menuEntities[0]->g_mat->samplerState);
+		deviceContext->PSSetShaderResources(0, 1, &menuEntities[0]->g_mat->resourceView);
 
 
 
-			// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-			deviceContext->VSSetShader(menuEntities[0]->g_mat->shaderProgram->vertexShader, NULL, 0);
-			deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
-			deviceContext->PSSetShader(menuEntities[0]->g_mat->shaderProgram->pixelShader, NULL, 0);
+		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+		deviceContext->VSSetShader(menuEntities[0]->g_mat->shaderProgram->vertexShader, NULL, 0);
+		deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+		deviceContext->PSSetShader(menuEntities[0]->g_mat->shaderProgram->pixelShader, NULL, 0);
 
-			// Finally do the actual drawing
-			deviceContext->DrawIndexed(
-				menuEntities.at(0)->g_mesh->m_size,	// The number of indices we're using in this draw
-				0,
-				0);
+		// Finally do the actual drawing
+		deviceContext->DrawIndexed(
+			menuEntities.at(0)->g_mesh->m_size,	// The number of indices we're using in this draw
+			0,
+			0);
 	}
 	else if (state == L"Instructions")
 	{
@@ -470,9 +470,9 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::DrawUserInterface(UINT32 textColor)
 {
-	if (state == L"Game" || state == L"Pause" || state == L"Win" || state == L"Lose")
+	if (state == L"Game" || state == L"Pause" || state == L"Win")
 	{
-		
+
 
 		if (!uiInitialized)
 		{
@@ -483,7 +483,7 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 			uiInitialized = true;
 		}
 
-		
+
 
 		pFontWrapper->DrawString(
 			deviceContext,
@@ -500,14 +500,14 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 			game->drawText(pFontWrapper);
 		}
 		/*pFontWrapper->DrawString(
-			deviceContext,
-			collision,// String
-			24.0f,// Font size
-			viewport.Width - 200.0f,// X position
-			100.0f,// Y position
-			0xff0099ff,// Text color, 0xAaBbGgRr
-			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-			);*/
+		deviceContext,
+		collision,// String
+		24.0f,// Font size
+		viewport.Width - 200.0f,// X position
+		100.0f,// Y position
+		0xff0099ff,// Text color, 0xAaBbGgRr
+		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+		);*/
 	}
 }
 

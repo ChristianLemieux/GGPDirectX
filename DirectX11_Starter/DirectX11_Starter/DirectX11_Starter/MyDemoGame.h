@@ -10,6 +10,7 @@
 #include "GameEntity.h"
 #include "SamplerState.h"
 #include "ShaderProgram.h"
+#include "SpriteFont.h"
 #include "ConstantBuffer.h"
 #include "Camera.h"
 #include "FW1FontWrapper.h"
@@ -34,8 +35,8 @@ using namespace DirectX;
 // Vertex struct for triangles
 /*struct Vertex
 {
-	XMFLOAT3 Position;
-	XMFLOAT4 Color;
+XMFLOAT3 Position;
+XMFLOAT4 Color;
 };*/
 
 // Struct to match vertex shader's constant buffer
@@ -66,7 +67,7 @@ public:
 	bool Init();
 	void OnResize();
 	void UpdateScene(float dt);
-	void DrawScene(); 
+	void DrawScene();
 	void UpdateCamera();
 
 	// For handing mouse input
@@ -124,7 +125,7 @@ private:
 	Mesh* asteroid;
 	ShaderProgram* shaderProgram;
 	ShaderProgram* PhongProgram;
-	
+
 
 	//Game Entity
 	std::vector<GameEntity*> gameEntities;
