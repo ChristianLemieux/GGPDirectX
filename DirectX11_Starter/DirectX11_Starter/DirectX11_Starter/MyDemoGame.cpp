@@ -127,6 +127,21 @@ bool MyDemoGame::Init()
 	cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	upDirection = XMVectorSet(0, 1, 0, 0);
 
+	// create the buttons for the menus
+	Button tempButton = { {165, 320, 625, 375}, 0, 1 };
+	buttons.push_back(tempButton);
+	tempButton = { { 145, 420, 660, 475 }, 0, 2 };
+	buttons.push_back(tempButton);
+	tempButton = { { 35, 460, 195, 560 }, 2, 0 };
+	buttons.push_back(tempButton);
+
+	//initialize states so that state strings can be looked up with a state index
+	states[0] = L"Menu";
+	states[1] = L"Game";
+	states[2] = L"Instructions";
+	states[3] = L"Pause";
+	states[4] = L"Win";
+	states[5] = L"Lose";
 
 	return true;
 }
@@ -483,17 +498,12 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 
 void MyDemoGame::HandleUIClick(int x, int y)
 {
-	if (x > 165 && x < 625 && y > 320 && y < 375 && state == L"Menu")
+	for (int i = 0; i < buttons.size(); i++)
 	{
-		stateManager->setState(1);
-	}
-	else if (x > 145 && x < 660 && y > 420 && y < 475 && state == L"Menu")
-	{
-		stateManager->setState(2);
-	}
-	else if (x > 35 && x < 195 && y > 460 && y < 560 && state == L"Instructions")
-	{
-		stateManager->setState(0);
+		if (state == states[buttons[i].activeState] && x > buttons[i].dimensions.left && x < buttons[i].dimensions.right && y > buttons[i].dimensions.top && y < buttons[i].dimensions.bottom)
+		{
+			stateManager->setState(buttons[i].newState);
+		}
 	}
 }
 

@@ -48,6 +48,13 @@ struct VertexShaderConstantBufferLayout
 	XMFLOAT4X4 projection;
 };
 
+struct Button
+{
+	RECT dimensions; // the dimensions covered by the button
+	int activeState; // The state the button is active in
+	int newState; // The state the button changes the game to
+};
+
 // Demo class which extends the base DirectXGame class
 class MyDemoGame : public DirectXGame
 {
@@ -95,9 +102,11 @@ private:
 	void DrawUserInterface(UINT32);
 	void HandleUIClick(int x, int y);
 
+
 private:
 	Game* game;
 	StateManager* stateManager;
+	wchar_t* states[6];
 	wchar_t* state;
 	wchar_t* collision;
 	// Buffers to hold actual geometry
@@ -125,6 +134,8 @@ private:
 	std::vector<SamplerState*> samplerStates;
 	//Materials
 	std::vector<Material*> materials;
+
+	std::vector<Button> buttons;
 
 	// Our basic shaders for this example
 	ID3D11PixelShader* pixelShader;
