@@ -133,11 +133,11 @@ void MyDemoGame::CreateGeometryBuffers()
 	light.ambient = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
 	light.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	XMFLOAT4 red = XMFLOAT4(1.0f * light.ambient.x, 0.0f * light.ambient.y, 0.0f * light.ambient.z, 1.0f * light.ambient.w);
-	XMFLOAT4 green = XMFLOAT4(0.0f * light.ambient.x, 1.0f * light.ambient.y, 0.0f * light.ambient.z, 1.0f * light.ambient.w);
-	XMFLOAT4 blue = XMFLOAT4(0.0f * light.ambient.x, 0.0f * light.ambient.y, 1.0f * light.ambient.z, 1.0f * light.ambient.w);
-	XMFLOAT4 orange = XMFLOAT4(1.0f * light.ambient.x, 0.5f * light.ambient.y, 0.0f * light.ambient.z, 1.0f * light.ambient.w);
-	XMFLOAT4 brown = XMFLOAT4(0.65f * light.ambient.x, 0.185f * light.ambient.y, 0.165f * light.ambient.z, 1.0f * light.ambient.w);
+	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	XMFLOAT4 orange = XMFLOAT4(1.0f, 0.5f, 0.0f, 1.0f);
+	XMFLOAT4 brown = XMFLOAT4(0.65f, 0.185f, 0.165f, 1.0f);
 
 
 	XMFLOAT3 normal = XMFLOAT3(+0.0f, +0.0f, +1.0f);
@@ -537,7 +537,15 @@ void MyDemoGame::DrawScene()
 			deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
 			deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
 			deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
-
+			
+			//lights
+			DirectionalLight mDirLight;
+			
+			mDirLight.Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+			mDirLight.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+			mDirLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+			mDirLight.Direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
+			
 			// Finally do the actual drawing
 			deviceContext->DrawIndexed(
 				gameEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
