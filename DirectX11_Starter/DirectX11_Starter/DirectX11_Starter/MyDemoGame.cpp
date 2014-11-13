@@ -180,9 +180,11 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	ObjectLoader *obj = new ObjectLoader(device);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
+	ObjectLoader *menuObject = new ObjectLoader(device);
 
 	Mesh *ship = obj->LoadModel("asteroid.obj");
 	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
+	Mesh *menu = menuObject->LoadModel("Menu.obj");
 
 	ID3D11SamplerState* sample = nullptr;
 	//create sampler state
@@ -192,10 +194,18 @@ void MyDemoGame::CreateGeometryBuffers()
 	//create materials
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"StartScreen.png", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"InstructionsScreen.png", shaderProgram));
 
 	//create game entities
 	gameEntities.push_back(new GameEntity(ship, materials[0]));
 	gameEntities[0]->translate(XMFLOAT3(0.1f, 0.1f, 0.0f));
+
+	//create menu entities
+	menuEntities.push_back(new GameEntity(menu, materials[2]));
+	menuEntities[0]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
+	menuEntities.push_back(new GameEntity(menu, materials[3]));
+
 
 	//comment
 	for (int i = 1; i < 20; i++)
@@ -248,150 +258,57 @@ void MyDemoGame::OnResize()
 // push it to the buffer on the device
 void MyDemoGame::UpdateScene(float dt)
 {
+	UpdateCamera();
 	state = stateManager->changeState();
-	if (state == L"Game"){
-		UpdateCamera();
+	if (state == L"Game")
+	{
 
 		//move triangle right
 		if (GetAsyncKeyState('D') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.3f * dt, 0.0f, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(0.6f * dt, 0.0f, 0.0f));
 		}
 		//move triangle left
 		if (GetAsyncKeyState('A') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(-0.3f * dt, 0.0f, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(-0.6f * dt, 0.0f, 0.0f));
 		}
 		//move triangle up
 		if (GetAsyncKeyState('W') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.0f, 0.3f * dt, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(0.0f, 0.6f * dt, 0.0f));
 		}
 		//move triangle down
 		if (GetAsyncKeyState('S') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.0f, -0.3f * dt, 0.0f));
-		}
-		/*
-		//move triangle forward
-		if (GetAsyncKeyState('U') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.001f));
-		}
-		//move triangle back
-		if (GetAsyncKeyState('P') & 0x8000){
-		gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, -0.001f));
+			gameEntities[0]->translate(XMFLOAT3(0.0f, -0.6f * dt, 0.0f));
 		}
 
-		//rotate square in positive x
-		if (GetAsyncKeyState('S') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->rotate(XMFLOAT3(0.001f, 0.0f, 0.0f));
-		}
-		}
-		//rotate square in negative x
-		if (GetAsyncKeyState('W') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->rotate(XMFLOAT3(-0.001f, 0.0f, 0.0f));
-		}
-		}
-		//rotate square in positive y
-		if (GetAsyncKeyState('D') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.001f, 0.0f));
-		}
-		}
-		//rotate square in negative y
-		if (GetAsyncKeyState('A') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->rotate(XMFLOAT3(0.0f, -0.001f, 0.0f));
-		}
-		}
-		//rotate square in positive z
-		if (GetAsyncKeyState('Q') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
-		}
-		}
-		//rotate square in negative z
-		if (GetAsyncKeyState('F') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, -0.001f));
-		}
-		}
-
-		//Increase Scale of "x" acis
-		if (GetAsyncKeyState('C') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
-		}
-		}
-		//Decrease Scale of "x" axis
-		if (GetAsyncKeyState('V') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->scale(XMFLOAT3(0.999f, 1.0f, 1.0f));
-		}
-		}
-
-
-		//Increase Scale of "y" axis
-		if (GetAsyncKeyState('B') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->scale(XMFLOAT3(1.0f, 1.001f, 1.0f));
-		}
-		}
-		//Decrease Scale of "y" axis
-		if (GetAsyncKeyState('N') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->scale(XMFLOAT3(1.0f, 0.999f, 1.0f));
-		}
-		}
-
-		//Increase Scale of "z" axis
-		if (GetAsyncKeyState('G') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 1.001f));
-		}
-		}
-		//Decrease Scale of "z" axis
-		if (GetAsyncKeyState('H') & 0x8000){
-		for (unsigned int i = 0; i < gameEntities.size(); i++)
-		{
-		gameEntities[i]->scale(XMFLOAT3(1.0f, 1.0f, 0.999f));
-		}
-		}
-		*/
+		
 		//moves asteroids across screen and respawns them when they leave the screen
 		for (unsigned int i = 1; i < 20; i++)
 		{
-			gameEntities[i]->translate(XMFLOAT3(-0.85f * dt, 0.0f, 0.0f));
+			gameEntities[i]->translate(XMFLOAT3(-1.55f * dt, 0.0f, 0.0f));
 
+			//._41 is the x value for the position matrix of game entities
 			if (gameEntities[i]->getPosition()._41 < -10)
 			{
-				//gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
 				gameEntities[i]->setPosition(XMFLOAT3(13.0f, (rand() % 9) - 4.0f, 0.0f));
 			}
 
-			//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
 		}
 
 		float distance = 0.3f;
 
-		for (int i = 1; i < 20; i++){
+		for (int i = 1; i < 20; i++)
+		{
 			float testDistX = fabs(gameEntities[0]->getPosition()._41 - gameEntities[i]->getPosition()._41);
 			float testDistY = fabs(gameEntities[0]->getPosition()._42 - gameEntities[i]->getPosition()._42);
-			if (testDistX < distance && testDistY < distance && notColliding == true){
+
+			if (testDistX < distance && testDistY < distance && notColliding == true)
+			{
 				hullIntegrity--;
 				notColliding = false;
 				break;
 			}
-			else{
+			else
+			{
 				notColliding = true;
 			}
 		}
@@ -501,7 +418,8 @@ void MyDemoGame::DrawScene()
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
-	if (state == L"Game" || state == L"Pause"){
+	if (state == L"Game" || state == L"Pause")
+	{
 		// Set buffers in the input assembler
 		//UINT stride = sizeof(PhongBlinnVertex);
 		UINT offset = 0;
@@ -553,6 +471,46 @@ void MyDemoGame::DrawScene()
 				0);
 		};
 	}
+	else if (state == L"Menu")
+	{
+		UINT offset = 0;
+			//UINT offset = 0;
+			UINT stride = menuEntities[0]->g_mesh->sizeofvertex;
+			// Set up the input assembler
+			deviceContext->IASetInputLayout(menuEntities[0]->g_mat->shaderProgram->vsInputLayout);
+			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[0]->getWorld();
+			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+
+			deviceContext->UpdateSubresource(
+				menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+				0,
+				NULL,
+				&menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+				0,
+				0);
+
+			deviceContext->IASetVertexBuffers(0, 1, &menuEntities[0]->g_mesh->v_buffer, &stride, &offset);
+			deviceContext->IASetIndexBuffer(menuEntities[0]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+			deviceContext->PSSetSamplers(0, 1, &menuEntities[0]->g_mat->samplerState);
+			deviceContext->PSSetShaderResources(0, 1, &menuEntities[0]->g_mat->resourceView);
+
+
+
+			// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+			deviceContext->VSSetShader(menuEntities[0]->g_mat->shaderProgram->vertexShader, NULL, 0);
+			deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+			deviceContext->PSSetShader(menuEntities[0]->g_mat->shaderProgram->pixelShader, NULL, 0);
+
+			// Finally do the actual drawing
+			deviceContext->DrawIndexed(
+				menuEntities.at(0)->g_mesh->m_size,	// The number of indices we're using in this draw
+				0,
+				0);
+	}
 	DrawUserInterface(0xff0099ff);
 
 	// Present the buffer
@@ -561,51 +519,52 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::DrawUserInterface(UINT32 textColor)
 {
-	std::wstring pi = L"Hull Integrity:" + std::to_wstring(hullIntegrity);
-	const WCHAR* szName = pi.c_str();
-
-	if (!uiInitialized)
+	if (state == L"Game" || state == L"Pause")
 	{
-		// set up the font factory
-		// The font wrapper used to actually draw the text
-		HRESULT hResult = FW1CreateFactory(FW1_VERSION, &pFW1Factory);
-		pFW1Factory->CreateFontWrapper(device, L"Arial", &pFontWrapper);
-		uiInitialized = true;
+		std::wstring pi = L"Hull Integrity:" + std::to_wstring(hullIntegrity);
+		const WCHAR* szName = pi.c_str();
+
+		if (!uiInitialized)
+		{
+			// set up the font factory
+			// The font wrapper used to actually draw the text
+			HRESULT hResult = FW1CreateFactory(FW1_VERSION, &pFW1Factory);
+			pFW1Factory->CreateFontWrapper(device, L"Arial", &pFontWrapper);
+			uiInitialized = true;
+		}
+
+		// The function to draw the actual text
+		pFontWrapper->DrawString(
+			deviceContext,
+			szName,// String
+			24.0f,// Font size
+			25.0f,// X position
+			15.0f,// Y position
+			0xff0099ff,// Text color, 0xAaBbGgRr
+			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+			);
+
+
+		pFontWrapper->DrawString(
+			deviceContext,
+			L"Score: 0",// String
+			24.0f,// Font size
+			viewport.Width - 125.0f,// X position
+			15.0f,// Y position
+			0xff0099ff,// Text color, 0xAaBbGgRr
+			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+			);
+
+		pFontWrapper->DrawString(
+			deviceContext,
+			state,// String
+			24.0f,// Font size
+			viewport.Width - 125.0f,// X position
+			50.0f,// Y position
+			0xff0099ff,// Text color, 0xAaBbGgRr
+			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+			);
 	}
-
-	// The function to draw the actual text
-	pFontWrapper->DrawString(
-		deviceContext,
-		szName,// String
-		24.0f,// Font size
-		25.0f,// X position
-		15.0f,// Y position
-		0xff0099ff,// Text color, 0xAaBbGgRr
-		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-		);
-
-
-	pFontWrapper->DrawString(
-		deviceContext,
-		L"Score: 0",// String
-		24.0f,// Font size
-		viewport.Width - 125.0f,// X position
-		15.0f,// Y position
-		0xff0099ff,// Text color, 0xAaBbGgRr
-		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-		);
-
-	pFontWrapper->DrawString(
-		deviceContext,
-		state,// String
-		24.0f,// Font size
-		viewport.Width - 125.0f,// X position
-		50.0f,// Y position
-		0xff0099ff,// Text color, 0xAaBbGgRr
-		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-		);
-
-
 }
 
 #pragma endregion

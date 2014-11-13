@@ -50,7 +50,7 @@ wchar_t* StateManager::changeState()
 			currentState = 2;
 		}
 	}
-	else if (GetAsyncKeyState('3') & 0x8000){
+	else if (GetAsyncKeyState('P') & 0x8000){
 		if (adj[currentState][3]){
 			currentState = 3;
 		}

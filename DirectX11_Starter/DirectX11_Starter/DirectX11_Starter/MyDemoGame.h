@@ -117,6 +117,8 @@ private:
 
 	//Game Entity
 	std::vector<GameEntity*> gameEntities;
+	//Menu Entities
+	std::vector<GameEntity*> menuEntities;
 	//SamplerState for textures
 	std::vector<SamplerState*> samplerStates;
 	//Materials
