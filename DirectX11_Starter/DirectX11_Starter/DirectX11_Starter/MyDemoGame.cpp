@@ -205,6 +205,7 @@ void MyDemoGame::CreateGeometryBuffers()
 	menuEntities.push_back(new GameEntity(menu, materials[2]));
 	menuEntities[0]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
 	menuEntities.push_back(new GameEntity(menu, materials[3]));
+	menuEntities[1]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
 
 
 	//comment
@@ -262,7 +263,6 @@ void MyDemoGame::UpdateScene(float dt)
 	state = stateManager->changeState();
 	if (state == L"Game")
 	{
-
 		//move triangle right
 		if (GetAsyncKeyState('D') & 0x8000){
 			gameEntities[0]->translate(XMFLOAT3(0.6f * dt, 0.0f, 0.0f));
@@ -511,6 +511,47 @@ void MyDemoGame::DrawScene()
 				0,
 				0);
 	}
+	else if (state == L"Instructions")
+	{
+		UINT offset = 0;
+		//UINT offset = 0;
+		UINT stride = menuEntities[1]->g_mesh->sizeofvertex;
+		// Set up the input assembler
+		deviceContext->IASetInputLayout(menuEntities[1]->g_mat->shaderProgram->vsInputLayout);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[1]->getWorld();
+		menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+		menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+
+		deviceContext->UpdateSubresource(
+			menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			0,
+			NULL,
+			&menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			0,
+			0);
+
+		deviceContext->IASetVertexBuffers(0, 1, &menuEntities[1]->g_mesh->v_buffer, &stride, &offset);
+		deviceContext->IASetIndexBuffer(menuEntities[1]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		deviceContext->PSSetSamplers(0, 1, &menuEntities[1]->g_mat->samplerState);
+		deviceContext->PSSetShaderResources(0, 1, &menuEntities[1]->g_mat->resourceView);
+
+
+
+		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+		deviceContext->VSSetShader(menuEntities[1]->g_mat->shaderProgram->vertexShader, NULL, 0);
+		deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+		deviceContext->PSSetShader(menuEntities[1]->g_mat->shaderProgram->pixelShader, NULL, 0);
+
+		// Finally do the actual drawing
+		deviceContext->DrawIndexed(
+			menuEntities.at(1)->g_mesh->m_size,	// The number of indices we're using in this draw
+			0,
+			0);
+
+	}
 	DrawUserInterface(0xff0099ff);
 
 	// Present the buffer
@@ -519,7 +560,7 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::DrawUserInterface(UINT32 textColor)
 {
-	if (state == L"Game" || state == L"Pause")
+	if (state == L"Game" || state == L"Pause" || state == L"Win" || state == L"Lose")
 	{
 		std::wstring pi = L"Hull Integrity:" + std::to_wstring(hullIntegrity);
 		const WCHAR* szName = pi.c_str();
