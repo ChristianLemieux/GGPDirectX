@@ -134,6 +134,8 @@ bool MyDemoGame::Init()
 	buttons.push_back(tempButton);
 	tempButton = { { 35, 460, 195, 560 }, 2, 0 };
 	buttons.push_back(tempButton);
+	tempButton = { { 235, 465, 550, 515 }, 5, 0 };
+	buttons.push_back(tempButton);
 
 	//initialize states so that state strings can be looked up with a state index
 	states[0] = L"Menu";
@@ -169,6 +171,7 @@ void MyDemoGame::CreateGeometryBuffers()
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"StartScreen.png", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"InstructionsScreen.png", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"gameOverScreen.png", shaderProgram));
 
 	//create game entities
 
@@ -177,6 +180,8 @@ void MyDemoGame::CreateGeometryBuffers()
 	menuEntities[0]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
 	menuEntities.push_back(new GameEntity(menu, materials[3]));
 	menuEntities[1]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
+	menuEntities.push_back(new GameEntity(menu, materials[4]));
+	menuEntities[2]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
 }
 
 #pragma region Window Resizing
@@ -417,6 +422,46 @@ void MyDemoGame::DrawScene()
 			0);
 
 	}
+	else if (state == L"Lose")
+	{
+		UINT offset = 0;
+		//UINT offset = 0;
+		UINT stride = menuEntities[2]->g_mesh->sizeofvertex;
+		// Set up the input assembler
+		deviceContext->IASetInputLayout(menuEntities[2]->g_mat->shaderProgram->vsInputLayout);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[2]->getWorld();
+		menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+		menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+
+		deviceContext->UpdateSubresource(
+			menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			0,
+			NULL,
+			&menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			0,
+			0);
+
+		deviceContext->IASetVertexBuffers(0, 1, &menuEntities[2]->g_mesh->v_buffer, &stride, &offset);
+		deviceContext->IASetIndexBuffer(menuEntities[2]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		deviceContext->PSSetSamplers(0, 1, &menuEntities[2]->g_mat->samplerState);
+		deviceContext->PSSetShaderResources(0, 1, &menuEntities[2]->g_mat->resourceView);
+
+
+
+		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+		deviceContext->VSSetShader(menuEntities[2]->g_mat->shaderProgram->vertexShader, NULL, 0);
+		deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+		deviceContext->PSSetShader(menuEntities[2]->g_mat->shaderProgram->pixelShader, NULL, 0);
+
+		// Finally do the actual drawing
+		deviceContext->DrawIndexed(
+			menuEntities.at(2)->g_mesh->m_size,	// The number of indices we're using in this draw
+			0,
+			0);
+	}
 	DrawUserInterface(0xff0099ff);
 
 	// Present the buffer
@@ -434,7 +479,7 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 			// set up the font factory
 			// The font wrapper used to actually draw the text
 			HRESULT hResult = FW1CreateFactory(FW1_VERSION, &pFW1Factory);
-			pFW1Factory->CreateFontWrapper(device, L"Arial", &pFontWrapper);
+			pFW1Factory->CreateFontWrapper(device, L"Copperplate Gothic", &pFontWrapper);
 			uiInitialized = true;
 		}
 
@@ -476,7 +521,7 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
-	if (state == L"Menu" || state == L"Instructions")
+	if (state == L"Menu" || state == L"Instructions" || state == L"Lose")
 	{
 		HandleUIClick(x, y);
 	}
