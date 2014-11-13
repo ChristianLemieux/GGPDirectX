@@ -93,6 +93,7 @@ private:
 	void CreateGeometryBuffers();
 	void LoadShadersAndInputLayout();
 	void DrawUserInterface(UINT32);
+	void HandleUIClick(int x, int y);
 
 private:
 	Game* game;

@@ -1,11 +1,31 @@
-﻿Build started 11/13/2014 12:59:53 AM.
-     1>Project "\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\\DirectXTK\inc /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MyDemoGame.cpp
+﻿Build started 11/13/2014 1:33:14 PM.
+     1>Project "C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
+     1>FxCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe /nologo /E"main" /T ps_4_0_level_9_1 /Fo "C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\PixelShader.cso" /Od /Zi Shaders\PixelShader.hlsl 
+         compilation object save succeeded; see C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\PixelShader.cso
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe /nologo /E"main" /T vs_4_0_level_9_1 /Fo "C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\VertexShader.cso" /Od /Zi Shaders\VertexShader.hlsl 
+         compilation object save succeeded; see C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\VertexShader.cso
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\\DirectXTK\inc /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Camera.cpp ConstantBuffer.cpp Game.cpp GameEntity.cpp LightHelper.cpp Material.cpp Mesh.cpp MyDemoGame.cpp dxerr.cpp DirectXGame.cpp GameTimer.cpp ObjectLoader.cpp SamplerState.cpp ShaderProgram.cpp StateManager.cpp
+         StateManager.cpp
+         ShaderProgram.cpp
+         SamplerState.cpp
+         ObjectLoader.cpp
+         GameTimer.cpp
+         DirectXGame.cpp
+         dxerr.cpp
          MyDemoGame.cpp
-     1>\\banner.main.ad.rit.edu\students\pco1853\igmprofile\desktop\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\mydemogame.cpp(215): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         Mesh.cpp
+         Material.cpp
+         LightHelper.cpp
+         GameEntity.cpp
+         Game.cpp
+     1>c:\git\ggpdirectx\directx11_starter\directx11_starter\directx11_starter\game.cpp(32): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         ConstantBuffer.cpp
+         Camera.cpp
+         Generating Code...
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib FW1FontWrapper.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.lib" /MACHINE:X86 /PROFILE Debug\Camera.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib FW1FontWrapper.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.lib" /MACHINE:X86 /PROFILE Debug\Camera.obj
          Debug\ConstantBuffer.obj
          Debug\Game.obj
          Debug\GameEntity.obj
@@ -20,12 +40,12 @@
          Debug\SamplerState.obj
          Debug\ShaderProgram.obj
          Debug\StateManager.obj
-         \\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
+         C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/PROFILE' specification
      1>Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
-         DirectX11_Starter.vcxproj -> \\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe
-     1>Done Building Project "\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
+         DirectX11_Starter.vcxproj -> C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\Debug\DirectX11_Starter.exe
+     1>Done Building Project "C:\git\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:28.78
+Time Elapsed 00:00:18.51

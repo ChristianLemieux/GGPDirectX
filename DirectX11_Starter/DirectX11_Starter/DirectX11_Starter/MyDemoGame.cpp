@@ -201,17 +201,28 @@ void MyDemoGame::UpdateScene(float dt)
 //Updates our viewMatrix based on the camera's position
 void MyDemoGame::UpdateCamera()
 {
+	// values used to translate and rotate the camera in response to input
+	float translationScale = -0.001f;
+	float rotationScale = -.01f;
 	//Left ad right arrow keys alter X position
+
+	// make all camera manipulations occur at double speed when holding spacebar
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+	{
+		translationScale *= 2.0f;
+		rotationScale *= 2.0f;
+	}
+
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
-		gameCam.setDistanceX(-.001f);
+		gameCam.setDistanceX(translationScale);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
-		gameCam.setDistanceX(+.001f);
+		gameCam.setDistanceX(-translationScale);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -220,14 +231,14 @@ void MyDemoGame::UpdateCamera()
 	//Up/Down arrow keys alter Y position
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 	{
-		gameCam.setDistanceY(-.001f);
+		gameCam.setDistanceY(translationScale);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
-		gameCam.setDistanceY(+.001f);
+		gameCam.setDistanceY(-translationScale);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -236,14 +247,14 @@ void MyDemoGame::UpdateCamera()
 	//5 and 0 on the numpad alter the Z position
 	if (GetAsyncKeyState(VK_NUMPAD0) & 0x8000)
 	{
-		gameCam.setDistanceZ(-.001f);
+		gameCam.setDistanceZ(translationScale);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_NUMPAD5) & 0x8000)
 	{
-		gameCam.setDistanceZ(+.001f);
+		gameCam.setDistanceZ(-translationScale);
 		gameCam.setPosition(gameCam.getDistanceX(), gameCam.getDistanceY(), gameCam.getDistanceZ());
 		cameraPosition = XMVectorSet(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ(), 0);
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
@@ -252,13 +263,13 @@ void MyDemoGame::UpdateCamera()
 	//4 and 6 on the numpad will rotate along the X axis
 	if (GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
 	{
-		gameCam.setRotationDistanceX(-.01f);
+		gameCam.setRotationDistanceX(rotationScale);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_NUMPAD6) & 0x8000)
 	{
-		gameCam.setRotationDistanceX(+.01f);
+		gameCam.setRotationDistanceX(-rotationScale);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
@@ -266,13 +277,13 @@ void MyDemoGame::UpdateCamera()
 	//8 ad 2 on the unmpad will rotate along the y axis
 	if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
 	{
-		gameCam.setRotationDistanceY(+.01f);
+		gameCam.setRotationDistanceY(-rotationScale);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 	if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
 	{
-		gameCam.setRotationDistanceY(-.01f);
+		gameCam.setRotationDistanceY(rotationScale);
 		gameCam.setRotation(gameCam.getRotationDistanceX(), gameCam.getRotationDistanceY(), gameCam.getRotationDistanceZ());
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
@@ -285,8 +296,13 @@ void MyDemoGame::UpdateCamera()
 		cameraRotation = XMVectorSet(gameCam.getRotationX(), gameCam.getRotationY(), gameCam.getRotationZ(), 0);
 	}
 
+	// return the manipulation scales to their normal values
+	translationScale = -0.001f;
+	rotationScale = -.01f;
+
 	XMMATRIX V = XMMatrixLookToLH(cameraPosition, cameraRotation, upDirection);
 	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
+
 
 }
 // Clear the screen, redraw everything, present
@@ -445,6 +461,12 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
+	if (state == L"Menu" || state == L"Instructions")
+	{
+		HandleUIClick(x, y);
+	}
+
+
 	SetCapture(hMainWnd);
 }
 
@@ -458,4 +480,21 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 }
+
+void MyDemoGame::HandleUIClick(int x, int y)
+{
+	if (x > 165 && x < 625 && y > 320 && y < 375 && state == L"Menu")
+	{
+		stateManager->setState(1);
+	}
+	else if (x > 145 && x < 660 && y > 420 && y < 475 && state == L"Menu")
+	{
+		stateManager->setState(2);
+	}
+	else if (x > 35 && x < 195 && y > 460 && y < 560 && state == L"Instructions")
+	{
+		stateManager->setState(0);
+	}
+}
+
 #pragma endregion
