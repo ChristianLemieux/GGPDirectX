@@ -85,6 +85,7 @@ MyDemoGame::~MyDemoGame()
 // sets up our geometry and loads the shaders (among other things)
 bool MyDemoGame::Init()
 {
+	
 	collision = L"Not Colliding";
 	stateManager = new StateManager();
 	notColliding = false;
@@ -94,12 +95,20 @@ bool MyDemoGame::Init()
 	if (!DirectXGame::Init())
 		return false;
 
+	game = new Game(device, deviceContext);
+	ID3D11SamplerState* sample = nullptr;
+	//create sampler state
+	samplerStates.push_back(new SamplerState(sample));
+	samplerStates[0]->createSamplerState(device);
+
+	game->initGame(samplerStates[0]);
+
 	// Set up buffers and such
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device));
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
 	PhongProgram = new ShaderProgram(L"Phong.cso", L"PhongPixel.cso", device, constantBufferList[0], constantBufferList[0]);
 	CreateGeometryBuffers();
-
+	
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
 	XMVECTOR position = XMVectorSet(0, 0, -5, 0);
@@ -133,64 +142,13 @@ void MyDemoGame::CreateGeometryBuffers()
 	light.ambient = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
 	light.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 orange = XMFLOAT4(1.0f, 0.5f, 0.0f, 1.0f);
-	XMFLOAT4 brown = XMFLOAT4(0.65f, 0.185f, 0.165f, 1.0f);
-
-
-	XMFLOAT3 normal = XMFLOAT3(+0.0f, +0.0f, +1.0f);
-
-	/*Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +0.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
-	{XMFLOAT3(-.5f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
-	{XMFLOAT3(+.5f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
-	};
-
-	Vertex squareVertices[] = {
-	{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0)},
-	{ XMFLOAT3(-1.0f, -1.0f, +0.2f), red, XMFLOAT2(0, 1)},
-	{ XMFLOAT3(+1.0f, +1.0f, +0.2f), red, XMFLOAT2(1, 0)},
-	{ XMFLOAT3(+1.0f, -1.0f, +0.2f), red, XMFLOAT2(1, 1)}
-	};
-
-	Phong asteroidVertices[] = {
-	{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0.0f, 0.7f), normal, light.dir },
-	{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0.0f, 0.3f), normal, light.dir },
-	{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3f, 0.0f), normal, light.dir },
-	{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7f, 0.0f), normal, light.dir },
-	{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1.0f, 0.3f), normal, light.dir },
-	{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-	{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f), normal, light.dir },
-	{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir }
-	};*/
-
-
-	//Set up set of asteroid indices
-	//UINT asteroidIndices[] = { 0,12,6,2,10,8,2,0,10,2,8,4,0,14,12,8,6,4,2,12,10 };
-	//asteroid = new Mesh(asteroidVertices, asteroidIndices, 21, device);
 
 	ObjectLoader *obj = new ObjectLoader(device);
-	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	ObjectLoader *menuObject = new ObjectLoader(device);
 
-	Mesh *ship = obj->LoadModel("asteroid.obj");
-	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
 	Mesh *menu = menuObject->LoadModel("Menu.obj");
 
-	ID3D11SamplerState* sample = nullptr;
-	//create sampler state
-	samplerStates.push_back(new SamplerState(sample));
-	samplerStates[0]->createSamplerState(device);
-
+	
 	//create materials
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
@@ -198,22 +156,12 @@ void MyDemoGame::CreateGeometryBuffers()
 	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"InstructionsScreen.png", shaderProgram));
 
 	//create game entities
-	gameEntities.push_back(new GameEntity(ship, materials[0]));
-	gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	gameEntities[0]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 
 	//create menu entities
 	menuEntities.push_back(new GameEntity(menu, materials[2]));
 	menuEntities[0]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
 	menuEntities.push_back(new GameEntity(menu, materials[3]));
 	menuEntities[1]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
-
-	for (int i = 1; i < 30; i++)
-	{
-		gameEntities.push_back(new GameEntity(ship, materials[1]));
-		gameEntities[i]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
-		gameEntities[i]->setPosition(XMFLOAT3(((rand() % 60) + 30) , ((rand() % 40) - 19.0f), 0.0f));
-	}
 }
 
 #pragma region Window Resizing
@@ -246,67 +194,7 @@ void MyDemoGame::UpdateScene(float dt)
 	state = stateManager->changeState();
 	if (state == L"Game")
 	{
-		//move triangle right
-		if (GetAsyncKeyState('D') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(5.0f * dt, 0.0f, 0.0f));
-		}
-		//move triangle left
-		if (GetAsyncKeyState('A') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(-5.0f * dt, 0.0f, 0.0f));
-		}
-		//move triangle up
-		if (GetAsyncKeyState('W') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.0f, 5.0f * dt, 0.0f));
-		}
-		//move triangle down
-		if (GetAsyncKeyState('S') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.0f, -5.0f * dt, 0.0f));
-		}
-
-		
-		//moves asteroids across screen and respawns them when they leave the screen
-		for (unsigned int i = 1; i < 30; i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
-
-			//._41 is the x value for the position matrix of game entities
-			if (gameEntities[i]->getPosition()._41 < -30)
-			{
-				gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
-			}
-
-		}
-
-		float distance = 2.0f;
-
-		for (int i = 1; i < 30; i++)
-		{
-			float testDistX = pow(gameEntities[0]->getPosition()._41 - gameEntities[i]->getPosition()._41, 2);
-			float testDistY = pow(gameEntities[0]->getPosition()._42 - gameEntities[i]->getPosition()._42, 2);
-
-			if (distance >= testDistX + testDistY)
-			{
-				notColliding = true;
-				if (canTakeDamage && notColliding){
-					hullIntegrity -= 10;
-
-					//lose condition
-					if (hullIntegrity <= 0)
-					{
-						state = stateManager->setState(5);
-						hullIntegrity = 100;
-					}
-					canTakeDamage = false;
-				}
-				
-				collision = L"Colliding";
-				break;
-			}
-		}
-
-		if (!notColliding){
-			canTakeDamage = true;
-		}
+		game->updateGame(dt, stateManager);
 	}
 }
 
@@ -415,56 +303,7 @@ void MyDemoGame::DrawScene()
 		0);
 	if (state == L"Game" || state == L"Pause")
 	{
-		// Set buffers in the input assembler
-		//UINT stride = sizeof(PhongBlinnVertex);
-		UINT offset = 0;
-		UINT stride = sizeof(Vertex);
-		for (unsigned int i = 0; i < gameEntities.size(); i++){
-			//UINT offset = 0;
-			stride = gameEntities[i]->g_mesh->sizeofvertex;
-			// Set up the input assembler
-			deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
-			deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
-			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
-
-			deviceContext->UpdateSubresource(
-				gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
-				0,
-				NULL,
-				&gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
-				0,
-				0);
-
-			deviceContext->IASetVertexBuffers(0, 1, &gameEntities[i]->g_mesh->v_buffer, &stride, &offset);
-			deviceContext->IASetIndexBuffer(gameEntities[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-			deviceContext->PSSetSamplers(0, 1, &gameEntities[i]->g_mat->samplerState);
-			deviceContext->PSSetShaderResources(0, 1, &gameEntities[i]->g_mat->resourceView);
-
-
-
-			// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-			deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
-			deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
-			deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
-			
-			//lights
-			DirectionalLight mDirLight;
-			
-			mDirLight.Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-			mDirLight.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-			mDirLight.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-			mDirLight.Direction = XMFLOAT3(0.57735f, -0.57735f, 0.57735f);
-			
-			// Finally do the actual drawing
-			deviceContext->DrawIndexed(
-				gameEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
-				0,
-				0);
-		};
+		game->drawGame(viewMatrix, projectionMatrix);
 	}
 	else if (state == L"Menu")
 	{
@@ -557,8 +396,7 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 {
 	if (state == L"Game" || state == L"Pause" || state == L"Win" || state == L"Lose")
 	{
-		std::wstring pi = L"Hull Integrity:" + std::to_wstring(hullIntegrity);
-		const WCHAR* szName = pi.c_str();
+		
 
 		if (!uiInitialized)
 		{
@@ -569,27 +407,7 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 			uiInitialized = true;
 		}
 
-		// The function to draw the actual text
-		pFontWrapper->DrawString(
-			deviceContext,
-			szName,// String
-			24.0f,// Font size
-			25.0f,// X position
-			15.0f,// Y position
-			0xff0099ff,// Text color, 0xAaBbGgRr
-			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-			);
-
-
-		pFontWrapper->DrawString(
-			deviceContext,
-			L"Score: 0",// String
-			24.0f,// Font size
-			viewport.Width - 125.0f,// X position
-			15.0f,// Y position
-			0xff0099ff,// Text color, 0xAaBbGgRr
-			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-			);
+		
 
 		pFontWrapper->DrawString(
 			deviceContext,
@@ -601,6 +419,10 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
 			);
 
+		if (state == L"Game")
+		{
+			game->drawText(pFontWrapper);
+		}
 		/*pFontWrapper->DrawString(
 			deviceContext,
 			collision,// String

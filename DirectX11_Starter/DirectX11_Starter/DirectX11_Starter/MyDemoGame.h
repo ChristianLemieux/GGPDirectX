@@ -19,6 +19,7 @@
 #include <string>
 #include <cstdio>
 #include <ctime>
+#include "Game.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -94,7 +95,7 @@ private:
 	void DrawUserInterface(UINT32);
 
 private:
-
+	Game* game;
 	StateManager* stateManager;
 	wchar_t* state;
 	wchar_t* collision;
