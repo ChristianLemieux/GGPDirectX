@@ -4,6 +4,7 @@
 #include <vector>
 #include "DirectXGame.h"
 #include "Global.h"
+#include "LightHelper.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "GameEntity.h"
