@@ -7,6 +7,7 @@ class StateManager{
 public:
 	StateManager();
 	wchar_t* changeState();
+	wchar_t* setState(int index);
 private:
 protected:
 	wchar_t* states[6];

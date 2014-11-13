@@ -97,7 +97,7 @@ private:
 
 	StateManager* stateManager;
 	wchar_t* state;
-
+	wchar_t* collision;
 	// Buffers to hold actual geometry
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
@@ -153,5 +153,6 @@ private:
 
 	int hullIntegrity;
 	bool notColliding;
+	bool canTakeDamage;
 
 };

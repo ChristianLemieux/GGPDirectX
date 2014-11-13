@@ -85,10 +85,11 @@ MyDemoGame::~MyDemoGame()
 // sets up our geometry and loads the shaders (among other things)
 bool MyDemoGame::Init()
 {
+	collision = L"Not Colliding";
 	stateManager = new StateManager();
-
+	notColliding = false;
+	canTakeDamage = true;
 	hullIntegrity = 100;
-	notColliding = true;
 
 	if (!DirectXGame::Init())
 		return false;
@@ -98,7 +99,6 @@ bool MyDemoGame::Init()
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
 	PhongProgram = new ShaderProgram(L"Phong.cso", L"PhongPixel.cso", device, constantBufferList[0], constantBufferList[0]);
 	CreateGeometryBuffers();
-	LoadShadersAndInputLayout();
 
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
@@ -199,7 +199,8 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	//create game entities
 	gameEntities.push_back(new GameEntity(ship, materials[0]));
-	gameEntities[0]->translate(XMFLOAT3(0.1f, 0.1f, 0.0f));
+	gameEntities[0]->translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	gameEntities[0]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 
 	//create menu entities
 	menuEntities.push_back(new GameEntity(menu, materials[2]));
@@ -207,33 +208,13 @@ void MyDemoGame::CreateGeometryBuffers()
 	menuEntities.push_back(new GameEntity(menu, materials[3]));
 	menuEntities[1]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
 
-
-	//comment
-	for (int i = 1; i < 20; i++)
+	for (int i = 1; i < 30; i++)
 	{
 		gameEntities.push_back(new GameEntity(ship, materials[1]));
-		gameEntities[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.5f));
-		gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
+		gameEntities[i]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+		gameEntities[i]->setPosition(XMFLOAT3(((rand() % 60) + 30) , ((rand() % 40) - 19.0f), 0.0f));
 	}
 }
-
-// Loads shaders from compiled shader object (.cso) files, and uses the
-// vertex shader to create an input layout which is needed when sending
-// vertex data to the device
-void MyDemoGame::LoadShadersAndInputLayout()
-{
-	// Set up the vertex layout description
-	// This has to match the vertex input layout in the vertex shader
-	// We can't set up the input layout yet since we need the actual vert shader
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-}
-
-#pragma endregion
 
 #pragma region Window Resizing
 
@@ -259,58 +240,72 @@ void MyDemoGame::OnResize()
 // push it to the buffer on the device
 void MyDemoGame::UpdateScene(float dt)
 {
+	collision = L"Not Colliding";
+	notColliding = false;
 	UpdateCamera();
 	state = stateManager->changeState();
 	if (state == L"Game")
 	{
 		//move triangle right
 		if (GetAsyncKeyState('D') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.6f * dt, 0.0f, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(5.0f * dt, 0.0f, 0.0f));
 		}
 		//move triangle left
 		if (GetAsyncKeyState('A') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(-0.6f * dt, 0.0f, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(-5.0f * dt, 0.0f, 0.0f));
 		}
 		//move triangle up
 		if (GetAsyncKeyState('W') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.0f, 0.6f * dt, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(0.0f, 5.0f * dt, 0.0f));
 		}
 		//move triangle down
 		if (GetAsyncKeyState('S') & 0x8000){
-			gameEntities[0]->translate(XMFLOAT3(0.0f, -0.6f * dt, 0.0f));
+			gameEntities[0]->translate(XMFLOAT3(0.0f, -5.0f * dt, 0.0f));
 		}
 
 		
 		//moves asteroids across screen and respawns them when they leave the screen
-		for (unsigned int i = 1; i < 20; i++)
+		for (unsigned int i = 1; i < 30; i++)
 		{
-			gameEntities[i]->translate(XMFLOAT3(-1.55f * dt, 0.0f, 0.0f));
+			gameEntities[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
 
 			//._41 is the x value for the position matrix of game entities
-			if (gameEntities[i]->getPosition()._41 < -10)
+			if (gameEntities[i]->getPosition()._41 < -30)
 			{
-				gameEntities[i]->setPosition(XMFLOAT3(13.0f, (rand() % 9) - 4.0f, 0.0f));
+				gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 			}
 
 		}
 
-		float distance = 0.3f;
+		float distance = 2.0f;
 
-		for (int i = 1; i < 20; i++)
+		for (int i = 1; i < 30; i++)
 		{
-			float testDistX = fabs(gameEntities[0]->getPosition()._41 - gameEntities[i]->getPosition()._41);
-			float testDistY = fabs(gameEntities[0]->getPosition()._42 - gameEntities[i]->getPosition()._42);
+			float testDistX = pow(gameEntities[0]->getPosition()._41 - gameEntities[i]->getPosition()._41, 2);
+			float testDistY = pow(gameEntities[0]->getPosition()._42 - gameEntities[i]->getPosition()._42, 2);
 
-			if (testDistX < distance && testDistY < distance && notColliding == true)
-			{
-				hullIntegrity--;
-				notColliding = false;
-				break;
-			}
-			else
+			if (distance >= testDistX + testDistY)
 			{
 				notColliding = true;
+				if (canTakeDamage && notColliding){
+					hullIntegrity -= 10;
+
+					//lose condition
+					if (hullIntegrity <= 0)
+					{
+						state = stateManager->setState(5);
+						hullIntegrity = 100;
+					}
+					canTakeDamage = false;
+				}
+				
+				collision = L"Colliding";
+				break;
 			}
+		}
+
+		if (!notColliding){
+			canTakeDamage = true;
 		}
 	}
 }
@@ -605,6 +600,16 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 			0xff0099ff,// Text color, 0xAaBbGgRr
 			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
 			);
+
+		/*pFontWrapper->DrawString(
+			deviceContext,
+			collision,// String
+			24.0f,// Font size
+			viewport.Width - 200.0f,// X position
+			100.0f,// Y position
+			0xff0099ff,// Text color, 0xAaBbGgRr
+			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
+			);*/
 	}
 }
 
