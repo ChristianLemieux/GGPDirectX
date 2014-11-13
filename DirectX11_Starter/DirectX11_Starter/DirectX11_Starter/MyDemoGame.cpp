@@ -132,9 +132,11 @@ bool MyDemoGame::Init()
 	buttons.push_back(tempButton);
 	tempButton = { { 145, 420, 660, 475 }, 0, 2 };
 	buttons.push_back(tempButton);
-	tempButton = { { 35, 460, 195, 560 }, 2, 0 };
+	tempButton = { { 100, 480, 685, 560 }, 2, 0 };
 	buttons.push_back(tempButton);
-	tempButton = { { 235, 465, 550, 515 }, 5, 0 };
+	tempButton = { { 187, 360, 609, 405 }, 5, 0 };
+	buttons.push_back(tempButton);
+	tempButton = { { 195, 300, 615, 350 }, 5, 1 };
 	buttons.push_back(tempButton);
 
 	//initialize states so that state strings can be looked up with a state index
