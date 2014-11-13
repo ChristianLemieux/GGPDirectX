@@ -14,6 +14,10 @@
 #include "FW1FontWrapper.h"
 #include "ObjectLoader.h"
 #include "StateManager.h"
+#include <iostream>
+#include <string>
+#include <cstdio>
+#include <ctime>
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -143,4 +147,8 @@ private:
 	POINT prevMousePos;
 	int moveDistanceMouseX;
 	int moveDistanceMouseY;
+
+	int hullIntegrity;
+	bool notColliding;
+
 };

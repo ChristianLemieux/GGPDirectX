@@ -34,22 +34,22 @@
 
 // Win32 Entry Point
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
-				   PSTR cmdLine, int showCmd)
+	PSTR cmdLine, int showCmd)
 {
 	// Enable run-time memory check for debug builds.
 
 #if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
 	// Make the game, initialize and run
 	MyDemoGame game(hInstance);
-	
-	if( !game.Init() )
+
+	if (!game.Init())
 		return 0;
-	
+
 	int toReturn = game.Run();
-	
+
 	_CrtDumpMemoryLeaks();
 	return toReturn;
 }
@@ -87,7 +87,10 @@ bool MyDemoGame::Init()
 {
 	stateManager = new StateManager();
 
-	if( !DirectXGame::Init() )
+	hullIntegrity = 100;
+	notColliding = true;
+
+	if (!DirectXGame::Init())
 		return false;
 
 	// Set up buffers and such
@@ -99,10 +102,10 @@ bool MyDemoGame::Init()
 
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
-	XMVECTOR position	= XMVectorSet(0, 0, -5, 0);
-	XMVECTOR target		= XMVectorSet(0, 0, 0, 0);
-	XMVECTOR up			= XMVectorSet(0, 1, 0, 0);
-	XMMATRIX V			= XMMatrixLookAtLH(position, target, up);
+	XMVECTOR position = XMVectorSet(0, 0, -5, 0);
+	XMVECTOR target = XMVectorSet(0, 0, 0, 0);
+	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+	XMMATRIX V = XMMatrixLookAtLH(position, target, up);
 
 	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
 
@@ -140,34 +143,34 @@ void MyDemoGame::CreateGeometryBuffers()
 	XMFLOAT3 normal = XMFLOAT3(+0.0f, +0.0f, +1.0f);
 
 	/*Phong triangleVertices[] = { {XMFLOAT3(+0.0f, +0.0f, +0.0f), red, XMFLOAT2(+0.5f, +0.0f), normal, light.dir },
-											{XMFLOAT3(-.5f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
-											{XMFLOAT3(+.5f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
+	{XMFLOAT3(-.5f, -1.0f, +0.0f), blue, XMFLOAT2(+0.0f, +1.0f), normal, light.dir },
+	{XMFLOAT3(+.5f, -1.0f, +0.0f), green, XMFLOAT2(+1.0f, +1.0f), normal, light.dir }
 	};
 
 	Vertex squareVertices[] = {
-			{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0)},
-			{ XMFLOAT3(-1.0f, -1.0f, +0.2f), red, XMFLOAT2(0, 1)},
-			{ XMFLOAT3(+1.0f, +1.0f, +0.2f), red, XMFLOAT2(1, 0)},
-			{ XMFLOAT3(+1.0f, -1.0f, +0.2f), red, XMFLOAT2(1, 1)}
+	{ XMFLOAT3(-1.0f, +1.0f, +0.2f), red, XMFLOAT2(0, 0)},
+	{ XMFLOAT3(-1.0f, -1.0f, +0.2f), red, XMFLOAT2(0, 1)},
+	{ XMFLOAT3(+1.0f, +1.0f, +0.2f), red, XMFLOAT2(1, 0)},
+	{ XMFLOAT3(+1.0f, -1.0f, +0.2f), red, XMFLOAT2(1, 1)}
 	};
 
 	Phong asteroidVertices[] = {
-			{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0.0f, 0.7f), normal, light.dir },
-			{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0.0f, 0.3f), normal, light.dir },
-			{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3f, 0.0f), normal, light.dir },
-			{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7f, 0.0f), normal, light.dir },
-			{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1.0f, 0.3f), normal, light.dir },
-			{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
-			{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f), normal, light.dir },
-			{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir }
+	{ XMFLOAT3(+0.7f, +1.0f, +0.0f), brown, XMFLOAT2(0.7f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.7f, +1.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.3f, +1.0f, +0.0f), brown, XMFLOAT2(0.3f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.3f, +1.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.0f, +0.7f, +0.0f), brown, XMFLOAT2(0.0f, 0.7f), normal, light.dir },
+	{ XMFLOAT3(+0.0f, +0.7f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.0f, +0.3f, +0.0f), brown, XMFLOAT2(0.0f, 0.3f), normal, light.dir },
+	{ XMFLOAT3(+0.0f, +0.3f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.3f, +0.0f, +0.0f), brown, XMFLOAT2(0.3f, 0.0f), normal, light.dir },
+	{ XMFLOAT3(+0.3f, +0.0f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+0.7f, +0.0f, +0.0f), brown, XMFLOAT2(0.7f, 0.0f), normal, light.dir },
+	{ XMFLOAT3(+0.7f, +0.0f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+1.0f, +0.3f, +0.0f), brown, XMFLOAT2(1.0f, 0.3f), normal, light.dir },
+	{ XMFLOAT3(+1.0f, +0.3f, -1.0f), brown, XMFLOAT2(0.0f, 1.0f), normal, light.dir },
+	{ XMFLOAT3(+1.0f, +0.7f, +0.0f), brown, XMFLOAT2(1.0f, 0.7f), normal, light.dir },
+	{ XMFLOAT3(+1.0f, +0.7f, -1.0f), brown, XMFLOAT2(1.0f, 1.0f), normal, light.dir }
 	};*/
 
 
@@ -192,6 +195,7 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	//create game entities
 	gameEntities.push_back(new GameEntity(ship, materials[0]));
+	gameEntities[0]->translate(XMFLOAT3(0.1f, 0.1f, 0.0f));
 
 	//comment
 	for (int i = 1; i < 20; i++)
@@ -212,9 +216,9 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	// We can't set up the input layout yet since we need the actual vert shader
 	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,	0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,	D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 }
 
@@ -370,10 +374,26 @@ void MyDemoGame::UpdateScene(float dt)
 
 			if (gameEntities[i]->getPosition()._41 < -10)
 			{
-				gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
+				//gameEntities[i]->translate(XMFLOAT3((((float)rand() / (float)(RAND_MAX))* 25.0f) + 10.0f, (((float)rand() / (float)(RAND_MAX))* 8.0f) - 5.0f, 0.0f));
+				gameEntities[i]->setPosition(XMFLOAT3(13.0f, (rand() % 9) - 4.0f, 0.0f));
 			}
 
 			//gameEntities[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.001f));
+		}
+
+		float distance = 0.3f;
+
+		for (int i = 1; i < 20; i++){
+			float testDistX = fabs(gameEntities[0]->getPosition()._41 - gameEntities[i]->getPosition()._41);
+			float testDistY = fabs(gameEntities[0]->getPosition()._42 - gameEntities[i]->getPosition()._42);
+			if (testDistX < distance && testDistY < distance && notColliding == true){
+				hullIntegrity--;
+				notColliding = false;
+				break;
+			}
+			else{
+				notColliding = true;
+			}
 		}
 	}
 }
@@ -472,12 +492,12 @@ void MyDemoGame::UpdateCamera()
 // Clear the screen, redraw everything, present
 void MyDemoGame::DrawScene()
 {
-	const float color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	const float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	// Clear the buffer
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
 	deviceContext->ClearDepthStencilView(
-		depthStencilView, 
+		depthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
@@ -533,6 +553,9 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::DrawUserInterface(UINT32 textColor)
 {
+	std::wstring pi = L"Hull Integrity:" + std::to_wstring(hullIntegrity);
+	const WCHAR* szName = pi.c_str();
+
 	if (!uiInitialized)
 	{
 		// set up the font factory
@@ -545,7 +568,7 @@ void MyDemoGame::DrawUserInterface(UINT32 textColor)
 	// The function to draw the actual text
 	pFontWrapper->DrawString(
 		deviceContext,
-		L"Hull Integrity: 100%",// String
+		szName,// String
 		24.0f,// Font size
 		25.0f,// X position
 		15.0f,// Y position

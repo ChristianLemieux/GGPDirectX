@@ -27,5 +27,6 @@ public:
 	void scale(XMFLOAT3 scale);
 	void translate(XMFLOAT3 translate);
 	void rotate(XMFLOAT3 rotate);
+	void setPosition(XMFLOAT3 pos);
 };
 #endif

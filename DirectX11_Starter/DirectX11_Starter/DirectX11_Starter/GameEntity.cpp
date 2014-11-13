@@ -118,3 +118,14 @@ void GameEntity::rotate(XMFLOAT3 r){
 	currentRotation *= rotation;
 	XMStoreFloat4x4(&rotationMatrix, currentRotation);
 }
+
+void GameEntity::setPosition(XMFLOAT3 pos){
+	XMMATRIX position = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		pos.x, pos.y, pos.z, 1.0f
+	};
+
+	XMStoreFloat4x4(&positionMatrix, position);
+}
