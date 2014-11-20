@@ -1,0 +1,5 @@
+\\banner.main.ad.rit.edu\students\jar5945\IGMProfile\Desktop\GitHub\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\MakeSpriteFont\bin\Debug\MakeSpriteFont.exe
+\\banner.main.ad.rit.edu\students\jar5945\IGMProfile\Desktop\GitHub\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\MakeSpriteFont\bin\Debug\MakeSpriteFont.pdb
+\\banner.main.ad.rit.edu\students\jar5945\IGMProfile\Desktop\GitHub\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\MakeSpriteFont\obj\Debug\MakeSpriteFont.csprojResolveAssemblyReference.cache
+\\banner.main.ad.rit.edu\students\jar5945\IGMProfile\Desktop\GitHub\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\MakeSpriteFont\obj\Debug\MakeSpriteFont.exe
+\\banner.main.ad.rit.edu\students\jar5945\IGMProfile\Desktop\GitHub\GGPDirectX\DirectX11_Starter\DirectX11_Starter\DirectXTK\MakeSpriteFont\obj\Debug\MakeSpriteFont.pdb

@@ -23,7 +23,6 @@ public:
 	void initGame(SamplerState *samplerStates);
 	void updateGame(float dt, StateManager *stateManager);
 	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
-	void drawText(IFW1FontWrapper *pFontWrapper);
 private:
 	wchar_t* collision;
 	ID3D11Device* device;

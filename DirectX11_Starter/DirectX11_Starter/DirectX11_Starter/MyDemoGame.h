@@ -100,7 +100,6 @@ private:
 	// Initialization for our "game" demo
 	void CreateGeometryBuffers();
 	void LoadShadersAndInputLayout();
-	void DrawUserInterface(UINT32);
 	void HandleUIClick(int x, int y);
 
 

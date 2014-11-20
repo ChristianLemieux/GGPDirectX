@@ -33,7 +33,7 @@ void Game::initGame(SamplerState *samplerStates){
 	}
 }
 
-void Game::updateGame(float dt,StateManager *stateManager){
+void Game::updateGame(float dt, StateManager *stateManager){
 	collision = L"Not Colliding";
 	notColliding = false;
 	
@@ -98,9 +98,6 @@ void Game::updateGame(float dt,StateManager *stateManager){
 		if (!notColliding){
 			canTakeDamage = true;
 		}
-	
-
-
 }
 
 void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix){
@@ -144,33 +141,4 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix){
 			0,
 			0);
 	}
-}
-
-
-void Game::drawText(IFW1FontWrapper *pFontWrapper)
-{
-	std::wstring pi = L"Hull Integrity:" + std::to_wstring(hullIntegrity);
-	const WCHAR* szName = pi.c_str();
-
-	// The function to draw the actual text
-	pFontWrapper->DrawString(
-		deviceContext,
-		szName,// String
-		24.0f,// Font size
-		25.0f,// X position
-		15.0f,// Y position
-		0xff0099ff,// Text color, 0xAaBbGgRr
-		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-		);
-
-
-	pFontWrapper->DrawString(
-		deviceContext,
-		L"Score: 0",// String
-		24.0f,// Font size
-		800 - 125.0f,// X position
-		15.0f,// Y position
-		0xff0099ff,// Text color, 0xAaBbGgRr
-		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-		);
 }

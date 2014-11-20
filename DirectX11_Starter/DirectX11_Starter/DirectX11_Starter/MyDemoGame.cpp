@@ -29,6 +29,13 @@
 #include <d3dcompiler.h>
 #include "MyDemoGame.h"
 #include "WICTextureLoader.h"
+#include "SpriteBatch.h"
+#include "SpriteFont.h"
+#include "SimpleMath.h"
+
+std::unique_ptr<DirectX::SpriteBatch> spriteBatch;
+std::unique_ptr<DirectX::SpriteFont> spriteFont;
+
 
 #pragma region Win32 Entry Point (WinMain)
 
@@ -92,6 +99,7 @@ bool MyDemoGame::Init()
 	canTakeDamage = true;
 	hullIntegrity = 100;
 
+	
 	if (!DirectXGame::Init())
 		return false;
 
@@ -108,6 +116,13 @@ bool MyDemoGame::Init()
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
 	PhongProgram = new ShaderProgram(L"Phong.cso", L"PhongPixel.cso", device, constantBufferList[0], constantBufferList[0]);
 	CreateGeometryBuffers();
+
+	//Create SpriteBatch
+	spriteBatch.reset(new DirectX::SpriteBatch(deviceContext));
+
+	//Create Spritefont
+	spriteFont.reset(new DirectX::SpriteFont(device, L"Font.spritesheet"));
+
 
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
@@ -464,53 +479,28 @@ void MyDemoGame::DrawScene()
 			0,
 			0);
 	}
-	DrawUserInterface(0xff0099ff);
 
-	// Present the buffer
-	HR(swapChain->Present(0, 0));
-}
 
-void MyDemoGame::DrawUserInterface(UINT32 textColor)
-{
+	spriteBatch->Begin();
 	if (state == L"Game" || state == L"Pause" || state == L"Win")
 	{
 
+		std::wstring pi = std::to_wstring(hullIntegrity);
+		const WCHAR* szName = pi.c_str();
 
-		if (!uiInitialized)
+		//Draw Sprites and fonts
+		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
+		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::LawnGreen);
+
+		if (hullIntegrity == 90)
 		{
-			// set up the font factory
-			// The font wrapper used to actually draw the text
-			HRESULT hResult = FW1CreateFactory(FW1_VERSION, &pFW1Factory);
-			pFW1Factory->CreateFontWrapper(device, L"Copperplate Gothic", &pFontWrapper);
-			uiInitialized = true;
+			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::YellowGreen);
 		}
-
-
-
-		pFontWrapper->DrawString(
-			deviceContext,
-			state,// String
-			24.0f,// Font size
-			viewport.Width - 125.0f,// X position
-			50.0f,// Y position
-			0xff0099ff,// Text color, 0xAaBbGgRr
-			0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-			);
-
-		if (state == L"Game")
-		{
-			game->drawText(pFontWrapper);
-		}
-		/*pFontWrapper->DrawString(
-		deviceContext,
-		collision,// String
-		24.0f,// Font size
-		viewport.Width - 200.0f,// X position
-		100.0f,// Y position
-		0xff0099ff,// Text color, 0xAaBbGgRr
-		0x800// Flags (currently set to "restore state" to not ruin the rest of the scene)
-		);*/
 	}
+	spriteBatch->End();
+
+	// Present the buffer
+	HR(swapChain->Present(0, 0));
 }
 
 #pragma endregion
