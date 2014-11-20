@@ -22,8 +22,14 @@ public:
 	Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt);
 	void initGame(SamplerState *samplerStates);
 	void updateGame(float dt, StateManager *stateManager);
+<<<<<<< HEAD
 	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
+=======
+	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos);
+	void drawText(IFW1FontWrapper *pFontWrapper);
+>>>>>>> origin/master
 private:
+	LightBufferType lighting;
 	wchar_t* collision;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
@@ -33,6 +39,8 @@ private:
 	std::vector<Material*> materials;
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
+	LightBufferType dataToSendToLightConstantBuffer;
+	CameraBufferType dataToSendToCameraConstantBuffer;
 
 	std::vector<ConstantBuffer*> constantBufferList;
 

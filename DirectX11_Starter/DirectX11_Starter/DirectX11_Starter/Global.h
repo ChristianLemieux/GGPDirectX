@@ -43,4 +43,19 @@ struct ConstantBufferLayout
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 projection;
 };
+
+//Camera Constant Buffer Data Layout
+struct CameraBufferType{
+	XMFLOAT3 cameraPosition;
+	float padding;
+};
+
+//Light Constant Buffer Data Layout
+struct LightBufferType{
+	XMFLOAT4 ambientColor;
+	XMFLOAT4 diffuseColor;
+	XMFLOAT3 lightDirection;
+	float specularPower;
+	XMFLOAT4 specularColor;
+};
 #endif

@@ -2,8 +2,27 @@
 #include "Global.h"
 ConstantBuffer::ConstantBuffer(ConstantBufferLayout c_buffer_data, ID3D11Device* dev)
 {
+	c_byteWidth = sizeof(ConstantBufferLayout);
+	setUpConstantBuffer(dev);
+}
+
+ConstantBuffer::ConstantBuffer(LightBufferType c_buffer_data, ID3D11Device* dev)
+{
+
+	c_byteWidth = sizeof(LightBufferType);
+	setUpConstantBuffer(dev);
+}
+
+ConstantBuffer::ConstantBuffer(CameraBufferType c_buffer_data, ID3D11Device* dev)
+{
+
+	c_byteWidth = sizeof(CameraBufferType);
+	setUpConstantBuffer(dev);
+}
+
+void ConstantBuffer::setUpConstantBuffer(ID3D11Device* dev){
 	D3D11_BUFFER_DESC cBufferDesc;
-	cBufferDesc.ByteWidth = sizeof(dataToSendToConstantBuffer);
+	cBufferDesc.ByteWidth = c_byteWidth;
 	cBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	cBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cBufferDesc.CPUAccessFlags = 0;
@@ -13,12 +32,6 @@ ConstantBuffer::ConstantBuffer(ConstantBufferLayout c_buffer_data, ID3D11Device*
 		&cBufferDesc,
 		NULL,
 		&constantBuffer);
-}
-
-void ConstantBuffer::InitializeConstantData(XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 projection){
-	dataToSendToConstantBuffer.world = world;
-	dataToSendToConstantBuffer.view = view;
-	dataToSendToConstantBuffer.projection = projection;
 }
 
 ConstantBuffer::~ConstantBuffer(void)
