@@ -340,9 +340,14 @@ void MyDemoGame::DrawScene()
 		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
 		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::LawnGreen);
 
-		if (game->hullIntegrity == 90)
+		if (game->hullIntegrity <= 30)
 		{
-			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::YellowGreen);
+			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::Red);
+		}
+
+		if (state == L"Pause")
+		{
+			spriteFont->DrawString(spriteBatch.get(), L"Pause", DirectX::SimpleMath::Vector2(viewport.Width - 225, 25));
 		}
 	}
 	spriteBatch->End();
