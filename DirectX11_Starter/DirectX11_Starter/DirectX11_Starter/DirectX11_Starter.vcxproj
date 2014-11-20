@@ -90,6 +90,7 @@
     <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="SamplerState.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="State.cpp" />
     <ClCompile Include="StateManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +110,7 @@
     <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="StateManager.h" />
   </ItemGroup>
   <ItemGroup>

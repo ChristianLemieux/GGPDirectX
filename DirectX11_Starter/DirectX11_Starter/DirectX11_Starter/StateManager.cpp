@@ -41,6 +41,12 @@ wchar_t* StateManager::returnState(){
 	return states[currentState];
 }
 
+// Simple getter function allowing functions in other classes to get a state name from a state index
+wchar_t* StateManager::getStateFromIndex(int index)
+{
+	return states[index];
+}
+
 wchar_t* StateManager::changeState()
 {
 	if (GetAsyncKeyState('0') & 0x8000){

@@ -333,14 +333,14 @@ void MyDemoGame::DrawScene()
 	if (state == L"Game" || state == L"Pause" || state == L"Win")
 	{
 
-		std::wstring pi = std::to_wstring(hullIntegrity);
+		std::wstring pi = std::to_wstring(game->hullIntegrity);
 		const WCHAR* szName = pi.c_str();
 
 		//Draw Sprites and fonts
 		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
 		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::LawnGreen);
 
-		if (hullIntegrity == 90)
+		if (game->hullIntegrity == 90)
 		{
 			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::YellowGreen);
 		}
@@ -361,6 +361,7 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
+	// If this screen has buttons, send the click coordinates to the UI click handler
 	if (state == L"Menu" || state == L"Instructions" || state == L"Lose")
 	{
 		HandleUIClick(x, y);
@@ -381,11 +382,12 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	prevMousePos.y = y;
 }
 
+// Checks to see if the region clicked (on a screen with clickable regions) was within the bounds of an active button, if so a state change occurs
 void MyDemoGame::HandleUIClick(int x, int y)
 {
 	for (int i = 0; i < buttons.size(); i++)
 	{
-		if (state == states[buttons[i].activeState] && x > buttons[i].dimensions.left && x < buttons[i].dimensions.right && y > buttons[i].dimensions.top && y < buttons[i].dimensions.bottom)
+		if (state == stateManager->getStateFromIndex(buttons[i].activeState) && x > buttons[i].dimensions.left && x < buttons[i].dimensions.right && y > buttons[i].dimensions.top && y < buttons[i].dimensions.bottom)
 		{
 			stateManager->setState(buttons[i].newState);
 		}

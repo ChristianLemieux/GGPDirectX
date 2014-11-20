@@ -22,12 +22,10 @@ public:
 	Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt);
 	void initGame(SamplerState *samplerStates);
 	void updateGame(float dt, StateManager *stateManager);
-<<<<<<< HEAD
-	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
-=======
+	//void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
 	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos);
 	void drawText(IFW1FontWrapper *pFontWrapper);
->>>>>>> origin/master
+	int hullIntegrity;
 private:
 	LightBufferType lighting;
 	wchar_t* collision;
@@ -44,7 +42,6 @@ private:
 
 	std::vector<ConstantBuffer*> constantBufferList;
 
-	int hullIntegrity;
 	bool notColliding;
 	bool canTakeDamage;
 };

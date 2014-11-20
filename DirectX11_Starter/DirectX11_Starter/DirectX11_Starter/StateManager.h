@@ -9,6 +9,7 @@ public:
 	wchar_t* changeState();
 	wchar_t* setState(int index);
 	wchar_t* returnState();
+	wchar_t* getStateFromIndex(int index);
 private:
 protected:
 	wchar_t* states[6];
