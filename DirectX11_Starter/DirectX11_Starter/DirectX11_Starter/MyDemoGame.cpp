@@ -69,12 +69,6 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 MyDemoGame::~MyDemoGame()
 {
 	// Release all of the D3D stuff that's still hanging out
-	ReleaseMacro(vertexBuffer);
-	ReleaseMacro(indexBuffer);
-	ReleaseMacro(vertexShader);
-	ReleaseMacro(pixelShader);
-	ReleaseMacro(vsConstantBuffer);
-	ReleaseMacro(inputLayout);
 }
 
 #pragma endregion
@@ -86,28 +80,27 @@ MyDemoGame::~MyDemoGame()
 bool MyDemoGame::Init()
 {
 
-	collision = L"Not Colliding";
-	stateManager = new StateManager();
-	notColliding = false;
-	canTakeDamage = true;
-	hullIntegrity = 100;
 
 	if (!DirectXGame::Init())
 		return false;
 
+	stateManager = new StateManager();
+	ObjectLoader* objLoader = new ObjectLoader(device);
+	Mesh* menuMesh = objLoader->LoadModel("Menu.obj");
 	game = new Game(device, deviceContext);
 	ID3D11SamplerState* sample = nullptr;
-	//create sampler state
-	samplerStates.push_back(new SamplerState(sample));
-	samplerStates[0]->createSamplerState(device);
-
-	game->initGame(samplerStates[0]);
+	samplerState = new SamplerState(sample);
+	samplerState->createSamplerState(device);
+	MatrixCB = new ConstantBuffer(dataToSendToVSConstantBuffer, device);
+	LightCB = new ConstantBuffer(dataToSendToLightConstantBuffer, device);
+	CamCB = new ConstantBuffer(dataToSendToCameraConstantBuffer, device);
+	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, MatrixCB, LightCB, CamCB);
+	gameStates.push_back(new State(device, deviceContext, sample, L"StartScreen.png", menuMesh, shaderProgram));
+	gameStates.push_back(new State(device, deviceContext, sample, L"InstructionsScreen.png", menuMesh, shaderProgram));
+	gameStates.push_back(new State(device, deviceContext, sample, L"gameOverScreen.png", menuMesh, shaderProgram));
+	game->initGame(samplerState);
 
 	// Set up buffers and such
-	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device));
-	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[0]);
-	PhongProgram = new ShaderProgram(L"Phong.cso", L"PhongPixel.cso", device, constantBufferList[0], constantBufferList[0]);
-	CreateGeometryBuffers();
 
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
@@ -150,41 +143,6 @@ bool MyDemoGame::Init()
 	return true;
 }
 
-XMFLOAT3 MyDemoGame::XMFLOAT3Cross(XMFLOAT3 a, XMFLOAT3 b){
-	return XMFLOAT3(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
-}
-
-// Creates the vertex and index buffers for a single triangle
-void MyDemoGame::CreateGeometryBuffers()
-{
-	light.dir = XMFLOAT3(0.25f, 0.5f, -1.0f);
-	light.ambient = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
-	light.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-
-
-	ObjectLoader *obj = new ObjectLoader(device);
-	ObjectLoader *menuObject = new ObjectLoader(device);
-
-	Mesh *menu = menuObject->LoadModel("Menu.obj");
-
-
-	//create materials
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"spaceShipTexture.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"asteroid.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"StartScreen.png", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"InstructionsScreen.png", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates[0]->sampler, L"gameOverScreen.png", shaderProgram));
-
-	//create game entities
-
-	//create menu entities
-	menuEntities.push_back(new GameEntity(menu, materials[2]));
-	menuEntities[0]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
-	menuEntities.push_back(new GameEntity(menu, materials[3]));
-	menuEntities[1]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
-	menuEntities.push_back(new GameEntity(menu, materials[4]));
-	menuEntities[2]->scale(XMFLOAT3(0.3f, 0.41f, 0.0f));
-}
 
 #pragma region Window Resizing
 
@@ -210,8 +168,6 @@ void MyDemoGame::OnResize()
 // push it to the buffer on the device
 void MyDemoGame::UpdateScene(float dt)
 {
-	collision = L"Not Colliding";
-	notColliding = false;
 	UpdateCamera();
 	state = stateManager->changeState();
 	if (state == L"Game")
@@ -331,7 +287,7 @@ void MyDemoGame::UpdateCamera()
 void MyDemoGame::DrawScene()
 {
 	const float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
+	XMFLOAT3 camPos = XMFLOAT3(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ());
 	// Clear the buffer
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
 	deviceContext->ClearDepthStencilView(
@@ -341,128 +297,20 @@ void MyDemoGame::DrawScene()
 		0);
 	if (state == L"Game" || state == L"Pause")
 	{
-		game->drawGame(viewMatrix, projectionMatrix);
+		game->drawGame(viewMatrix, projectionMatrix, camPos);
 	}
 	else if (state == L"Menu")
 	{
-		UINT offset = 0;
-		//UINT offset = 0;
-		UINT stride = menuEntities[0]->g_mesh->sizeofvertex;
-		// Set up the input assembler
-		deviceContext->IASetInputLayout(menuEntities[0]->g_mat->shaderProgram->vsInputLayout);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[0]->getWorld();
-		menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
-
-		deviceContext->UpdateSubresource(
-			menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
-			0,
-			NULL,
-			&menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
-			0,
-			0);
-
-		deviceContext->IASetVertexBuffers(0, 1, &menuEntities[0]->g_mesh->v_buffer, &stride, &offset);
-		deviceContext->IASetIndexBuffer(menuEntities[0]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-		deviceContext->PSSetSamplers(0, 1, &menuEntities[0]->g_mat->samplerState);
-		deviceContext->PSSetShaderResources(0, 1, &menuEntities[0]->g_mat->resourceView);
-
-
-
-		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-		deviceContext->VSSetShader(menuEntities[0]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
-		deviceContext->PSSetShader(menuEntities[0]->g_mat->shaderProgram->pixelShader, NULL, 0);
-
-		// Finally do the actual drawing
-		deviceContext->DrawIndexed(
-			menuEntities.at(0)->g_mesh->m_size,	// The number of indices we're using in this draw
-			0,
-			0);
+		gameStates[0]->draw(viewMatrix, projectionMatrix);
 	}
 	else if (state == L"Instructions")
 	{
-		UINT offset = 0;
-		//UINT offset = 0;
-		UINT stride = menuEntities[1]->g_mesh->sizeofvertex;
-		// Set up the input assembler
-		deviceContext->IASetInputLayout(menuEntities[1]->g_mat->shaderProgram->vsInputLayout);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[1]->getWorld();
-		menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
-
-		deviceContext->UpdateSubresource(
-			menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
-			0,
-			NULL,
-			&menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
-			0,
-			0);
-
-		deviceContext->IASetVertexBuffers(0, 1, &menuEntities[1]->g_mesh->v_buffer, &stride, &offset);
-		deviceContext->IASetIndexBuffer(menuEntities[1]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-		deviceContext->PSSetSamplers(0, 1, &menuEntities[1]->g_mat->samplerState);
-		deviceContext->PSSetShaderResources(0, 1, &menuEntities[1]->g_mat->resourceView);
-
-
-
-		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-		deviceContext->VSSetShader(menuEntities[1]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[1]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
-		deviceContext->PSSetShader(menuEntities[1]->g_mat->shaderProgram->pixelShader, NULL, 0);
-
-		// Finally do the actual drawing
-		deviceContext->DrawIndexed(
-			menuEntities.at(1)->g_mesh->m_size,	// The number of indices we're using in this draw
-			0,
-			0);
+		gameStates[1]->draw(viewMatrix, projectionMatrix);
 
 	}
 	else if (state == L"Lose")
 	{
-		UINT offset = 0;
-		//UINT offset = 0;
-		UINT stride = menuEntities[2]->g_mesh->sizeofvertex;
-		// Set up the input assembler
-		deviceContext->IASetInputLayout(menuEntities[2]->g_mat->shaderProgram->vsInputLayout);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = menuEntities[2]->getWorld();
-		menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
-
-		deviceContext->UpdateSubresource(
-			menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
-			0,
-			NULL,
-			&menuEntities[2]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
-			0,
-			0);
-
-		deviceContext->IASetVertexBuffers(0, 1, &menuEntities[2]->g_mesh->v_buffer, &stride, &offset);
-		deviceContext->IASetIndexBuffer(menuEntities[2]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-		deviceContext->PSSetSamplers(0, 1, &menuEntities[2]->g_mat->samplerState);
-		deviceContext->PSSetShaderResources(0, 1, &menuEntities[2]->g_mat->resourceView);
-
-
-
-		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
-		deviceContext->VSSetShader(menuEntities[2]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &menuEntities[0]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
-		deviceContext->PSSetShader(menuEntities[2]->g_mat->shaderProgram->pixelShader, NULL, 0);
-
-		// Finally do the actual drawing
-		deviceContext->DrawIndexed(
-			menuEntities.at(2)->g_mesh->m_size,	// The number of indices we're using in this draw
-			0,
-			0);
+		gameStates[2]->draw(viewMatrix, projectionMatrix);
 	}
 	DrawUserInterface(0xff0099ff);
 

@@ -37,6 +37,10 @@ wchar_t* StateManager::setState(int index){
 	return states[currentState];
 }
 
+wchar_t* StateManager::returnState(){
+	return states[currentState];
+}
+
 wchar_t* StateManager::changeState()
 {
 	if (GetAsyncKeyState('0') & 0x8000){

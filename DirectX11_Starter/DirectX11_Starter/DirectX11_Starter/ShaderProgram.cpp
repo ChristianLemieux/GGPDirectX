@@ -16,6 +16,7 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, ID3D11Device* d
 
 	vsConstantBuffer = vs_const_b;
 	psConstantBuffer = ps_const_b;
+	camConstantBuffer = nullptr;
 }
 
 ShaderProgram::~ShaderProgram(void)
@@ -34,6 +35,24 @@ ShaderProgram::~ShaderProgram(void)
 	/*	delete psConstantBuffer;
 		psConstantBuffer = nullptr;*/
 	}
+}
+
+ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, ID3D11Device* dev, ConstantBuffer *& vs_const_b, ConstantBuffer *& light_buffer, ConstantBuffer *& camera_buffer){
+	ID3DBlob* vsBlob;
+	D3DReadFileToBlob(vs_file, &vsBlob);
+	HRESULT hr_vertex = this->CreateInputLayoutDescFromShaderSignature(vsBlob, dev, &vsInputLayout);
+	dev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vertexShader);
+	ReleaseMacro(vsBlob);
+
+	ID3DBlob* psBlob;
+	D3DReadFileToBlob(ps_file, &psBlob);
+	HRESULT hr_pixel = this->CreateInputLayoutDescFromShaderSignature(psBlob, dev, &psInputLayout);
+	dev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &pixelShader);
+	ReleaseMacro(psBlob);
+
+	vsConstantBuffer = vs_const_b;
+	psConstantBuffer = light_buffer;
+	camConstantBuffer = camera_buffer;
 }
 
 /**

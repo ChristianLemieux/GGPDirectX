@@ -8,6 +8,7 @@ public:
 	StateManager();
 	wchar_t* changeState();
 	wchar_t* setState(int index);
+	wchar_t* returnState();
 private:
 protected:
 	wchar_t* states[6];

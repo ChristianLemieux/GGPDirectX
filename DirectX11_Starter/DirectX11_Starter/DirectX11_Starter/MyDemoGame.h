@@ -21,6 +21,7 @@
 #include <cstdio>
 #include <ctime>
 #include "Game.h"
+#include "State.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -75,20 +76,8 @@ public:
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 	XMFLOAT3 XMFLOAT3Cross(XMFLOAT3 a, XMFLOAT3 b);
+	LightBufferType lighting;
 
-	struct Light
-	{
-		Light()
-		{
-			ZeroMemory(this, sizeof(Light));
-		}
-		XMFLOAT3 dir;
-		float pad;
-		XMFLOAT4 ambient;
-		XMFLOAT4 diffuse;
-	};
-
-	Light light;
 
 	IFW1Factory *pFW1Factory;
 
@@ -109,45 +98,24 @@ private:
 	StateManager* stateManager;
 	wchar_t* states[6];
 	wchar_t* state;
-	wchar_t* collision;
-	// Buffers to hold actual geometry
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
-	ID3D11Buffer* cbPerFrameBuffer;
 
-	//Second set of buffers to hold actual geometry
-	ID3D11Buffer* vertex2Buffer;
-	ID3D11Buffer* index2Buffer;
 
-	//Basic shapes!
-	Mesh* triangle;
-	Mesh* square;
-	Mesh* asteroid;
 	ShaderProgram* shaderProgram;
-	ShaderProgram* PhongProgram;
 
 
-	//Game Entity
-	std::vector<GameEntity*> gameEntities;
-	//Menu Entities
-	std::vector<GameEntity*> menuEntities;
-	//SamplerState for textures
-	std::vector<SamplerState*> samplerStates;
-	//Materials
-	std::vector<Material*> materials;
 
 	std::vector<Button> buttons;
+	std::vector<State*> gameStates;
 
-	// Our basic shaders for this example
-	ID3D11PixelShader* pixelShader;
-	ID3D11VertexShader* vertexShader;
-
-	// A few more odds and ends we'll need
-	ID3D11InputLayout* inputLayout;
-	ID3D11Buffer* vsConstantBuffer;
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
+	LightBufferType dataToSendToLightConstantBuffer;
+	CameraBufferType dataToSendToCameraConstantBuffer;
 
-	std::vector<ConstantBuffer*> constantBufferList;
+	ConstantBuffer* MatrixCB;
+	ConstantBuffer* LightCB;
+	ConstantBuffer* CamCB;
+
+	SamplerState* samplerState;
 	// The matrices to go from model space
 	// to screen space
 	XMFLOAT4X4 worldMatrix;
@@ -164,9 +132,4 @@ private:
 	POINT prevMousePos;
 	int moveDistanceMouseX;
 	int moveDistanceMouseY;
-
-	int hullIntegrity;
-	bool notColliding;
-	bool canTakeDamage;
-
 };
