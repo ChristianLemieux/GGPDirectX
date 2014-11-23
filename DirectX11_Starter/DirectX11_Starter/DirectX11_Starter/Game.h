@@ -14,6 +14,7 @@
 #include "Camera.h"
 #include "StateManager.h"
 #include "FW1FontWrapper.h"
+#include "Player.h"
 
 using namespace DirectX;
 
@@ -29,7 +30,7 @@ public:
 	int hullIntegrity;
 private:
 	LightBufferType lighting;
-	LightBufferType lighting2;
+	
 	wchar_t* collision;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
@@ -38,6 +39,8 @@ private:
 	std::vector<GameEntity*> gameEntities;
 	std::vector<SamplerState*>samplerStates;
 	std::vector<Material*> materials;
+
+	Player* player;
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
 	LightBufferType dataToSendToLightConstantBuffer;

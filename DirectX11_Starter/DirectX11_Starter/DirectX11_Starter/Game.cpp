@@ -25,12 +25,6 @@ void Game::initGame(SamplerState *samplerStates){
 	lighting.specularColor = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
 	lighting.specularPower = 5.0f;
 
-	lighting2.ambientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	lighting2.diffuseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	lighting2.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	lighting2.specularColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	lighting2.specularPower = 0.0f;
-
 	notColliding = false;
 	canTakeDamage = true;
 	hullIntegrity = 100;
@@ -40,7 +34,6 @@ void Game::initGame(SamplerState *samplerStates){
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
-	multiTex = new ShaderProgram(L"MultiTexVertexShader.cso", L"MultiTexPixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
@@ -49,12 +42,13 @@ void Game::initGame(SamplerState *samplerStates){
 	ObjectLoader *bgObject = new ObjectLoader(device);
 	Mesh *bg = bgObject->LoadModel("Menu.obj");
 
+	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid);
+
 	//create sampler state
 	//create materials
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", L"night.jpg", multiTex));
 
 	//two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
@@ -62,13 +56,9 @@ void Game::initGame(SamplerState *samplerStates){
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
 	gameEntities[1]->setPosition(XMFLOAT3(17.0f, 0.0f, 6.0f));
 
-	//create game entities
-	gameEntities.push_back(new GameEntity(asteroid, materials[3]));
-	gameEntities[2]->translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	gameEntities[2]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 
 	//comment
-	for (int i = 3; i < 32; i++)
+	for (int i = 2; i < 31; i++)
 	{
 		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
 		gameEntities[i]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
@@ -81,22 +71,7 @@ void Game::updateGame(float dt, StateManager *stateManager){
 	collision = L"Not Colliding";
 	notColliding = false;
 	
-		//move triangle right
-		if (GetAsyncKeyState('D') & 0x8000){
-			gameEntities[2]->translate(XMFLOAT3(5.0f * dt, 0.0f, 0.0f));
-		}
-		//move triangle left
-		if (GetAsyncKeyState('A') & 0x8000){
-			gameEntities[2]->translate(XMFLOAT3(-5.0f * dt, 0.0f, 0.0f));
-		}
-		//move triangle up
-		if (GetAsyncKeyState('W') & 0x8000){
-			gameEntities[2]->translate(XMFLOAT3(0.0f, 5.0f * dt, 0.0f));
-		}
-		//move triangle down
-		if (GetAsyncKeyState('S') & 0x8000){
-			gameEntities[2]->translate(XMFLOAT3(0.0f, -5.0f * dt, 0.0f));
-		}
+		player->update(dt);
 
 		//parallex
 		gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
@@ -111,7 +86,7 @@ void Game::updateGame(float dt, StateManager *stateManager){
 		}
 
 		//moves asteroids across screen and respawns them when they leave the screen
-		for (unsigned int i = 3; i < 32; i++)
+		for (unsigned int i = 2; i < 31; i++)
 		{
 			gameEntities[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
 
@@ -124,11 +99,12 @@ void Game::updateGame(float dt, StateManager *stateManager){
 		}
 
 		float distance = 2.0f;
-
-		for (int i = 3; i < 32; i++)
+		float playerX = player->player->getPosition()._41;
+		float playerY = player->player->getPosition()._42;
+		for (int i = 2; i < 31; i++)
 		{
-			float testDistX = pow(gameEntities[2]->getPosition()._41 - gameEntities[i]->getPosition()._41, 2);
-			float testDistY = pow(gameEntities[2]->getPosition()._42 - gameEntities[i]->getPosition()._42, 2);
+			float testDistX = pow(playerX - gameEntities[i]->getPosition()._41, 2);
+			float testDistY = pow(playerY - gameEntities[i]->getPosition()._42, 2);
 
 			if (distance >= testDistX + testDistY)
 			{
@@ -214,9 +190,6 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		deviceContext->PSSetSamplers(0, 1, &gameEntities[i]->g_mat->samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &gameEntities[i]->g_mat->resourceView);
-		if (gameEntities[i]->g_mat->shaderProgram == multiTex){
-			deviceContext->PSSetShaderResources(1, 1, &gameEntities[i]->g_mat->resourceView2);
-		}
 
 
 
@@ -233,4 +206,5 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			0,
 			0);
 	}
+	player->draw(viewMatrix, projectionMatrix, camPos);
 }

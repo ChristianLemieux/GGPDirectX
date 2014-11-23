@@ -23,29 +23,11 @@ cbuffer LightBuffer
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	float3 reflection;
-	float4 diff;
-	// Just return the input color
-	// - Note that this color (like all values that pass through the rasterizer)
-	//   is interpolated for each pixel between the corresponding 
-	//   vertices of the triangle
+	float3 reflection = reflect(-lightDirection, input.normal);
 	float4 textureColor = myTexture.Sample(mySampler, input.uv);
-		float4 color = ambientColor;
-		float3 lightDir = -lightDirection;
-		float4 specular = specularColor;
-		float lightIntensity = saturate(dot(input.normal, lightDir));
-
-	if (lightIntensity > 0.0f)
-	{
-		color += (diffuseColor * lightIntensity);
-		color = saturate(color);
-		reflection = normalize(2 * lightIntensity * input.normal - lightDir);
-		specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
-
-	}
-	color = color * textureColor;
-	color = saturate(color + specular);
-
+	float4 specular = pow(saturate(dot(reflection, -input.viewDirection)), specularPower) * specularColor;
+	float4 diffuse = lerp(diffuseColor, textureColor, 0.85f) * saturate(dot(input.normal, -lightDirection)) * 0.8f;
+	float4 color = saturate(diffuse + ambientColor + specular);
 	return color;
 }
 
