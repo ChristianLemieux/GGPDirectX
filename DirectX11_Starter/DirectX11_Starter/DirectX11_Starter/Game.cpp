@@ -35,7 +35,7 @@ void Game::initGame(SamplerState *samplerStates){
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
-	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
+	asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
 
 	//background
@@ -49,6 +49,7 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
 
 	//two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
@@ -69,10 +70,17 @@ void Game::initGame(SamplerState *samplerStates){
 
 void Game::updateGame(float dt, StateManager *stateManager){
 	collision = L"Not Colliding";
+	shotFired = false;
 	notColliding = false;
 	
 		player->update(dt);
-
+		if (GetAsyncKeyState('Q') & 0x8000)
+		{
+			if (projectiles.size() < 1)
+			{
+				fireProjectile();
+			}
+		}
 		//parallex
 		gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
 		gameEntities[1]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
@@ -96,6 +104,21 @@ void Game::updateGame(float dt, StateManager *stateManager){
 				gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 			}
 
+		}
+
+		if (projectiles.size() > 0)
+		{
+			for (int x = projectiles.size() - 1; x >= 0; x--)
+			{
+				projectiles[x]->translate(XMFLOAT3(10.0f * dt, 0.0f, 0.0f));
+
+				//._41 is the x value for the position matrix of game entities
+				if (projectiles[x]->getPosition()._41 > 30)
+				{
+					projectiles.erase(projectiles.begin() + x);
+				}
+
+			}
 		}
 
 		float distance = 2.0f;
@@ -126,9 +149,42 @@ void Game::updateGame(float dt, StateManager *stateManager){
 			}
 		}
 
+		if (projectiles.size() > 0)
+		{
+			for (int x = projectiles.size() - 1; x >= 0; x--)
+			{
+				for (int i = 3; i < 31; i++)
+				{
+					float testDistX = pow(projectiles[x]->getPosition()._41 - gameEntities[i]->getPosition()._41, 2);
+					float testDistY = pow(projectiles[x]->getPosition()._42 - gameEntities[i]->getPosition()._42, 2);
+
+					if (distance >= testDistX + testDistY)
+					{
+						projectiles.erase(projectiles.begin() + x);
+						gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+						break;
+					}
+				}
+			}
+		}
+
 		if (!notColliding){
 			canTakeDamage = true;
 		}
+}
+
+void Game::fireProjectile()
+{
+	if (!shotFired)
+	{
+		float playerX = player->player->getPosition()._41;
+		float playerY = player->player->getPosition()._42;
+		projectiles.push_back(new GameEntity(asteroid, materials[3]));
+		projectiles[projectiles.size() - 1]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+		projectiles[projectiles.size() - 1]->setPosition(XMFLOAT3(playerX, playerY, 0.0f));
+		shotFired = true;
+	}
+	
 }
 
 void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){
@@ -205,6 +261,84 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			gameEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
 			0,
 			0);
+	}
+
+	for (unsigned int i = 0; i < projectiles.size(); i++){
+		projectiles[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.5f));
+		projectiles[i]->setPosition(XMFLOAT3(projectiles[i]->getPosition()._41 * 2, projectiles[i]->getPosition()._42 * 2, 0.0f));
+		//UINT offset = 0;
+		stride = projectiles[i]->g_mesh->sizeofvertex;
+		// Set up the input assembler
+		deviceContext->IASetInputLayout(projectiles[i]->g_mat->shaderProgram->vsInputLayout);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//set values that get passed to matrix constant buffer
+
+		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = projectiles[i]->getWorld();
+		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
+		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+
+		//set values that get passed to lighting constant buffer
+		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
+		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
+		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
+		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularColor = lighting.specularColor;
+		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularPower = lighting.specularPower;
+		//set values that get passed to camera constant buffer
+		projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.cameraPosition = camPos;
+		projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.padding = 1.0f;
+
+
+
+		//matrix constant buffer
+		deviceContext->UpdateSubresource(
+			projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			0,
+			NULL,
+			&projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			0,
+			0);
+
+		//camera constant buffer 
+		deviceContext->UpdateSubresource(
+			projectiles[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer,
+			0,
+			NULL,
+			&projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer,
+			0,
+			0);
+		//light constant buffer
+		deviceContext->UpdateSubresource(
+			projectiles[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer,
+			0,
+			NULL,
+			&projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer,
+			0,
+			0);
+
+		deviceContext->IASetVertexBuffers(0, 1, &projectiles[i]->g_mesh->v_buffer, &stride, &offset);
+		deviceContext->IASetIndexBuffer(projectiles[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		deviceContext->PSSetSamplers(0, 1, &projectiles[i]->g_mat->samplerState);
+		deviceContext->PSSetShaderResources(0, 1, &projectiles[i]->g_mat->resourceView);
+
+
+
+		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+		deviceContext->VSSetShader(projectiles[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
+		deviceContext->VSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer); //set first constant vertex buffer-matrix
+		deviceContext->VSSetConstantBuffers(1, 1, &projectiles[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer); //set second constant vertex buffer-camera
+		deviceContext->PSSetShader(projectiles[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
+		deviceContext->PSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer); //set pixel constant buffer-light
+
+		// Finally do the actual drawing
+		deviceContext->DrawIndexed(
+			projectiles.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
+			0,
+			0);
+		projectiles[i]->setPosition(XMFLOAT3(projectiles[i]->getPosition()._41 / 2, projectiles[i]->getPosition()._42 / 2, 0.0f));
+		projectiles[i]->scale(XMFLOAT3(2.0f, 2.0f, 2.0f));
+
 	}
 	player->draw(viewMatrix, projectionMatrix, camPos);
 }

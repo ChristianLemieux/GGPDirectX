@@ -27,6 +27,7 @@ public:
 	//void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
 	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos);
 	void drawText(IFW1FontWrapper *pFontWrapper);
+	void fireProjectile();
 	int hullIntegrity;
 private:
 	LightBufferType lighting;
@@ -39,8 +40,11 @@ private:
 	std::vector<GameEntity*> gameEntities;
 	std::vector<SamplerState*>samplerStates;
 	std::vector<Material*> materials;
+	std::vector<GameEntity*> projectiles;
 
 	Player* player;
+	Mesh* asteroid;
+	bool shotFired;
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
 	LightBufferType dataToSendToLightConstantBuffer;
