@@ -9,6 +9,7 @@ ObjectLoader::ObjectLoader(ID3D11Device* device)
 
 ObjectLoader::~ObjectLoader()
 {
+	ReleaseMacro(m_device);
 }
 
 bool ObjectLoader::CompareVertices(Vertex2 a, Vertex2 b){

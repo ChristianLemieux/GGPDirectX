@@ -12,6 +12,7 @@
 class State{
 public:
 	State(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11SamplerState* sample, wchar_t* textureFile, Mesh* menuMesh, ShaderProgram* shaderProgram);
+	~State(void);
 	void update();
 	void draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
 	GameEntity* gameState;

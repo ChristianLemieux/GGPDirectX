@@ -95,7 +95,6 @@ private:
 private:
 	Game* game;
 	StateManager* stateManager;
-	wchar_t* states[6];
 	wchar_t* state;
 
 

@@ -24,11 +24,20 @@ Material::Material(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11Sampler
 	samplerState = sampler;
 	shaderProgram = s_program;
 	CreateWICTextureFromFile(dev, devCtx, filepath, 0, &resourceView, 0);
+	resourceView2 = nullptr;
+}
+
+Material::Material(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11SamplerState* sampler, wchar_t* filepath, wchar_t* filepath2, ShaderProgram* s_program){
+	samplerState = sampler;
+	shaderProgram = s_program;
+	CreateWICTextureFromFile(dev, devCtx, filepath, 0, &resourceView, 0);
+	CreateWICTextureFromFile(dev, devCtx, filepath2, 0, &resourceView2, 0);
 }
 
 Material::~Material(void){
 	ReleaseMacro(samplerState);
 	ReleaseMacro(resourceView);
+	ReleaseMacro(resourceView2);
 	ReleaseMacro(vsConstantBuffer);
 	ReleaseMacro(psConstantBuffer);
 	if (shaderProgram){

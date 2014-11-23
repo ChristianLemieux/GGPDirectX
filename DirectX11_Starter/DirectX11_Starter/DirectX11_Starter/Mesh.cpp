@@ -44,6 +44,15 @@ Mesh::Mesh(Phong* vertices, UINT* indices, int size, ID3D11Device* device){
 Mesh::~Mesh(void){
 	ReleaseMacro(v_buffer);
 	ReleaseMacro(i_buffer);
+	ReleaseMacro(m_device);
+	if (m_indices){
+		delete m_indices;
+		m_indices = nullptr;
+	}
+	if (m_vertices){
+		delete m_vertices;
+		m_vertices = nullptr;
+	}
 }
 
 void Mesh::createVertexBuffer(){

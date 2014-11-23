@@ -5,12 +5,31 @@ Game::Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt){
 	deviceContext = devCxt;
 }
 
+Game::~Game(void){
+	ReleaseMacro(device);
+	ReleaseMacro(deviceContext);
+	/*if (shaderProgram){
+		delete shaderProgram;
+		shaderProgram = nullptr;
+	}
+	if (multiTex){
+		delete multiTex;
+		multiTex = nullptr;
+	}*/
+}
+
 void Game::initGame(SamplerState *samplerStates){
-	lighting.ambientColor = XMFLOAT4(1.0f, 0.2f, 0.2f, 1.0f);
-	lighting.diffuseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	lighting.ambientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	lighting.diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	lighting.specularColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	lighting.specularPower = 50.0f;
+	lighting.specularColor = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
+	lighting.specularPower = 5.0f;
+
+	lighting2.ambientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	lighting2.diffuseColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	lighting2.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	lighting2.specularColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	lighting2.specularPower = 0.0f;
 
 	notColliding = false;
 	canTakeDamage = true;
@@ -21,6 +40,7 @@ void Game::initGame(SamplerState *samplerStates){
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
 	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
+	multiTex = new ShaderProgram(L"MultiTexVertexShader.cso", L"MultiTexPixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	Mesh *asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
@@ -34,6 +54,7 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", L"night.jpg", multiTex));
 
 	//two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
@@ -42,7 +63,7 @@ void Game::initGame(SamplerState *samplerStates){
 	gameEntities[1]->setPosition(XMFLOAT3(17.0f, 0.0f, 6.0f));
 
 	//create game entities
-	gameEntities.push_back(new GameEntity(asteroid, materials[0]));
+	gameEntities.push_back(new GameEntity(asteroid, materials[3]));
 	gameEntities[2]->translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	gameEntities[2]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 
@@ -145,20 +166,22 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//set values that get passed to matrix constant buffer
+		
 		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
 		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
 		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
-
+		
 		//set values that get passed to lighting constant buffer
 		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
 		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
 		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
 		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularColor = lighting.specularColor;
 		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularPower = lighting.specularPower;
-
 		//set values that get passed to camera constant buffer
 		gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.cameraPosition = camPos;
 		gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.padding = 1.0f;
+
+		
 
 		//matrix constant buffer
 		deviceContext->UpdateSubresource(
@@ -191,13 +214,16 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		deviceContext->PSSetSamplers(0, 1, &gameEntities[i]->g_mat->samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &gameEntities[i]->g_mat->resourceView);
+		if (gameEntities[i]->g_mat->shaderProgram == multiTex){
+			deviceContext->PSSetShaderResources(1, 1, &gameEntities[i]->g_mat->resourceView2);
+		}
 
 
 
 		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
 		deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
 		deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer); //set first constant vertex buffer-matrix
-		deviceContext->VSSetConstantBuffers(1, 1, &gameEntities[2]->g_mat->shaderProgram->camConstantBuffer->constantBuffer); //set second constant vertex buffer-camera
+		deviceContext->VSSetConstantBuffers(1, 1, &gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer); //set second constant vertex buffer-camera
 		deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
 		deviceContext->PSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer); //set pixel constant buffer-light
 

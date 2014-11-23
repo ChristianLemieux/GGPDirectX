@@ -6,6 +6,7 @@ using namespace std;
 class StateManager{
 public:
 	StateManager();
+	~StateManager(void);
 	wchar_t* changeState();
 	wchar_t* setState(int index);
 	wchar_t* returnState();

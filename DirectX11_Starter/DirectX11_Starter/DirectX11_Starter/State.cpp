@@ -20,6 +20,17 @@ void State::update(){
 
 }
 
+State::~State(void)
+{
+	ReleaseMacro(device);
+	ReleaseMacro(deviceContext);
+	if (gameState){
+		delete gameState;
+		gameState = nullptr;
+	}
+
+}
+
 void State::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix){
 	UINT offset = 0;
 	//UINT offset = 0;

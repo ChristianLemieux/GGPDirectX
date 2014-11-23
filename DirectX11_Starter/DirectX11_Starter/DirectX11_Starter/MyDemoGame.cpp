@@ -76,6 +76,39 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 MyDemoGame::~MyDemoGame()
 {
 	// Release all of the D3D stuff that's still hanging out
+	if (pFW1Factory){
+		delete pFW1Factory;
+		pFW1Factory = nullptr;
+	}
+	if (pFontWrapper){
+		delete pFontWrapper;
+		pFontWrapper = nullptr;
+	}
+	if (state){
+		//delete state;
+		//state = nullptr;
+	}
+	if (MatrixCB){
+		delete MatrixCB;
+		MatrixCB = nullptr;
+	}
+	if (LightCB){
+		delete LightCB;
+		LightCB = nullptr;
+	}
+	if (CamCB){
+		delete CamCB;
+		CamCB = nullptr;
+	}
+	if (samplerState){
+		delete samplerState;
+		samplerState = nullptr;
+	}
+	if (game){
+		delete game;
+		game = nullptr;
+	}
+	
 }
 
 #pragma endregion
@@ -148,12 +181,6 @@ bool MyDemoGame::Init()
 	buttons.push_back(tempButton);
 
 	//initialize states so that state strings can be looked up with a state index
-	states[0] = L"Menu";
-	states[1] = L"Game";
-	states[2] = L"Instructions";
-	states[3] = L"Pause";
-	states[4] = L"Win";
-	states[5] = L"Lose";
 
 	return true;
 }

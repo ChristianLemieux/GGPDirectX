@@ -32,6 +32,11 @@ StateManager::StateManager()
 	adj[5][1] = 1; //Lose to Game
 	adj[5][0] = 1; //Lose to Menu
 }
+
+StateManager::~StateManager(void){
+	
+}
+
 wchar_t* StateManager::setState(int index){
 	currentState = max(0, min(index, 5));
 	return states[currentState];

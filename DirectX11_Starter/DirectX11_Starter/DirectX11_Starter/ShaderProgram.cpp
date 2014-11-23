@@ -25,15 +25,21 @@ ShaderProgram::~ShaderProgram(void)
 	ReleaseMacro(vertexShader);
 	ReleaseMacro(vsInputLayout);
 	ReleaseMacro(psInputLayout);
+	ReleaseMacro(camInputLayout);
 	if (vsConstantBuffer)
 	{
-	/*	delete vsConstantBuffer;
-		vsConstantBuffer = nullptr;*/
+		delete vsConstantBuffer;
+		vsConstantBuffer = nullptr;
 	}
 	if (psConstantBuffer)
 	{
-	/*	delete psConstantBuffer;
-		psConstantBuffer = nullptr;*/
+		delete psConstantBuffer;
+		psConstantBuffer = nullptr;
+	}
+	if (camConstantBuffer)
+	{
+		delete camConstantBuffer;
+		camConstantBuffer = nullptr;
 	}
 }
 

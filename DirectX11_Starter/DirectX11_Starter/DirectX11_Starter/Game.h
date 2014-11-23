@@ -20,6 +20,7 @@ using namespace DirectX;
 class Game{
 public:
 	Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt);
+	~Game(void);
 	void initGame(SamplerState *samplerStates);
 	void updateGame(float dt, StateManager *stateManager);
 	//void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
@@ -28,10 +29,12 @@ public:
 	int hullIntegrity;
 private:
 	LightBufferType lighting;
+	LightBufferType lighting2;
 	wchar_t* collision;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	ShaderProgram* shaderProgram;
+	ShaderProgram *multiTex;
 	std::vector<GameEntity*> gameEntities;
 	std::vector<SamplerState*>samplerStates;
 	std::vector<Material*> materials;
