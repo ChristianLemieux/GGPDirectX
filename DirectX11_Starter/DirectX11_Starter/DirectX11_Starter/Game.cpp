@@ -184,7 +184,6 @@ void Game::fireProjectile()
 		projectiles[projectiles.size() - 1]->setPosition(XMFLOAT3(playerX, playerY, 0.0f));
 		shotFired = true;
 	}
-	
 }
 
 void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){
