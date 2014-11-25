@@ -55,7 +55,7 @@ void Game::initGame(SamplerState *samplerStates){
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
 	gameEntities[0]->setPosition(XMFLOAT3(2.5f, 0.0f, 6.0f));
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
-	gameEntities[1]->setPosition(XMFLOAT3(17.0f, 0.0f, 6.0f));
+	gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 
 
 	//comment
@@ -84,13 +84,13 @@ void Game::updateGame(float dt, StateManager *stateManager){
 		//parallex
 		gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
 		gameEntities[1]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
-		if (gameEntities[0]->getPosition()._41 < -15)
+		if (gameEntities[0]->getPosition()._41 < -14)
 		{
-			gameEntities[0]->setPosition(XMFLOAT3(17.0f, 0.0f, 6.0f));
+			gameEntities[0]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 		}
-		if (gameEntities[1]->getPosition()._41 < -15)
+		if (gameEntities[1]->getPosition()._41 < -14)
 		{
-			gameEntities[1]->setPosition(XMFLOAT3(17.0f, 0.0f, 6.0f));
+			gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 		}
 
 		//moves asteroids across screen and respawns them when they leave the screen

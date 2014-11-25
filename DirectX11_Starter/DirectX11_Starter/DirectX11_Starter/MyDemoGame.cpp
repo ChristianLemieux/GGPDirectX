@@ -329,7 +329,7 @@ void MyDemoGame::UpdateCamera()
 void MyDemoGame::DrawScene()
 {
 	const float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	XMFLOAT3 camPos = XMFLOAT3(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ());
+	XMFLOAT3 camPos = XMFLOAT3(gameCam.getPositionX(), gameCam.getPositionY(), gameCam.getPositionZ() + 5);
 	// Clear the buffer
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
 	deviceContext->ClearDepthStencilView(
