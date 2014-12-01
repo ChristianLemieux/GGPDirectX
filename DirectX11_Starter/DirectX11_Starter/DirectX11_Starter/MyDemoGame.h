@@ -22,6 +22,8 @@
 #include <ctime>
 #include "Game.h"
 #include "State.h"
+#include "GameTimer.h"
+//#include "include/irrKlang.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -100,7 +102,7 @@ private:
 
 	ShaderProgram* shaderProgram;
 
-
+	GameTimer *timer;
 
 	std::vector<Button> buttons;
 	std::vector<State*> gameStates;

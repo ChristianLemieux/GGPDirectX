@@ -182,6 +182,9 @@ bool MyDemoGame::Init()
 
 	//initialize states so that state strings can be looked up with a state index
 
+	//initialize the game timer
+	timer = new GameTimer();
+
 	return true;
 }
 
@@ -214,7 +217,15 @@ void MyDemoGame::UpdateScene(float dt)
 	state = stateManager->changeState();
 	if (state == L"Game")
 	{
+		timer->Start();
 		game->updateGame(dt, stateManager);
+		timer->Tick();
+	}
+	else if (state == L"Pause"){
+		timer->Stop();
+	}
+	else{
+		timer->Reset();
 	}
 }
 
@@ -363,9 +374,15 @@ void MyDemoGame::DrawScene()
 		std::wstring pi = std::to_wstring(game->hullIntegrity);
 		const WCHAR* szName = pi.c_str();
 
+		std::wstring score = std::to_wstring(timer->TotalTime() * 1000.0);
+		const WCHAR* szScore = score.c_str();
+
 		//Draw Sprites and fonts
 		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
 		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::LawnGreen);
+
+		spriteFont->DrawString(spriteBatch.get(), L"Score: ", DirectX::SimpleMath::Vector2(300, 25));
+		spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 25), Colors::LawnGreen);
 
 		if (game->hullIntegrity <= 30)
 		{

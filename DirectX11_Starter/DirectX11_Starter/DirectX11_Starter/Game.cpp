@@ -19,6 +19,10 @@ Game::~Game(void){
 }
 
 void Game::initGame(SamplerState *samplerStates){
+
+	//sound effect engine
+	engine = irrklang::createIrrKlangDevice();
+
 	lighting.ambientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	lighting.diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
@@ -135,6 +139,10 @@ void Game::updateGame(float dt, StateManager *stateManager){
 				if (canTakeDamage && notColliding){
 					hullIntegrity -= 10;
 					gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+					// start the sound engine with default parameters
+					engine->play2D("Explosion.wav", false);
+					//std::unique_ptr<SoundEffect> soundEffect(new SoundEffect(audEngine.get(), L"Explosion.wav"));
+					//soundEffect->Play();
 					//lose condition
 					if (hullIntegrity <= 0)
 					{

@@ -15,8 +15,13 @@
 #include "StateManager.h"
 #include "FW1FontWrapper.h"
 #include "Player.h"
+#include <Audio.h>
+#include "include/irrKlang.h"
+#include <iostream>
 
 using namespace DirectX;
+
+#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
 
 class Game{
 public:
@@ -31,6 +36,9 @@ public:
 	int hullIntegrity;
 private:
 	LightBufferType lighting;
+
+	//sound engine for the project
+	irrklang::ISoundEngine* engine;
 	
 	wchar_t* collision;
 	ID3D11Device* device;
