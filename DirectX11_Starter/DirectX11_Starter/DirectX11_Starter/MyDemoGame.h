@@ -23,6 +23,7 @@
 #include "Game.h"
 #include "State.h"
 #include "GameTimer.h"
+#include "RenderTextureClass.h"
 //#include "include/irrKlang.h"
 
 // Include run-time memory checking in debug builds
@@ -71,6 +72,7 @@ public:
 	void OnResize();
 	void UpdateScene(float dt);
 	void DrawScene();
+	void DrawPostProcessing();
 	void UpdateCamera();
 
 	// For handing mouse input
@@ -101,6 +103,9 @@ private:
 
 
 	ShaderProgram* shaderProgram;
+
+	//Render target
+	RenderTextureClass renderTarget;
 
 	GameTimer *timer;
 

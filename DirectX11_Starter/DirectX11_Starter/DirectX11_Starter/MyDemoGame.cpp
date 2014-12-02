@@ -141,7 +141,8 @@ bool MyDemoGame::Init()
 	gameStates.push_back(new State(device, deviceContext, sample, L"gameOverScreen.png", menuMesh, shaderProgram));
 	game->initGame(samplerState);
 
-	// Set up buffers and such
+	//initialize our render Target
+	renderTarget.Initialize(device, windowWidth, windowHeight);
 
 	//Create SpriteBatch
 	spriteBatch.reset(new DirectX::SpriteBatch(deviceContext));
@@ -441,6 +442,11 @@ void MyDemoGame::HandleUIClick(int x, int y)
 			stateManager->setState(buttons[i].newState);
 		}
 	}
+}
+
+void MyDemoGame::DrawPostProcessing()
+{
+
 }
 
 #pragma endregion
