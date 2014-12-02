@@ -37,7 +37,7 @@ void Game::initGame(SamplerState *samplerStates){
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToCameraConstantBuffer, device)); //create camera constant buffer
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
-	shaderProgram = new ShaderProgram(L"VertexShader.cso", L"PixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
+	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
