@@ -89,6 +89,7 @@ public:
 
 	BOOL uiInitialized = false;
 
+
 private:
 	// Initialization for our "game" demo
 	void CreateGeometryBuffers();

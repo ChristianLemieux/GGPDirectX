@@ -397,6 +397,7 @@ void MyDemoGame::DrawScene()
 	}
 	spriteBatch->End();
 
+
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
 }
