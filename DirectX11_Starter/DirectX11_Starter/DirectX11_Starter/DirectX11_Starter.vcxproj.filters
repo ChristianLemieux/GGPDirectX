@@ -178,6 +178,9 @@
     <FxCompile Include="Shaders\PhongPixel.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="PostProcessShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTK\DirectXTK_Desktop_2013.vcxproj.filters" />

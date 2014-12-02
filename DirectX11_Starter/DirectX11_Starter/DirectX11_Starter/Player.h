@@ -24,6 +24,7 @@ public:
 	int returnHealth(void);
 	void setHealth(int new_health);
 	void takeDamage();
+	void reset();
 	GameEntity* getPlayer();
 	GameEntity* player;
 private:

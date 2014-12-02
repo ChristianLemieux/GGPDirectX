@@ -32,7 +32,9 @@ public:
 	//void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
 	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos);
 	void drawText(IFW1FontWrapper *pFontWrapper);
+	void drawPostProcessing();
 	void fireProjectile();
+	void reset();
 	int hullIntegrity;
 private:
 	LightBufferType lighting;

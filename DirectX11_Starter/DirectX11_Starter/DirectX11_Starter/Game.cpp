@@ -147,7 +147,8 @@ void Game::updateGame(float dt, StateManager *stateManager){
 					if (hullIntegrity <= 0)
 					{
 						stateManager->setState(5);
-						hullIntegrity = 100;
+						reset();
+						
 					}
 					canTakeDamage = false;
 				}
@@ -348,4 +349,35 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 	}
 	player->draw(viewMatrix, projectionMatrix, camPos);
+}
+
+//resets after lose condition
+void Game::reset()
+{
+	hullIntegrity = 100;
+	
+	//reset player 
+	player->reset();
+
+	//reset asteroids
+	for (int i = 2; i < 31; i++)
+	{
+		gameEntities[i]->setPosition(XMFLOAT3(((rand() % 60) + 30), ((rand() % 40) - 19.0f), 0.0f));
+	}
+
+	//reset projectiles
+	if (projectiles.size() > 0)
+	{
+		for (int x = projectiles.size() - 1; x >= 0; x--)
+		{
+			projectiles.erase(projectiles.begin() + x);
+		}
+	}
+
+}
+
+//method that will handle all post processing
+void Game::drawPostProcessing()
+{
+
 }

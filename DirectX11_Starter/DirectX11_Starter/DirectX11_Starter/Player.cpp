@@ -149,6 +149,12 @@ void Player::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 c
 		0);
 }
 
+//simple reset
+void Player::reset()
+{
+	player->setPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+}
+
 void Player::drawText(IFW1FontWrapper *pFontWrapper){
 
 }

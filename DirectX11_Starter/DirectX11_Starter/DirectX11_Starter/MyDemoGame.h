@@ -72,7 +72,6 @@ public:
 	void OnResize();
 	void UpdateScene(float dt);
 	void DrawScene();
-	void DrawPostProcessing();
 	void UpdateCamera();
 
 	// For handing mouse input

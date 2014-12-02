@@ -375,7 +375,7 @@ void MyDemoGame::DrawScene()
 		std::wstring pi = std::to_wstring(game->hullIntegrity);
 		const WCHAR* szName = pi.c_str();
 
-		std::wstring score = std::to_wstring(timer->TotalTime() * 1000.0);
+		std::wstring score = std::to_wstring(int(timer->TotalTime() * 700.0));
 		const WCHAR* szScore = score.c_str();
 
 		//Draw Sprites and fonts
@@ -387,7 +387,7 @@ void MyDemoGame::DrawScene()
 
 		if (game->hullIntegrity <= 30)
 		{
-			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::Red);
+			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::Red);
 		}
 
 		if (state == L"Pause")
@@ -442,11 +442,6 @@ void MyDemoGame::HandleUIClick(int x, int y)
 			stateManager->setState(buttons[i].newState);
 		}
 	}
-}
-
-void MyDemoGame::DrawPostProcessing()
-{
-
 }
 
 #pragma endregion
