@@ -380,10 +380,10 @@ void MyDemoGame::DrawScene()
 
 		//Draw Sprites and fonts
 		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
-		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(225, 25), Colors::LawnGreen);
+		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::LawnGreen);
 
-		spriteFont->DrawString(spriteBatch.get(), L"Score: ", DirectX::SimpleMath::Vector2(300, 25));
-		spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 25), Colors::LawnGreen);
+		spriteFont->DrawString(spriteBatch.get(), L"Score: ", DirectX::SimpleMath::Vector2(15, 55));
+		spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(144, 55), Colors::LawnGreen);
 
 		if (game->hullIntegrity <= 30)
 		{

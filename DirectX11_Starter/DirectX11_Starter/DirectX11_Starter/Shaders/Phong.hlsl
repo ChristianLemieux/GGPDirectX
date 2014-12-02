@@ -1,4 +1,4 @@
-http://www.gamasutra.com/view/feature/131275/implementing_lighting_models_with_.php?print=1
+//http://www.gamasutra.com/view/feature/131275/implementing_lighting_models_with_.php?print=1
 
 
 // The constant buffer that holds our "per model" data
