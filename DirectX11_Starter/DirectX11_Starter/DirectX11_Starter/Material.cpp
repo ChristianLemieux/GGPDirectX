@@ -25,6 +25,7 @@ Material::Material(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11Sampler
 	shaderProgram = s_program;
 	CreateWICTextureFromFile(dev, devCtx, filepath, 0, &resourceView, 0);
 	resourceView2 = nullptr;
+	resourceView3 = nullptr;
 }
 
 Material::Material(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11SamplerState* sampler, wchar_t* filepath, wchar_t* filepath2, ShaderProgram* s_program){
@@ -32,12 +33,22 @@ Material::Material(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11Sampler
 	shaderProgram = s_program;
 	CreateWICTextureFromFile(dev, devCtx, filepath, 0, &resourceView, 0);
 	CreateWICTextureFromFile(dev, devCtx, filepath2, 0, &resourceView2, 0);
+	resourceView3 = nullptr;
+}
+
+Material::Material(ID3D11Device* dev, ID3D11DeviceContext* devCtx, ID3D11SamplerState* sampler, wchar_t* filepath, wchar_t* filepath2, wchar_t* filepath3, ShaderProgram* s_program){
+	samplerState = sampler;
+	shaderProgram = s_program;
+	CreateWICTextureFromFile(dev, devCtx, filepath, 0, &resourceView, 0);
+	CreateWICTextureFromFile(dev, devCtx, filepath2, 0, &resourceView2, 0);
+	CreateWICTextureFromFile(dev, devCtx, filepath3, 0, &resourceView3, 0);
 }
 
 Material::~Material(void){
 	ReleaseMacro(samplerState);
 	ReleaseMacro(resourceView);
 	ReleaseMacro(resourceView2);
+	ReleaseMacro(resourceView3);
 	ReleaseMacro(vsConstantBuffer);
 	ReleaseMacro(psConstantBuffer);
 	if (shaderProgram){

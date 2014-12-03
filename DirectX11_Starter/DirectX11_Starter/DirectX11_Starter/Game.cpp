@@ -37,7 +37,7 @@ void Game::initGame(SamplerState *samplerStates){
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToCameraConstantBuffer, device)); //create camera constant buffer
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
-	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
+	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
@@ -207,45 +207,45 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		//set values that get passed to matrix constant buffer
 		
-		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
-		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
 		
 		//set values that get passed to lighting constant buffer
-		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
-		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
-		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
-		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularColor = lighting.specularColor;
-		gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularPower = lighting.specularPower;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.specularColor = lighting.specularColor;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.specularPower = lighting.specularPower;
 		//set values that get passed to camera constant buffer
-		gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.cameraPosition = camPos;
-		gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.padding = 1.0f;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.cameraPosition = camPos;
+		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.padding = 1.0f;
 
 		
 
 		//matrix constant buffer
 		deviceContext->UpdateSubresource(
-			gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
 			0,
 			NULL,
-			&gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			&gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
 			0,
 			0);
 
 		//camera constant buffer 
 		deviceContext->UpdateSubresource(
-			gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer,
+			gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->constantBuffer,
 			0,
 			NULL,
-			&gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer,
+			&gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer,
 			0,
 			0);
 		//light constant buffer
 		deviceContext->UpdateSubresource(
-			gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer,
+			gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->constantBuffer,
 			0,
 			NULL,
-			&gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer,
+			&gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer,
 			0,
 			0);
 
@@ -259,10 +259,10 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
 		deviceContext->VSSetShader(gameEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer); //set first constant vertex buffer-matrix
-		deviceContext->VSSetConstantBuffers(1, 1, &gameEntities[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer); //set second constant vertex buffer-camera
+		deviceContext->VSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
+		deviceContext->VSSetConstantBuffers(1, 1, &gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->constantBuffer); //set second constant vertex buffer-camera
 		deviceContext->PSSetShader(gameEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
-		deviceContext->PSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer); //set pixel constant buffer-light
+		deviceContext->PSSetConstantBuffers(0, 1, &gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->constantBuffer); //set pixel constant buffer-light
 
 		// Finally do the actual drawing
 		deviceContext->DrawIndexed(
@@ -282,45 +282,45 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		//set values that get passed to matrix constant buffer
 
-		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = projectiles[i]->getWorld();
-		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = projectiles[i]->getWorld();
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
 
 		//set values that get passed to lighting constant buffer
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularColor = lighting.specularColor;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularPower = lighting.specularPower;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.specularColor = lighting.specularColor;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.specularPower = lighting.specularPower;
 		//set values that get passed to camera constant buffer
-		projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.cameraPosition = camPos;
-		projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.padding = 1.0f;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.cameraPosition = camPos;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.padding = 1.0f;
 
 
 
 		//matrix constant buffer
 		deviceContext->UpdateSubresource(
-			projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
 			0,
 			NULL,
-			&projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			&projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
 			0,
 			0);
 
 		//camera constant buffer 
 		deviceContext->UpdateSubresource(
-			projectiles[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer,
+			projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->constantBuffer,
 			0,
 			NULL,
-			&projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer,
+			&projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer,
 			0,
 			0);
 		//light constant buffer
 		deviceContext->UpdateSubresource(
-			projectiles[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer,
+			projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->constantBuffer,
 			0,
 			NULL,
-			&projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer,
+			&projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer,
 			0,
 			0);
 
@@ -334,10 +334,10 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
 		deviceContext->VSSetShader(projectiles[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer); //set first constant vertex buffer-matrix
-		deviceContext->VSSetConstantBuffers(1, 1, &projectiles[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer); //set second constant vertex buffer-camera
+		deviceContext->VSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
+		deviceContext->VSSetConstantBuffers(1, 1, &projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->constantBuffer); //set second constant vertex buffer-camera
 		deviceContext->PSSetShader(projectiles[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
-		deviceContext->PSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer); //set pixel constant buffer-light
+		deviceContext->PSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->constantBuffer); //set pixel constant buffer-light
 
 		// Finally do the actual drawing
 		deviceContext->DrawIndexed(

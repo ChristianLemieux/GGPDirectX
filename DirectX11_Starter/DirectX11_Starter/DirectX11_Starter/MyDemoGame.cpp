@@ -135,7 +135,9 @@ bool MyDemoGame::Init()
 	MatrixCB = new ConstantBuffer(dataToSendToVSConstantBuffer, device);
 	LightCB = new ConstantBuffer(dataToSendToLightConstantBuffer, device);
 	CamCB = new ConstantBuffer(dataToSendToCameraConstantBuffer, device);
-	shaderProgram = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", device, MatrixCB, LightCB, CamCB);
+	vector<ConstantBuffer*> cb;
+	cb.push_back(MatrixCB);
+	shaderProgram = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", device, cb);
 	gameStates.push_back(new State(device, deviceContext, sample, L"StartScreen.png", menuMesh, shaderProgram));
 	gameStates.push_back(new State(device, deviceContext, sample, L"InstructionsScreen.png", menuMesh, shaderProgram));
 	gameStates.push_back(new State(device, deviceContext, sample, L"gameOverScreen.png", menuMesh, shaderProgram));

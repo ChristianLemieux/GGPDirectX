@@ -12,7 +12,7 @@ Projectile::Projectile(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<Co
 	device = dev;
 	deviceContext = devCtx;
 	sampler = samplerState;
-	shaderProgram = new ShaderProgram(L"MultiTexVertexShader.cso", L"MultiTexPixelShader.cso", device, constantBufferList[0], constantBufferList[1], constantBufferList[2]);
+	shaderProgram = new ShaderProgram(L"MultiTexVertexShader.cso", L"MultiTexPixelShader.cso", device, constantBufferList);
 	projectileMaterial = new Material(device, deviceContext, sampler, L"bullet.jpg", shaderProgram);
 	player = playerReference;
 	mesh = meshReference;
@@ -66,43 +66,43 @@ void Projectile::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOA
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//set values that get passed to matrix constant buffer
-		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = projectiles[i]->getWorld();
-		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-		projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = projectiles[i]->getWorld();
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
 
 		//set values that get passed to lighting constant buffer
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularColor = lighting.specularColor;
-		projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer.specularPower = lighting.specularPower;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.lightDirection = lighting.lightDirection;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.specularColor = lighting.specularColor;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.specularPower = lighting.specularPower;
 		//set values that get passed to camera constant buffer
-		projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.cameraPosition = camPos;
-		projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer.padding = 1.0f;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.cameraPosition = camPos;
+		projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.padding = 1.0f;
 
 		//matrix constant buffer
 		deviceContext->UpdateSubresource(
-			projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+			projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
 			0,
 			NULL,
-			&projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+			&projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
 			0,
 			0);
 
 		//camera constant buffer 
 		deviceContext->UpdateSubresource(
-			projectiles[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer,
+			projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->constantBuffer,
 			0,
 			NULL,
-			&projectiles[i]->g_mat->shaderProgram->camConstantBuffer->dataToSendToCameraBuffer,
+			&projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer,
 			0,
 			0);
 		//light constant buffer
 		deviceContext->UpdateSubresource(
-			projectiles[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer,
+			projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->constantBuffer,
 			0,
 			NULL,
-			&projectiles[i]->g_mat->shaderProgram->psConstantBuffer->dataToSendToLightBuffer,
+			&projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer,
 			0,
 			0);
 
@@ -117,10 +117,10 @@ void Projectile::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOA
 
 		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
 		deviceContext->VSSetShader(projectiles[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->vsConstantBuffer->constantBuffer); //set first constant vertex buffer-matrix
-		deviceContext->VSSetConstantBuffers(1, 1, &projectiles[i]->g_mat->shaderProgram->camConstantBuffer->constantBuffer); //set second constant vertex buffer-camera
+		deviceContext->VSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
+		deviceContext->VSSetConstantBuffers(1, 1, &projectiles[i]->g_mat->shaderProgram->ConstantBuffers[2]->constantBuffer); //set second constant vertex buffer-camera
 		deviceContext->PSSetShader(projectiles[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
-		deviceContext->PSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->psConstantBuffer->constantBuffer); //set pixel constant buffer-light
+		deviceContext->PSSetConstantBuffers(0, 1, &projectiles[i]->g_mat->shaderProgram->ConstantBuffers[1]->constantBuffer); //set pixel constant buffer-light
 
 		// Finally do the actual drawing
 		deviceContext->DrawIndexed(

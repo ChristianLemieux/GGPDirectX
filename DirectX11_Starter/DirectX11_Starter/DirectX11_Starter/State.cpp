@@ -33,16 +33,16 @@ void State::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix){
 	deviceContext->IASetInputLayout(gameState->g_mat->shaderProgram->vsInputLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	gameState->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.world = gameState->getWorld();
-	gameState->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.view = viewMatrix;
-	gameState->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer.projection = projectionMatrix;
+	gameState->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = gameState->getWorld();
+	gameState->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
+	gameState->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
 
 
 	deviceContext->UpdateSubresource(
-		gameState->g_mat->shaderProgram->vsConstantBuffer->constantBuffer,
+		gameState->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
 		0,
 		NULL,
-		&gameState->g_mat->shaderProgram->vsConstantBuffer->dataToSendToConstantBuffer,
+		&gameState->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
 		0,
 		0);
 
@@ -56,7 +56,7 @@ void State::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix){
 
 	// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
 	deviceContext->VSSetShader(gameState->g_mat->shaderProgram->vertexShader, NULL, 0);
-	deviceContext->VSSetConstantBuffers(0, 1, &gameState->g_mat->shaderProgram->vsConstantBuffer->constantBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &gameState->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer);
 	deviceContext->PSSetShader(gameState->g_mat->shaderProgram->pixelShader, NULL, 0);
 	// Finally do the actual drawing
 	deviceContext->DrawIndexed(

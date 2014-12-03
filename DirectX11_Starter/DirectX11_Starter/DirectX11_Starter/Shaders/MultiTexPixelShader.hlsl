@@ -1,5 +1,6 @@
 Texture2D myTexture: register(t0);
 Texture2D myTexture2: register(t1);
+Texture2D myTexture3: register(t2);
 SamplerState mySampler: register(s0);
 
 
@@ -36,8 +37,11 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 textureColor2 = myTexture2.Sample(mySampler, reflection);
 	float4 specular = pow(saturate(dot(reflection, -input.viewDirection)), specularPower) * specularColor;
 	float4 diffuse = lerp(diffuseColor, textureColor, 0.85f) * saturate(dot(input.normal, -lightDirection)) * 0.2f;
-		//float4 diffuse = diffuseColor * saturate(dot(input.normal, -lightDirection)*0.2f);
+	//float4 diffuse = diffuseColor * saturate(dot(input.normal, -lightDirection)*0.2f);
 	float4 color = saturate(diffuse + ambientColor + specular);
-	return textureColor2 * 0.3f + color;
+	float4 textureColor3 = myTexture3.Sample(mySampler, input.uv);
+	color = textureColor2 * 0.3f + color;
+	float4 cyan = float4(0, 1, 1, 1);
+	return lerp(color, cyan, textureColor3);
 }
 
