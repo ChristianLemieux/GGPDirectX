@@ -18,6 +18,7 @@
 #include <Audio.h>
 #include "include/irrKlang.h"
 #include <iostream>
+#include "Projectile.h"
 
 using namespace DirectX;
 
@@ -33,7 +34,6 @@ public:
 	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos);
 	void drawText(IFW1FontWrapper *pFontWrapper);
 	void drawPostProcessing();
-	void fireProjectile();
 	void reset();
 	int hullIntegrity;
 private:
@@ -50,17 +50,17 @@ private:
 	std::vector<GameEntity*> gameEntities;
 	std::vector<SamplerState*>samplerStates;
 	std::vector<Material*> materials;
-	std::vector<GameEntity*> projectiles;
 
 	Player* player;
 	Mesh* asteroid;
-	bool shotFired;
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
 	LightBufferType dataToSendToLightConstantBuffer;
 	CameraBufferType dataToSendToCameraConstantBuffer;
 
 	std::vector<ConstantBuffer*> constantBufferList;
+
+	Projectile* projectileManager;
 
 	bool notColliding;
 	bool canTakeDamage;
