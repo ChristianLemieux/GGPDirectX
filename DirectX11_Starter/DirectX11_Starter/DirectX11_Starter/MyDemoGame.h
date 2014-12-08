@@ -72,6 +72,7 @@ public:
 	void OnResize();
 	void UpdateScene(float dt);
 	void DrawScene();
+	void PostProcessDraw();
 	void UpdateCamera();
 
 	// For handing mouse input
@@ -103,9 +104,11 @@ private:
 
 
 	ShaderProgram* shaderProgram;
+	ShaderProgram* postProcessShaderProgram;
 
 	//Render target
 	RenderTextureClass renderTarget;
+	std::vector<GameEntity*> postProcessEntities;
 
 	GameTimer *timer;
 

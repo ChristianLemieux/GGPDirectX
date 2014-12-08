@@ -10,7 +10,7 @@ public:
 	void createSamplerState(ID3D11Device* dev, D3D11_TEXTURE_ADDRESS_MODE mode, D3D11_FILTER filter, float MaxLOD, float MinLOD, float MipLODBias, UINT MaxAnisotropy);
 	void createSamplerState(ID3D11Device* dev, D3D11_TEXTURE_ADDRESS_MODE mode, D3D11_FILTER filter);
 	void createSamplerState(ID3D11Device* dev);
-	
+	ID3D11SamplerState* getSamplerState();
 };
 
 #endif

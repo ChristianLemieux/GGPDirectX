@@ -45,3 +45,8 @@ void SamplerState::createSamplerState(ID3D11Device* dev, D3D11_TEXTURE_ADDRESS_M
 void SamplerState::createSamplerState(ID3D11Device* dev){
 	createSamplerState(dev, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_ANISOTROPIC, 0, 0, 0, 0);
 }
+
+ID3D11SamplerState* SamplerState::getSamplerState()
+{
+	return sampler;
+}

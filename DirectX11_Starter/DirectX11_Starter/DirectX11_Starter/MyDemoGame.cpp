@@ -145,6 +145,11 @@ bool MyDemoGame::Init()
 
 	//initialize our render Target
 	renderTarget.Initialize(device, windowWidth, windowHeight);
+	ObjectLoader* postProcessQuad = new ObjectLoader(device);
+	Mesh* postProcessQuadMesh = postProcessQuad->LoadModel("fullscreenQuad.obj");
+	postProcessShaderProgram = new ShaderProgram(L"PostProcessVertexShader.cso", L"PostProcessPixelShader.cso", device, cb);
+	Material* postProcessMaterial = new Material(renderTarget.GetShaderResourceView(), samplerState->getSamplerState(), postProcessShaderProgram);
+	postProcessEntities.push_back(new GameEntity(postProcessQuadMesh, postProcessMaterial));
 
 	//Create SpriteBatch
 	spriteBatch.reset(new DirectX::SpriteBatch(deviceContext));
@@ -351,9 +356,21 @@ void MyDemoGame::DrawScene()
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
-	if (state == L"Game" || state == L"Pause")
+
+	//Set render target only if we are paused, otherwise render game normally
+	if (state == L"Pause")
+	{
+		renderTarget.SetRenderTarget(deviceContext, depthStencilView);
+	}
+
+	if (state == L"Game")
 	{
 		game->drawGame(viewMatrix, projectionMatrix, camPos);
+	}
+	else if (state == L"Pause")
+	{
+		game->drawGame(viewMatrix, projectionMatrix, camPos);
+		PostProcessDraw();
 	}
 	else if (state == L"Menu")
 	{
@@ -447,4 +464,38 @@ void MyDemoGame::HandleUIClick(int x, int y)
 	}
 }
 
+void MyDemoGame::PostProcessDraw()
+{
+	// Reset render target so that from here on out you're rendering to the screen!
+	// The variable "renderTargetView" is the render target that maps to the screen
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	UINT offset = 0;
+	UINT stride = sizeof(Vertex2);
+	for (int i = 0; i < postProcessEntities.size(); i++)
+	{
+		stride = postProcessEntities[i]->g_mesh->sizeofvertex;
+
+		// Set up the input assembler
+		deviceContext->IASetInputLayout(postProcessEntities[i]->g_mat->shaderProgram->vsInputLayout);
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		deviceContext->IASetVertexBuffers(0, 1, &postProcessEntities[i]->g_mesh->v_buffer, &stride, &offset);
+		deviceContext->IASetIndexBuffer(postProcessEntities[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+		deviceContext->PSSetSamplers(0, 1, &postProcessEntities[i]->g_mat->samplerState);
+		deviceContext->PSSetShaderResources(0, 1, &postProcessEntities[i]->g_mat->resourceView);
+
+		// Set the current vertex and pixel shaders, as well the constant buffer for the vert shader
+		deviceContext->VSSetShader(postProcessEntities[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
+		deviceContext->PSSetShader(postProcessEntities[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
+
+		// Finally do the actual drawing
+		deviceContext->DrawIndexed(
+			postProcessEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
+			0,
+			0);
+	}
+
+}
 #pragma endregion
