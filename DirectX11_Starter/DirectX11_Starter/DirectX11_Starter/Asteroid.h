@@ -1,7 +1,6 @@
 #pragma once
 #ifndef _ASTEROID_H
 #define _ASTEROID_H
-//#include "Game.h"
 #include <DirectXMath.h>
 #include <vector>
 #include "ConstantBuffer.h"
@@ -29,8 +28,9 @@ public:
 	void update(float dt, StateManager *stateManager);
 	void draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos);
 	GameEntity* getAsteroid();
+
+	// list of asteroids present in the game
 	std::vector<GameEntity*> asteroids;
-	//void fireProjectile();
 private:
 	Player* player;
 	Mesh* mesh;
@@ -41,6 +41,7 @@ private:
 	ID3D11DeviceContext* deviceContext;
 	LightBufferType lighting;
 
+	// reference to the game necesary for handling the non-asteroid results of a player-asteroid collision
 	Game* gameReference;
 
 	wchar_t* collision;

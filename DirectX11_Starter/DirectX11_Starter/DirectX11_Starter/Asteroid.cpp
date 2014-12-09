@@ -2,9 +2,9 @@
 #include "Game.h"
 
 //Constructor for Asteroid object
-//Params(device, deviceContext, vector of constantbuffers, sampler state, mesh)
 Asteroid::Asteroid(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<ConstantBuffer*> constantBufferList, ID3D11SamplerState* samplerState, Mesh* meshReference, Player* playerReference, Game* gameReferencePassed){
 
+	// set up the lighting parameters
 	lighting.ambientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	lighting.diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
@@ -21,6 +21,7 @@ Asteroid::Asteroid(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<Consta
 
 	gameReference = gameReferencePassed;
 
+	// populate the list of asteroids, scale them to one tenth the size of the mesh and randomize their position (off the right side of the screen)
 	for (int i = 0; i < 29; i++)
 	{
 		asteroids.push_back(new GameEntity(meshReference, asteroidMaterial));
@@ -47,11 +48,14 @@ Asteroid::~Asteroid(){
 }
 
 
-//Update asteroid positions based on user input
+//Update asteroid positions each frame
 void Asteroid::update(float dt, StateManager *stateManager){
+	
+	// double boolean system used to ensure the same collision isn't registered multiple times.
 	collision = L"Not Colliding";
 	notColliding = false;
-	//moves asteroids across screen and respawns them when they leave the screen
+
+	//moves asteroids across screen (right to left) and respawns them when they leave the screen
 	for (unsigned int i = 0; i < 29; i++)
 	{
 		asteroids[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
@@ -63,6 +67,7 @@ void Asteroid::update(float dt, StateManager *stateManager){
 		}
 	}
 
+	// Tests for collisions between the asteroids and the player, tells the game to handle the collision (for non-asteroid consequences) if one is found
 	float distance = 2.0f;
 	float playerX = player->player->getPosition()._41;
 	float playerY = player->player->getPosition()._42;

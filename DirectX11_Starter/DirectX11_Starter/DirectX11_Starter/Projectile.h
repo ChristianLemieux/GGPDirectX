@@ -22,7 +22,11 @@ public:
 	void update(float dt);
 	void draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos);
 	GameEntity* getProjectile();
+
+	// list of projectiles present in the game
 	std::vector<GameEntity*> projectiles;
+
+	// fires a projectile in response to user input (current the 'q' key)
 	void fireProjectile();
 private:
 	Player* player;

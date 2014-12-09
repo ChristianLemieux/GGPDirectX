@@ -1,8 +1,8 @@
 #include "Projectile.h"
 
 //Constructor for Projectile object
-//Params(device, deviceContext, vector of constantbuffers, sampler state, mesh)
 Projectile::Projectile(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<ConstantBuffer*> constantBufferList, ID3D11SamplerState* samplerState, Mesh* meshReference, Player* playerReference){
+	// set up the lighting
 	lighting.ambientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	lighting.diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
@@ -36,13 +36,16 @@ Projectile::~Projectile(){
 }
 
 
-//Update player position based on user input
+//Update projectile position each frame, check for user input that fires a projectile
 void Projectile::update(float dt){
+	
+	// fires a projectile in response to the 'q' key
 	if (GetAsyncKeyState('Q') & 0x8000){
 		if (projectiles.size() < 1)
 		fireProjectile();
 	}
 
+	// moves the projectile, cleans it up if it moves off screen
 	if (projectiles.size() > 0)
 	{
 		for (int x = projectiles.size() - 1; x >= 0; x--)
@@ -60,6 +63,7 @@ void Projectile::update(float dt){
 
 }
 
+// Creates a new projectile at the player's position, scales it to 1/10th the original mesh size, and adds it to the list of active projectiles.
 void Projectile::fireProjectile()
 {
 		float playerX = player->player->getPosition()._41;
@@ -71,10 +75,12 @@ void Projectile::fireProjectile()
 
 }
 
-//draw player game entity
+//draw projectiles
 void Projectile::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){
 	for (unsigned int i = 0; i < projectiles.size(); i++){
+		// projectiles are scaled to 50% size so that they are not as large as the player ship
 		projectiles[i]->scale(XMFLOAT3(0.5f, 0.5f, 0.5f));
+		// The projectile is moved to compensate for the scaling operation (that would change its location)
 		projectiles[i]->setPosition(XMFLOAT3(projectiles[i]->getPosition()._41 * 2, projectiles[i]->getPosition()._42 * 2, 0.0f));
 		UINT offset = 0;
 		UINT stride = projectiles[i]->g_mesh->sizeofvertex;
@@ -143,7 +149,9 @@ void Projectile::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOA
 			projectiles[i]->g_mesh->m_size,	// The number of indices we're using in this draw
 			0,
 			0);
+		// Move the projectile back to the position it was at before we compensated for the scaling operation.
 		projectiles[i]->setPosition(XMFLOAT3(projectiles[i]->getPosition()._41 / 2, projectiles[i]->getPosition()._42 / 2, 0.0f));
+		// Scale the projectile back to the typical mesh size so that collision is handled properly.
 		projectiles[i]->scale(XMFLOAT3(2.0f, 2.0f, 2.0f));
 	}
 }
