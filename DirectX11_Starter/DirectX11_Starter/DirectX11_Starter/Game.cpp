@@ -64,11 +64,11 @@ void Game::initGame(SamplerState *samplerStates){
 	
 	asteroidManager = new Asteroid(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player, this);
 
-	// particle system
+	/*// particle system
 	geoShader = new ShaderProgram(L"GeometryVertexShader.cso", L"GeometryPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
 	for (int i = 0; i < 1; i++){
 		particles.push_back(new Particle{XMFLOAT3(1.0f,1.0f,1.0f), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)});
-	}
+	}*/
 
 }
 
@@ -209,12 +209,12 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			0);
 	}
 
-	UINT stride2 = sizeof(Particle);
+	/*UINT stride2 = sizeof(Particle);
 	for (int i = 0; i < particles.size; i++){
 		// Set up the input assembler
 		deviceContext->IASetInputLayout(particles[i]->shaderProgram->vsInputLayout);
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	}
+	}*/
 
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	player->draw(viewMatrix, projectionMatrix, camPos);

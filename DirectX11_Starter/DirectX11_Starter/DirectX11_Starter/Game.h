@@ -65,14 +65,12 @@ private:
 
 	Projectile* projectileManager;
 
-<<<<<<< HEAD
 	std::vector<Particle*> particles;
 
 	bool notColliding;
 	bool canTakeDamage;
-=======
+
 	Asteroid* asteroidManager;
 
->>>>>>> origin/master
 };
 #endif
