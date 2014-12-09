@@ -29,15 +29,14 @@ class Game{
 public:
 	Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt);
 	~Game(void);
-	void initGame(SamplerState *samplerStates);
-	void updateGame(float dt, StateManager *stateManager);
-	//void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix);
-	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos);
-	void drawText(IFW1FontWrapper *pFontWrapper);
-	void drawPostProcessing();
-	void reset();
-	void handleCollision(StateManager *stateManager);
-	int hullIntegrity;
+	void initGame(SamplerState *samplerStates); // sets up the default parameters for the game
+	void updateGame(float dt, StateManager *stateManager); // main update method for the game
+	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos); // Main drawing method for the game
+	void drawText(IFW1FontWrapper *pFontWrapper); // handles text rendering
+	void drawPostProcessing(); // draw method for all post processing
+	void reset(); // resets the game to the default state
+	void handleCollision(StateManager *stateManager); // handles collisions between the player and an asteroid
+	int hullIntegrity; // the current hull integrity (out of 100)
 private:
 	LightBufferType lighting;
 
@@ -49,12 +48,12 @@ private:
 	ShaderProgram* shaderProgram;
 	ShaderProgram *multiTex;
 	ShaderProgram* geoShader;
-	std::vector<GameEntity*> gameEntities;
+	std::vector<GameEntity*> gameEntities; // Game entities that are not covered by the player, projectile, and asteroid managers
 	std::vector<SamplerState*>samplerStates;
-	std::vector<Material*> materials;
+	std::vector<Material*> materials; // The list of materials utilized by game entities
 
-	Player* player;
-	Mesh* asteroid;
+	Player* player; // the player character/ship
+	Mesh* asteroid; // basic mesh used for the majority of in-game entities
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
 	ParticleVertexShaderConstantBufferLayout dataToSendToGSConstantBuffer;
@@ -63,14 +62,10 @@ private:
 
 	std::vector<ConstantBuffer*> constantBufferList;
 
+	// The projectile and asteroid managers
 	Projectile* projectileManager;
-
-	std::vector<Particle*> particles;
-
-	bool notColliding;
-	bool canTakeDamage;
-
 	Asteroid* asteroidManager;
 
+	std::vector<Particle*> particles; // Container for all the particles currently in the game
 };
 #endif

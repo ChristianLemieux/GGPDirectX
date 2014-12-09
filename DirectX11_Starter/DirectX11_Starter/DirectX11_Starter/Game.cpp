@@ -8,14 +8,6 @@ Game::Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt){
 Game::~Game(void){
 	ReleaseMacro(device);
 	ReleaseMacro(deviceContext);
-	/*if (shaderProgram){
-		delete shaderProgram;
-		shaderProgram = nullptr;
-	}
-	if (multiTex){
-		delete multiTex;
-		multiTex = nullptr;
-	}*/
 }
 
 void Game::initGame(SamplerState *samplerStates){
@@ -23,13 +15,16 @@ void Game::initGame(SamplerState *samplerStates){
 	//sound effect engine
 	engine = irrklang::createIrrKlangDevice();
 
+	// Set up lighting parameters
 	lighting.ambientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	lighting.diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	lighting.specularColor = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
 	lighting.specularPower = 5.0f;
-
+	
+	// Set initial hull integrity to full (100%)
 	hullIntegrity = 100;
+
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device)); //create matrix constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToLightConstantBuffer, device));//create light constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToCameraConstantBuffer, device)); //create camera constant buffer
@@ -41,45 +36,39 @@ void Game::initGame(SamplerState *samplerStates){
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
 
-	//background
+	// Set up the object loader and load the main menu
 	ObjectLoader *bgObject = new ObjectLoader(device);
 	Mesh *bg = bgObject->LoadModel("Menu.obj");
 
 	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid);
 
-	//create sampler state
-	//create materials
+	//Create the matierials used by the myriad game entities
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
 
-	//two backgrounds
+	//Set up the two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
 	gameEntities[0]->setPosition(XMFLOAT3(2.5f, 0.0f, 6.0f));
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
 	gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 
+	// Create the particle and asteroid managers
 	projectileManager = new Projectile(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player);
-	
 	asteroidManager = new Asteroid(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player, this);
-
-	/*// particle system
-	geoShader = new ShaderProgram(L"GeometryVertexShader.cso", L"GeometryPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
-	for (int i = 0; i < 1; i++){
-		particles.push_back(new Particle{XMFLOAT3(1.0f,1.0f,1.0f), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)});
-	}*/
 
 }
 
+// Main update function for the game
 void Game::updateGame(float dt, StateManager *stateManager){
 
-	
+		// Call the different entity manager's update functions
 		player->update(dt);
 		projectileManager->update(dt);
 		asteroidManager->update(dt, stateManager);
 
-		//parallex
+		//Parralax 
 		gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
 		gameEntities[1]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
 		if (gameEntities[0]->getPosition()._41 < -14)
@@ -93,9 +82,10 @@ void Game::updateGame(float dt, StateManager *stateManager){
 
 		
 
-
+		// distance used for determining whether a collision is triggered
 		float distance = 2.0f;
 
+		// Run through the list of projectiles and check if any of them are colliding with an asteroid
 		if (projectileManager->projectiles.size() > 0)
 		{
 			for (int x = projectileManager->projectiles.size() - 1; x >= 0; x--)
@@ -107,6 +97,7 @@ void Game::updateGame(float dt, StateManager *stateManager){
 
 					if (distance >= testDistX + testDistY)
 					{
+						// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
 						projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
 						asteroidManager->asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 						break;
@@ -116,28 +107,30 @@ void Game::updateGame(float dt, StateManager *stateManager){
 		}
 }
 
+// Handles collisions between the player and an asteroid
 void Game::handleCollision(StateManager *stateManager)
 {
+	// Drop the hull integrity by 10% due to the collision
 	hullIntegrity -= 10;
+
 	// start the sound engine with default parameters
 	engine->play2D("Explosion.wav", false);
-	//std::unique_ptr<SoundEffect> soundEffect(new SoundEffect(audEngine.get(), L"Explosion.wav"));
-	//soundEffect->Play();
-	//lose condition
+	
+	//Trigger a game loss
 	if (hullIntegrity <= 0)
 	{
+		// State 5 is the "game loss" state that triggers the game over screen to show
 		stateManager->setState(5);
 		reset();
 	}
 }
 
 
-
+// Method where all the actual drawing occurs
 void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){
 	UINT offset = 0;
 	UINT stride = sizeof(Vertex);
 	for (unsigned int i = 0; i < gameEntities.size(); i++){
-		//UINT offset = 0;
 		stride = gameEntities[i]->g_mesh->sizeofvertex;
 		// Set up the input assembler
 		deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
@@ -209,27 +202,22 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			0);
 	}
 
-	/*UINT stride2 = sizeof(Particle);
-	for (int i = 0; i < particles.size; i++){
-		// Set up the input assembler
-		deviceContext->IASetInputLayout(particles[i]->shaderProgram->vsInputLayout);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	}*/
-
+	// Call the corresponding draw methods for the different entity managers
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	player->draw(viewMatrix, projectionMatrix, camPos);
 	asteroidManager->draw(viewMatrix, projectionMatrix, camPos);
 }
 
-//resets after lose condition
+//resets the game after lose condition
 void Game::reset()
 {
+	// reset hull integrity to full
 	hullIntegrity = 100;
 	
 	//reset player 
 	player->reset();
 
-	//reset asteroids
+	//reset asteroids to a random area off the right side of the screen
 	for (int i = 0; i < 29; i++)
 	{
 		asteroidManager->asteroids[i]->setPosition(XMFLOAT3(((rand() % 60) + 30), ((rand() % 40) - 19.0f), 0.0f));
@@ -246,8 +234,3 @@ void Game::reset()
 
 }
 
-//method that will handle all post processing
-void Game::drawPostProcessing()
-{
-
-}
