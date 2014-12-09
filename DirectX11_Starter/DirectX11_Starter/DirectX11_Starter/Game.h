@@ -1,6 +1,6 @@
+#pragma once
 #ifndef _GAME_H
 #define _GAME_H
-
 #include <DirectXMath.h>
 #include <vector>
 #include "ConstantBuffer.h"
@@ -19,6 +19,7 @@
 #include "include/irrKlang.h"
 #include <iostream>
 #include "Projectile.h"
+#include "Asteroid.h"
 
 using namespace DirectX;
 
@@ -35,6 +36,7 @@ public:
 	void drawText(IFW1FontWrapper *pFontWrapper);
 	void drawPostProcessing();
 	void reset();
+	void handleCollision(StateManager *stateManager);
 	int hullIntegrity;
 private:
 	LightBufferType lighting;
@@ -42,7 +44,6 @@ private:
 	//sound engine for the project
 	irrklang::ISoundEngine* engine;
 	
-	wchar_t* collision;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	ShaderProgram* shaderProgram;
@@ -62,7 +63,7 @@ private:
 
 	Projectile* projectileManager;
 
-	bool notColliding;
-	bool canTakeDamage;
+	Asteroid* asteroidManager;
+
 };
 #endif

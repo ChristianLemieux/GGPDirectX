@@ -29,8 +29,6 @@ void Game::initGame(SamplerState *samplerStates){
 	lighting.specularColor = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
 	lighting.specularPower = 5.0f;
 
-	notColliding = false;
-	canTakeDamage = true;
 	hullIntegrity = 100;
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device)); //create matrix constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToLightConstantBuffer, device));//create light constant buffer
@@ -62,22 +60,17 @@ void Game::initGame(SamplerState *samplerStates){
 	gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 
 	projectileManager = new Projectile(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player);
-	//comment
-	for (int i = 2; i < 31; i++)
-	{
-		gameEntities.push_back(new GameEntity(asteroid, materials[1]));
-		gameEntities[i]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
-		gameEntities[i]->setPosition(XMFLOAT3(((rand() % 60) + 30), ((rand() % 40) - 19.0f), 0.0f));
-	}
+	
+	asteroidManager = new Asteroid(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player, this);
 
 }
 
 void Game::updateGame(float dt, StateManager *stateManager){
-	collision = L"Not Colliding";
-	notColliding = false;
+
 	
 		player->update(dt);
 		projectileManager->update(dt);
+		asteroidManager->update(dt, stateManager);
 
 		//parallex
 		gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
@@ -91,75 +84,44 @@ void Game::updateGame(float dt, StateManager *stateManager){
 			gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 		}
 
-		//moves asteroids across screen and respawns them when they leave the screen
-		for (unsigned int i = 2; i < 31; i++)
-		{
-			gameEntities[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
-
-			//._41 is the x value for the position matrix of game entities
-			if (gameEntities[i]->getPosition()._41 < -30)
-			{
-				gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
-			}
-
-		}
+		
 
 
 		float distance = 2.0f;
-		float playerX = player->player->getPosition()._41;
-		float playerY = player->player->getPosition()._42;
-		for (int i = 2; i < 31; i++)
-		{
-			float testDistX = pow(playerX - gameEntities[i]->getPosition()._41, 2);
-			float testDistY = pow(playerY - gameEntities[i]->getPosition()._42, 2);
-
-			if (distance >= testDistX + testDistY)
-			{
-				notColliding = true;
-				if (canTakeDamage && notColliding){
-					hullIntegrity -= 10;
-					gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
-					// start the sound engine with default parameters
-					engine->play2D("Explosion.wav", false);
-					//std::unique_ptr<SoundEffect> soundEffect(new SoundEffect(audEngine.get(), L"Explosion.wav"));
-					//soundEffect->Play();
-					//lose condition
-					if (hullIntegrity <= 0)
-					{
-						stateManager->setState(5);
-						reset();
-						
-					}
-					canTakeDamage = false;
-				}
-
-				collision = L"Colliding";
-				break;
-			}
-		}
 
 		if (projectileManager->projectiles.size() > 0)
 		{
 			for (int x = projectileManager->projectiles.size() - 1; x >= 0; x--)
 			{
-				for (int i = 3; i < 31; i++)
+				for (int i = 0; i < 29; i++)
 				{
-					float testDistX = pow(projectileManager->projectiles[x]->getPosition()._41 - gameEntities[i]->getPosition()._41, 2);
-					float testDistY = pow(projectileManager->projectiles[x]->getPosition()._42 - gameEntities[i]->getPosition()._42, 2);
+					float testDistX = pow(projectileManager->projectiles[x]->getPosition()._41 - asteroidManager->asteroids[i]->getPosition()._41, 2);
+					float testDistY = pow(projectileManager->projectiles[x]->getPosition()._42 - asteroidManager->asteroids[i]->getPosition()._42, 2);
 
 					if (distance >= testDistX + testDistY)
 					{
 						projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
-						gameEntities[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+						asteroidManager->asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 						break;
 					}
 				}
 			}
 		}
+}
 
-		if (!notColliding){
-			canTakeDamage = true;
-		}
+void Game::handleCollision(StateManager *stateManager)
+{
+	hullIntegrity -= 10;
+	// start the sound engine with default parameters
+	engine->play2D("Explosion.wav", false);
+	//std::unique_ptr<SoundEffect> soundEffect(new SoundEffect(audEngine.get(), L"Explosion.wav"));
+	//soundEffect->Play();
+	//lose condition
+	if (hullIntegrity <= 0)
+	{
+		stateManager->setState(5);
+		reset();
+	}
 }
 
 
@@ -242,6 +204,7 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	player->draw(viewMatrix, projectionMatrix, camPos);
+	asteroidManager->draw(viewMatrix, projectionMatrix, camPos);
 }
 
 //resets after lose condition
@@ -253,9 +216,9 @@ void Game::reset()
 	player->reset();
 
 	//reset asteroids
-	for (int i = 2; i < 31; i++)
+	for (int i = 0; i < 29; i++)
 	{
-		gameEntities[i]->setPosition(XMFLOAT3(((rand() % 60) + 30), ((rand() % 40) - 19.0f), 0.0f));
+		asteroidManager->asteroids[i]->setPosition(XMFLOAT3(((rand() % 60) + 30), ((rand() % 40) - 19.0f), 0.0f));
 	}
 
 	//reset projectiles
