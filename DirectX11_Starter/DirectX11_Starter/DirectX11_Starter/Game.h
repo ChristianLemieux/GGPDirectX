@@ -47,6 +47,7 @@ private:
 	ID3D11DeviceContext* deviceContext;
 	ShaderProgram* shaderProgram;
 	ShaderProgram *multiTex;
+	ShaderProgram* geoShader;
 	std::vector<GameEntity*> gameEntities;
 	std::vector<SamplerState*>samplerStates;
 	std::vector<Material*> materials;
@@ -55,12 +56,15 @@ private:
 	Mesh* asteroid;
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
+	ParticleVertexShaderConstantBufferLayout dataToSendToGSConstantBuffer;
 	LightBufferType dataToSendToLightConstantBuffer;
 	CameraBufferType dataToSendToCameraConstantBuffer;
 
 	std::vector<ConstantBuffer*> constantBufferList;
 
 	Projectile* projectileManager;
+
+	std::vector<Particle*> particles;
 
 	bool notColliding;
 	bool canTakeDamage;

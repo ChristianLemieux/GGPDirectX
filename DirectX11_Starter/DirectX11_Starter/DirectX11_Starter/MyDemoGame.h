@@ -53,6 +53,7 @@ struct VertexShaderConstantBufferLayout
 	XMFLOAT4X4 projection;
 };
 
+
 struct Button
 {
 	RECT dimensions; // the dimensions covered by the button

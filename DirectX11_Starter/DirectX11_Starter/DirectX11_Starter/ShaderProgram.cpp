@@ -17,6 +17,28 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, ID3D11Device* d
 	ConstantBuffers = constantBufferList;
 }
 
+ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_file, ID3D11Device* dev, std::vector<ConstantBuffer*> constantBufferList){
+	ID3DBlob* vsBlob;
+	D3DReadFileToBlob(vs_file, &vsBlob);
+	HRESULT hr_vertex = this->CreateInputLayoutDescFromShaderSignature(vsBlob, dev, &vsInputLayout);
+	dev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vertexShader);
+	ReleaseMacro(vsBlob);
+
+	ID3DBlob* psBlob;
+	D3DReadFileToBlob(ps_file, &psBlob);
+	HRESULT hr_pixel = this->CreateInputLayoutDescFromShaderSignature(psBlob, dev, &psInputLayout);
+	dev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &pixelShader);
+	ReleaseMacro(psBlob);
+
+	ID3DBlob* gsBlob;
+	D3DReadFileToBlob(gs_file, &gsBlob);
+	HRESULT hr_geometry = this->CreateInputLayoutDescFromShaderSignature(gsBlob, dev, &gsInputLayout);
+	dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader);
+	ReleaseMacro(gsBlob);
+
+	ConstantBuffers = constantBufferList;
+}
+
 ShaderProgram::~ShaderProgram(void)
 {
 	ReleaseMacro(pixelShader);

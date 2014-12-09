@@ -44,6 +44,15 @@ struct ConstantBufferLayout
 	XMFLOAT4X4 projection;
 };
 
+struct ParticleVertexShaderConstantBufferLayout
+{
+	XMFLOAT4X4 world;
+	XMFLOAT4X4 view;
+	XMFLOAT4X4 projection;
+	float velocity;
+	float age;
+};
+
 //Camera Constant Buffer Data Layout
 struct CameraBufferType{
 	XMFLOAT3 cameraPosition;
@@ -57,5 +66,10 @@ struct LightBufferType{
 	XMFLOAT3 lightDirection;
 	float specularPower;
 	XMFLOAT4 specularColor;
+};
+
+struct Particle{
+	XMFLOAT3 Position;
+	XMFLOAT4 Color;
 };
 #endif

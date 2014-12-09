@@ -11,10 +11,12 @@ class ConstantBuffer{
 public:
 	int c_byteWidth;
 	ConstantBufferLayout dataToSendToConstantBuffer;
+	ParticleVertexShaderConstantBufferLayout dataToSendToGSBuffer;
 	LightBufferType dataToSendToLightBuffer;
 	CameraBufferType dataToSendToCameraBuffer;
 	ID3D11Buffer* constantBuffer;
 	ConstantBuffer(ConstantBufferLayout c_buffer_data, ID3D11Device* dev);
+	ConstantBuffer(ParticleVertexShaderConstantBufferLayout c_buffer_data, ID3D11Device* dev);
 	ConstantBuffer(LightBufferType c_buffer_data, ID3D11Device* dev);
 	ConstantBuffer(CameraBufferType c_buffer_data, ID3D11Device* dev);
 	~ConstantBuffer(void);
