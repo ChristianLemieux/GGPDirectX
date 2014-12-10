@@ -66,8 +66,6 @@ struct LightBufferType{
 
 struct Particle{
 	XMFLOAT3 Position;
-	XMFLOAT3 Normal;
-	XMFLOAT2 UVs;
 	XMFLOAT2 velocity;
 	XMFLOAT2 acceleration;
 };

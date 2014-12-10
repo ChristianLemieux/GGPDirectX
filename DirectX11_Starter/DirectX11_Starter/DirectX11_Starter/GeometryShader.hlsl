@@ -1,15 +1,12 @@
 struct VSOutput
 {
 	float4 position		: SV_POSITION;
-	float3 normal		: TEXCOORD0;
-	float2 uv			: TEXCOORD1;
 };
 
 struct GSOutput
 {
 	float4 position		: SV_POSITION;
-	float3 normal		: TEXCOORD0;
-	float2 uv			: TEXCOORD1;
+	float2 uv			: TEXCOORD0;
 };
 
 
@@ -39,7 +36,6 @@ void main(
 	for (uint i = 0; i < 4; i++)
 	{
 		element.position = v[i];
-		element.normal = dataIn[0].normal;
 		element.uv = quadUVs[i];
 		output.Append(element);
 	}

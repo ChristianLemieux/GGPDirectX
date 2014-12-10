@@ -23,7 +23,7 @@ ConstantBuffer::ConstantBuffer(CameraBufferType c_buffer_data, ID3D11Device* dev
 ConstantBuffer::ConstantBuffer(ParticleVertexShaderConstantBufferLayout c_buffer_data, ID3D11Device* dev)
 {
 
-	c_byteWidth = sizeof(ParticleVertexShaderConstantBufferLayout);
+	c_byteWidth = 16;
 	setUpConstantBuffer(dev);
 }
 

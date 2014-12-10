@@ -51,7 +51,7 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", geoShader));
 
-	Particle point[] = { XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 1), XMFLOAT2(0, 0), XMFLOAT2(1, 0), XMFLOAT2(0,0) };
+	Particle point[] = { XMFLOAT3(0, 0, 0), XMFLOAT2(1, 0), XMFLOAT2(0,0) };
 	testGeo = new GameEntity(new Mesh(point, 0, 1, device), materials[4]);
 
 	//Set up the two backgrounds
