@@ -2,6 +2,7 @@
 #include "Global.h"
 SamplerState::SamplerState(ID3D11SamplerState *&sample){
 	sampler = sample;
+	test = 0;
 }
 
 SamplerState::~SamplerState(void){
@@ -49,4 +50,9 @@ void SamplerState::createSamplerState(ID3D11Device* dev){
 ID3D11SamplerState* SamplerState::getSamplerState()
 {
 	return sampler;
+}
+
+int SamplerState::getTest()
+{
+	return test;
 }

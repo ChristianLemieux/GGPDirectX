@@ -1,4 +1,11 @@
 #include "Game.h"
+#include "WICTextureLoader.h"
+#include "SpriteBatch.h"
+#include "SpriteFont.h"
+#include "SimpleMath.h"
+
+std::unique_ptr<DirectX::SpriteBatch> spriteBatch;
+std::unique_ptr<DirectX::SpriteFont> spriteFont;
 
 Game::Game(ID3D11Device* dev, ID3D11DeviceContext* devCxt){
 	device = dev;
@@ -24,6 +31,7 @@ void Game::initGame(SamplerState *samplerStates){
 	
 	// Set initial hull integrity to full (100%)
 	hullIntegrity = 100;
+	shootingScore = 0;
 
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToVSConstantBuffer, device)); //create matrix constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToLightConstantBuffer, device));//create light constant buffer
@@ -64,11 +72,14 @@ void Game::initGame(SamplerState *samplerStates){
 	projectileManager = new Projectile(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player);
 	asteroidManager = new Asteroid(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player, this);
 
+	spriteBatch.reset(new DirectX::SpriteBatch(deviceContext));
+	spriteFont.reset(new DirectX::SpriteFont(device, L"Font.spritesheet"));
+
 }
 
 // Main update function for the game
-void Game::updateGame(float dt, StateManager *stateManager){
-
+void Game::updateGame(float dt, StateManager *stateManager)
+{
 		// Call the different entity manager's update functions
 		player->update(dt);
 		projectileManager->update(dt);
@@ -85,8 +96,7 @@ void Game::updateGame(float dt, StateManager *stateManager){
 		{
 			gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 		}
-
-		
+	
 
 		// distance used for determining whether a collision is triggered
 		float distance = 2.0f;
@@ -106,6 +116,8 @@ void Game::updateGame(float dt, StateManager *stateManager){
 						// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
 						projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
 						asteroidManager->asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+						engine->play2D("Crumble.wav", false);
+						shootingScore += 1000;
 						break;
 					}
 				}
@@ -133,10 +145,12 @@ void Game::handleCollision(StateManager *stateManager)
 
 
 // Method where all the actual drawing occurs
-void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos, float time){
+void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos, float time, wchar_t* state)
+{
 	UINT offset = 0;
 	UINT stride = sizeof(Vertex);
-	for (unsigned int i = 0; i < gameEntities.size(); i++){
+	for (unsigned int i = 0; i < gameEntities.size(); i++)
+	{
 		stride = gameEntities[i]->g_mesh->sizeofvertex;
 		// Set up the input assembler
 		deviceContext->IASetInputLayout(gameEntities[i]->g_mat->shaderProgram->vsInputLayout);
@@ -262,6 +276,41 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	player->draw(viewMatrix, projectionMatrix, camPos);
 	asteroidManager->draw(viewMatrix, projectionMatrix, camPos);
+	DrawUI(time, state);
+}
+
+void Game::DrawUI(float time, wchar_t* state)
+{
+	spriteBatch->Begin();
+	if (state == L"Game" || state == L"Pause" || state == L"Win")
+	{
+
+		std::wstring pi = std::to_wstring(hullIntegrity);
+		const WCHAR* szName = pi.c_str();
+
+		std::wstring score = std::to_wstring(int(time * 100.0) + shootingScore);
+		const WCHAR* szScore = score.c_str();
+
+		//Draw Sprites and fonts
+		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
+		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::LawnGreen);
+
+		spriteFont->DrawString(spriteBatch.get(), L"Score: ", DirectX::SimpleMath::Vector2(15, 55));
+		spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(144, 55), Colors::LawnGreen);
+
+		if (hullIntegrity <= 30)
+		{
+			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::Red);
+		}
+
+		if (state == L"Pause")
+		{
+			spriteFont->DrawString(spriteBatch.get(), L"Pause", DirectX::SimpleMath::Vector2(800 - 225, 25));
+			
+		}
+	}
+	spriteBatch->End();
+
 }
 
 //resets the game after lose condition
@@ -269,6 +318,7 @@ void Game::reset()
 {
 	// reset hull integrity to full
 	hullIntegrity = 100;
+	shootingScore = 0;
 	
 	//reset player 
 	player->reset();

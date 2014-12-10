@@ -103,7 +103,6 @@ private:
 	StateManager* stateManager;
 	wchar_t* state;
 
-
 	ShaderProgram* shaderProgram;
 	ShaderProgram* postProcessShaderProgram;
 

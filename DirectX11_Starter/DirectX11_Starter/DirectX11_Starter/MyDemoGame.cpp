@@ -29,13 +29,6 @@
 #include <d3dcompiler.h>
 #include "MyDemoGame.h"
 #include "WICTextureLoader.h"
-#include "SpriteBatch.h"
-#include "SpriteFont.h"
-#include "SimpleMath.h"
-
-std::unique_ptr<DirectX::SpriteBatch> spriteBatch;
-std::unique_ptr<DirectX::SpriteFont> spriteFont;
-
 
 #pragma region Win32 Entry Point (WinMain)
 
@@ -150,13 +143,6 @@ bool MyDemoGame::Init()
 	postProcessShaderProgram = new ShaderProgram(L"PostProcessVertexShader.cso", L"PostProcessPixelShader.cso", device, cb);
 	Material* postProcessMaterial = new Material(renderTarget.GetShaderResourceView(), samplerState->getSamplerState(), postProcessShaderProgram);
 	postProcessEntities.push_back(new GameEntity(postProcessQuadMesh, postProcessMaterial));
-
-	//Create SpriteBatch
-	spriteBatch.reset(new DirectX::SpriteBatch(deviceContext));
-
-	//Create Spritefont
-	spriteFont.reset(new DirectX::SpriteFont(device, L"Font.spritesheet"));
-
 
 	// Set up view matrix (camera)
 	// In an actual game, update this when the camera moves (every frame)
@@ -365,11 +351,11 @@ void MyDemoGame::DrawScene()
 
 	if (state == L"Game")
 	{
-		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime());
+		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime(), state);
 	}
 	else if (state == L"Pause")
 	{
-		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime());
+		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime(), state);
 		PostProcessDraw();
 	}
 	else if (state == L"Menu")
@@ -385,37 +371,6 @@ void MyDemoGame::DrawScene()
 	{
 		gameStates[2]->draw(viewMatrix, projectionMatrix);
 	}
-
-
-	spriteBatch->Begin();
-	if (state == L"Game" || state == L"Pause" || state == L"Win")
-	{
-
-		std::wstring pi = std::to_wstring(game->hullIntegrity);
-		const WCHAR* szName = pi.c_str();
-
-		std::wstring score = std::to_wstring(int(timer->TotalTime() * 700.0));
-		const WCHAR* szScore = score.c_str();
-
-		//Draw Sprites and fonts
-		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
-		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::LawnGreen);
-
-		spriteFont->DrawString(spriteBatch.get(), L"Score: ", DirectX::SimpleMath::Vector2(15, 55));
-		spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(144, 55), Colors::LawnGreen);
-
-		if (game->hullIntegrity <= 30)
-		{
-			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::Red);
-		}
-
-		if (state == L"Pause")
-		{
-			spriteFont->DrawString(spriteBatch.get(), L"Pause", DirectX::SimpleMath::Vector2(viewport.Width - 225, 25));
-		}
-	}
-	spriteBatch->End();
-
 
 	// Present the buffer
 	HR(swapChain->Present(0, 0));
@@ -498,4 +453,5 @@ void MyDemoGame::PostProcessDraw()
 	}
 
 }
+
 #pragma endregion

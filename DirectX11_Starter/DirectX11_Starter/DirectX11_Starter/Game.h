@@ -19,6 +19,7 @@
 #include "include/irrKlang.h"
 #include <iostream>
 #include "Projectile.h"
+#include "GameTimer.h"
 #include "Asteroid.h"
 
 using namespace DirectX;
@@ -31,9 +32,9 @@ public:
 	~Game(void);
 	void initGame(SamplerState *samplerStates); // sets up the default parameters for the game
 	void updateGame(float dt, StateManager *stateManager); // main update method for the game
-	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos, float time); // Main drawing method for the game
+	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos, float time, wchar_t* state); // Main drawing method for the game
 	void drawText(IFW1FontWrapper *pFontWrapper); // handles text rendering
-	void drawPostProcessing(); // draw method for all post processing
+	void DrawUI(float time, wchar_t* state);
 	void reset(); // resets the game to the default state
 	void handleCollision(StateManager *stateManager); // handles collisions between the player and an asteroid
 	int hullIntegrity; // the current hull integrity (out of 100)
@@ -60,9 +61,11 @@ private:
 
 	std::vector<ConstantBuffer*> constantBufferList;
 	GameEntity *testGeo;
+
 	// The projectile and asteroid managers
 	Projectile* projectileManager;
 	Asteroid* asteroidManager;
+	int shootingScore;
 
 	std::vector<Particle*> particles; // Container for all the particles currently in the game
 };
