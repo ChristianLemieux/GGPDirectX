@@ -1,26 +1,31 @@
 Texture2D myTexture: register(t0);
 SamplerState mySampler: register(s0);
 
-//for normals
-Texture2D shaderTextures[3];
-SamplerState SampleType;
-Texture2D texture2;
-float BumpConstant = 1;
-texture NormalMap;
-SamplerState bumpSampler = sampler_state {
-	Texture = (NormalMap);
-	MinFilter = Linear;
-	MagFilter = Linear;
-	AddressU = Wrap;
-	AddressV = Wrap;
+Texture2D bumps: register(t1);
+SamplerState samLinear
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = WRAP;
+	AddressV = WRAP;
 };
-SamplerState textureSampler = sampler_state {
-	Texture = (ModelTexture);
-	MinFilter = Linear;
-	MagFilter = Linear;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
+
+float3 NormalSampleToWorldSpace(float3 normalMapSample,
+	float3 unitNormalW,
+	float3 tangentW)
+{
+	// Uncompress each component from [0,1] to [-1,1].
+	float3 normalT = 2.0f*normalMapSample - 1.0f;
+		// Build orthonormal basis.
+		float3 N = unitNormalW;
+		float3 T = normalize(tangentW - dot(tangentW, N)*N);
+		float3 B = cross(N, T);
+		float3x3 TBN = float3x3(T, B, N);
+		// Transform from tangent space to world space.
+		float3 bumpedNormalW = mul(normalT, TBN);
+
+		return bumpedNormalW;
+}
+
 // Defines the input to this pixel shader
 // - Should match the output of our corresponding vertex shader
 struct VertexToPixel
@@ -50,65 +55,27 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 textureColor = myTexture.Sample(mySampler, input.uv);
 	float4 specular = pow(saturate(dot(reflection, -input.viewDirection)), specularPower) * specularColor;
 	float4 diffuse = lerp(diffuseColor, textureColor, 0.85f) * saturate(dot(input.normal, -lightDirection)) * 0.8f;
+	
+
+	// Interpolating normal can unnormalize it, so normalize it.
+	input.normal = normalize(input.normal);
+	float3 toEye = lightDirection - input.viewDirection;
+	// Cache the distance to the eye from this surface point. 
+	float distToEye = length(toEye);
+	// Normalize.
+	toEye /= distToEye;
+
+	// Default to multiplicative identity.
+	float4 texColor = float4(1, 1, 1, 1);
+	// Sample texture.
+	texColor = bumps.Sample(samLinear, input.normal);
+
+	//Normal Mappign
+	float3 normalMapSample = bumps.Sample(samLinear, input.normal).rgb;
+	float3 bumpedNormalW = NormalSampleToWorldSpace(
+	normalMapSample, input.normal, input.tangent);
+
 	float4 color = saturate(diffuse + ambientColor + specular);
-
-	float4 bumpMap;
-	float3 bumpNormal;
-	float3 lightDir;
-	float lightIntensity;
-	float3 DiffuseLightDirection = float3(1, 0, 0);
-		float3 ViewVector = float3(1, 0, 0);
-		float4x4 World;
-	float SpecularIntensity = 1;
-	float4 SpecularColor = float4(1, 1, 1, 1);
-		float Shininess = 200;
-	float4 AmbientColor = float4(1, 1, 1, 1);
-		float AmbientIntensity = 0.1;
-
-	// Sample the pixel in the bump map.
-	bumpMap = shaderTextures[1].Sample(SampleType, input.normal);
-
-	// Expand the range of the normal value from (0, +1) to (-1, +1).
-	bumpMap = (bumpMap * 2.0f) - 1.0f;
-
-	// Calculate the normal from the data in the bump map.
-	bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
-
-	// Normalize the resulting bump normal.
-	bumpNormal = normalize(bumpNormal);
-
-	// Invert the light direction for calculations.
-	lightDir = -lightDirection;
-
-	// Calculate the amount of light on this pixel based on the bump map normal value.
-	lightIntensity = saturate(dot(bumpNormal, lightDir));
-
-	// Combine the final bump light color with the texture color.
-	color = color * textureColor;
-
-	// Calculate the normal, including the information in the bump map
-	float4 bump = BumpConstant * (texture2.Sample(bumpSampler, input.uv)) - (0.5, 0.5, 0.5);
-		bumpNormal = input.normal + (bump.x * input.tangent + bump.y * input.binormal);
-	bumpNormal = normalize(bumpNormal);
-
-	// Calculate the diffuse light component with the bump map normal
-	float diffuseIntensity = dot(normalize(DiffuseLightDirection), bumpNormal);
-	if (diffuseIntensity < 0)
-		diffuseIntensity = 0;
-
-	// Calculate the specular light component with the bump map normal
-	float3 light = normalize(DiffuseLightDirection);
-		float3 r = normalize(2 * dot(light, bumpNormal) * bumpNormal - light);
-		float3 v = normalize(mul(normalize(ViewVector), lightDir));
-		float dotProduct = dot(r, v);
-
-	specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
-
-	// Calculate the texture color
-	textureColor = texture2.Sample(textureSampler, input.uv);
-	textureColor.a = 1;
-
-	// Combine all of these values into one (including the ambient light)
-	return saturate(textureColor + AmbientColor * AmbientIntensity * specular);
+	return color;
 }
 
