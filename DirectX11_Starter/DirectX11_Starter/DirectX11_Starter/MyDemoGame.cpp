@@ -365,11 +365,11 @@ void MyDemoGame::DrawScene()
 
 	if (state == L"Game")
 	{
-		game->drawGame(viewMatrix, projectionMatrix, camPos);
+		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime());
 	}
 	else if (state == L"Pause")
 	{
-		game->drawGame(viewMatrix, projectionMatrix, camPos);
+		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime());
 		PostProcessDraw();
 	}
 	else if (state == L"Menu")

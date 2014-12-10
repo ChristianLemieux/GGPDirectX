@@ -40,6 +40,20 @@ Mesh::Mesh(Phong* vertices, UINT* indices, int size, ID3D11Device* device){
 	createIndexBuffer();
 }
 
+Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
+	m_size = size;
+	m_vertices = vertices;
+	m_indices = indices;
+	m_device = device;
+
+	sizeofvertex = sizeof(Particle);
+
+	createVertexBuffer();
+	createIndexBuffer();
+}
+
+
+
 
 Mesh::~Mesh(void){
 	ReleaseMacro(v_buffer);

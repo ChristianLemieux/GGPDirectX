@@ -31,7 +31,7 @@ public:
 	~Game(void);
 	void initGame(SamplerState *samplerStates); // sets up the default parameters for the game
 	void updateGame(float dt, StateManager *stateManager); // main update method for the game
-	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos); // Main drawing method for the game
+	void drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 gamePos, float time); // Main drawing method for the game
 	void drawText(IFW1FontWrapper *pFontWrapper); // handles text rendering
 	void drawPostProcessing(); // draw method for all post processing
 	void reset(); // resets the game to the default state

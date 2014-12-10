@@ -46,10 +46,6 @@ struct ConstantBufferLayout
 
 struct ParticleVertexShaderConstantBufferLayout
 {
-	XMFLOAT4X4 world;
-	XMFLOAT4X4 view;
-	XMFLOAT4X4 projection;
-	float velocity;
 	float age;
 };
 
@@ -70,6 +66,9 @@ struct LightBufferType{
 
 struct Particle{
 	XMFLOAT3 Position;
-	XMFLOAT4 Color;
+	XMFLOAT3 Normal;
+	XMFLOAT2 UVs;
+	XMFLOAT2 velocity;
+	XMFLOAT2 acceleration;
 };
 #endif

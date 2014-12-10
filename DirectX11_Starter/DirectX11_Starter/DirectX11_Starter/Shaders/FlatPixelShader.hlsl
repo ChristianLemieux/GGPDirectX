@@ -10,6 +10,5 @@ struct VertexToPixel
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	float4 white = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return myTexture.Sample(mySampler, input.uv);
 }

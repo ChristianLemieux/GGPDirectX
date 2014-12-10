@@ -29,10 +29,11 @@ void Game::initGame(SamplerState *samplerStates){
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToLightConstantBuffer, device));//create light constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToCameraConstantBuffer, device)); //create camera constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToGSConstantBuffer, device)); //create geometry constant buffer
+	
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
 	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList);
-	ShaderProgram* geoShader = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
+	ShaderProgram* geoShader = new ShaderProgram(L"GeometryVertexShader.cso", L"GeometryPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
@@ -50,9 +51,8 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", geoShader));
 
-	Vertex2 point[] = { XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 1), XMFLOAT2(0, 0) };
+	Particle point[] = { XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 1), XMFLOAT2(0, 0), XMFLOAT2(1, 0), XMFLOAT2(0,0) };
 	testGeo = new GameEntity(new Mesh(point, 0, 1, device), materials[4]);
-	testGeo->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 
 	//Set up the two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
@@ -133,7 +133,7 @@ void Game::handleCollision(StateManager *stateManager)
 
 
 // Method where all the actual drawing occurs
-void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){
+void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos, float time){
 	UINT offset = 0;
 	UINT stride = sizeof(Vertex);
 	for (unsigned int i = 0; i < gameEntities.size(); i++){
@@ -207,6 +207,9 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			0,
 			0);
 	}
+
+	stride = testGeo->g_mesh->sizeofvertex;
+
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	player->draw(viewMatrix, projectionMatrix, camPos);
 
@@ -217,6 +220,7 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 	testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = testGeo->getWorld();
 	testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
 	testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
+	testGeo->g_mat->shaderProgram->ConstantBuffers[3]->dataToSendToGSBuffer.age = time;
 
 
 	//matrix constant buffer
@@ -228,6 +232,14 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 		0,
 		0);
 
+	deviceContext->UpdateSubresource(
+		testGeo->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer,
+		0,
+		NULL,
+		&testGeo->g_mat->shaderProgram->ConstantBuffers[3]->dataToSendToGSBuffer,
+		0,
+		0);
+
 	deviceContext->IASetVertexBuffers(0, 1, &testGeo->g_mesh->v_buffer, &stride, &offset);
 	deviceContext->IASetIndexBuffer(testGeo->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
 
@@ -236,6 +248,7 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 	deviceContext->VSSetShader(testGeo->g_mat->shaderProgram->vertexShader, NULL, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &testGeo->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
+	deviceContext->VSSetConstantBuffers(1, 1, &testGeo->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer);
 	deviceContext->PSSetShader(testGeo->g_mat->shaderProgram->pixelShader, NULL, 0);
 	deviceContext->GSSetShader(testGeo->g_mat->shaderProgram->geometryShader, NULL, 0);
 
@@ -245,7 +258,6 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 		0);
 
 	deviceContext->GSSetShader(NULL, NULL, 0);
-
 	// Call the corresponding draw methods for the different entity managers
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	player->draw(viewMatrix, projectionMatrix, camPos);

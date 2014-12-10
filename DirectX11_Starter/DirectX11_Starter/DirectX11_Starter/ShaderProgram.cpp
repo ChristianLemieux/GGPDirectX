@@ -43,8 +43,10 @@ ShaderProgram::~ShaderProgram(void)
 {
 	ReleaseMacro(pixelShader);
 	ReleaseMacro(vertexShader);
+	ReleaseMacro(geometryShader);
 	ReleaseMacro(vsInputLayout);
 	ReleaseMacro(psInputLayout);
+	ReleaseMacro(gsInputLayout);
 	ReleaseMacro(camInputLayout);
 }
 
