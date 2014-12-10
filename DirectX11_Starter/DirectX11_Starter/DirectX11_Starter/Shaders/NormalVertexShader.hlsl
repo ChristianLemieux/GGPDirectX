@@ -55,16 +55,15 @@ VertexToPixel main(VertexShaderInput input)
 	output.viewDirection = normalize(cameraPosition.xyz - worldPosition.xyz);
 
 	// Calculate the normal vector against the world matrix only and then normalize the final value.
-	output.normal = mul(input.normal, (float3x3)world);
-	output.normal = normalize(output.normal);
+	output.normal = normalize(mul(input.normal, (float3x3)world));
 
 	// Calculate the tangent vector against the world matrix only and then normalize the final value.
-	output.tangent = mul(input.tangent, (float3x3)world);
-	output.tangent = normalize(output.tangent);
+	output.tangent = normalize(mul(input.tangent, (float3x3)world));
 
 	// Calculate the binormal vector against the world matrix only and then normalize the final value.
-	output.binormal = mul(input.binormal, (float3x3)world);
-	output.binormal = normalize(output.binormal);
+	output.binormal = normalize(mul(input.binormal, (float3x3)world));
+
+	output.uv = input.uv;
 
 	return output;
 }
