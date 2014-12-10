@@ -32,6 +32,7 @@ void Game::initGame(SamplerState *samplerStates){
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
 	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList);
+	ShaderProgram* geoShader = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
 	ID3D11SamplerState* sample = nullptr;
@@ -47,6 +48,11 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
+	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", geoShader));
+
+	Vertex2 point[] = { XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 1), XMFLOAT2(0, 0) };
+	testGeo = new GameEntity(new Mesh(point, 0, 1, device), materials[4]);
+	testGeo->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 
 	//Set up the two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
@@ -201,6 +207,44 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			0,
 			0);
 	}
+	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
+	player->draw(viewMatrix, projectionMatrix, camPos);
+
+	deviceContext->IASetInputLayout(testGeo->g_mat->shaderProgram->vsInputLayout);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+
+	testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = testGeo->getWorld();
+	testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
+	testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
+
+
+	//matrix constant buffer
+	deviceContext->UpdateSubresource(
+		testGeo->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
+		0,
+		NULL,
+		&testGeo->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
+		0,
+		0);
+
+	deviceContext->IASetVertexBuffers(0, 1, &testGeo->g_mesh->v_buffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(testGeo->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+	deviceContext->PSSetSamplers(0, 1, &testGeo->g_mat->samplerState);
+	deviceContext->PSSetShaderResources(0, 1, &testGeo->g_mat->resourceView);
+
+	deviceContext->VSSetShader(testGeo->g_mat->shaderProgram->vertexShader, NULL, 0);
+	deviceContext->VSSetConstantBuffers(0, 1, &testGeo->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
+	deviceContext->PSSetShader(testGeo->g_mat->shaderProgram->pixelShader, NULL, 0);
+	deviceContext->GSSetShader(testGeo->g_mat->shaderProgram->geometryShader, NULL, 0);
+
+	deviceContext->DrawIndexed(
+		testGeo->g_mesh->m_size,	// The number of indices we're using in this draw
+		0,
+		0);
+
+	deviceContext->GSSetShader(NULL, NULL, 0);
 
 	// Call the corresponding draw methods for the different entity managers
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);

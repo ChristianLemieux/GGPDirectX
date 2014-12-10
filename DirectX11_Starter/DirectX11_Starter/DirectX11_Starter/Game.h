@@ -46,8 +46,6 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	ShaderProgram* shaderProgram;
-	ShaderProgram *multiTex;
-	ShaderProgram* geoShader;
 	std::vector<GameEntity*> gameEntities; // Game entities that are not covered by the player, projectile, and asteroid managers
 	std::vector<SamplerState*>samplerStates;
 	std::vector<Material*> materials; // The list of materials utilized by game entities
@@ -61,7 +59,7 @@ private:
 	CameraBufferType dataToSendToCameraConstantBuffer;
 
 	std::vector<ConstantBuffer*> constantBufferList;
-
+	GameEntity *testGeo;
 	// The projectile and asteroid managers
 	Projectile* projectileManager;
 	Asteroid* asteroidManager;
