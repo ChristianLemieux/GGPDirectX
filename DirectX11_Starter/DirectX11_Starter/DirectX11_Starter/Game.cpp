@@ -61,7 +61,7 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"goldstar.png", L"staralpha.png", geoShader));
+	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"goldstar.png", geoShader));
 
 	stars = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(-0.1f, 0.0f), XMFLOAT2(-0.01f, -0.01f), device, deviceContext, materials[4], 20);
 	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, playerm);

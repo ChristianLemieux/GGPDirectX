@@ -47,7 +47,7 @@ Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
 	m_device = device;
 
 	sizeofvertex = sizeof(Particle);
-
+	/*
 	D3D11_BUFFER_DESC sobd;
 	sobd.Usage = D3D11_USAGE_DEFAULT;
 	sobd.ByteWidth = 10000;
@@ -58,7 +58,7 @@ Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
 	D3D11_SUBRESOURCE_DATA initialVertexData;
 	initialVertexData.pSysMem = m_vertices;
 	m_device->CreateBuffer(&sobd, &initialVertexData, &so_buffer);
-
+	*/
 	createVertexBuffer();
 	createIndexBuffer();
 }

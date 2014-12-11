@@ -1,5 +1,4 @@
 Texture2D myTexture: register(t0);
-Texture2D alphaMap: register(t1);
 SamplerState mySampler: register(s0);
 
 struct VertexToPixel
@@ -15,9 +14,5 @@ float opacity(float4 color)
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	float4 color = myTexture.Sample(mySampler, input.uv);
-	float4 alpha = alphaMap.Sample(mySampler, input.uv);
-	color.a = 0.5f;
-
-	return color;
+	return myTexture.Sample(mySampler, input.uv);
 }

@@ -18,6 +18,21 @@ ParticleSystem::ParticleSystem(XMFLOAT3 position, XMFLOAT2 velocity, XMFLOAT2 ac
 
 void ParticleSystem::drawParticleSystem(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, float time)
 {
+	ID3D11BlendState* blendState = nullptr;
+	D3D11_BLEND_DESC blendDesc;
+	blendDesc.AlphaToCoverageEnable = 0;
+	blendDesc.IndependentBlendEnable = 0;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	HRESULT hr_blend = device->CreateBlendState(&blendDesc, &blendState);
+
 	for (int i = 0; i < particles.size(); i++){
 		UINT offset = 0;
 		UINT stride = particles[i]->g_mesh->sizeofvertex;
@@ -52,10 +67,10 @@ void ParticleSystem::drawParticleSystem(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projec
 		deviceContext->IASetVertexBuffers(0, 1, &particles[i]->g_mesh->v_buffer, &stride, &offset);
 		deviceContext->IASetIndexBuffer(particles[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
 		//deviceContext->SOSetTargets(1, &particles[i]->g_mesh->so_buffer, 0);
-
+		deviceContext->OMSetBlendState(blendState, NULL, 0xffffffff);
+		
 		deviceContext->PSSetSamplers(0, 1, &particles[i]->g_mat->samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &particles[i]->g_mat->resourceView);
-		deviceContext->PSSetShaderResources(1, 1, &particles[i]->g_mat->resourceView2);
 
 		deviceContext->VSSetShader(particles[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
 		deviceContext->VSSetConstantBuffers(0, 1, &particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
