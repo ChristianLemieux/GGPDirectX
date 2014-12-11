@@ -68,7 +68,7 @@ void Asteroid::update(float dt, StateManager *stateManager){
 	}
 
 	// Tests for collisions between the asteroids and the player, tells the game to handle the collision (for non-asteroid consequences) if one is found
-	float distance = 2.0f;
+	float distance = 12.0f;
 	float playerX = player->player->getPosition()._41;
 	float playerY = player->player->getPosition()._42;
 	for (int i = 0; i < 29; i++)
@@ -157,6 +157,7 @@ void Asteroid::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 		deviceContext->PSSetSamplers(0, 1, &asteroids[i]->g_mat->samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &asteroids[i]->g_mat->resourceView);
+		deviceContext->PSSetShaderResources(1, 1, &asteroids[1]->g_mat->resourceView2);
 
 
 

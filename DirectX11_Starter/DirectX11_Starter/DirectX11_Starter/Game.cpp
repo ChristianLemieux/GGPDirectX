@@ -43,7 +43,11 @@ void Game::initGame(SamplerState *samplerStates){
 	shaderProgram = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", device, constantBufferList);
 	ShaderProgram* geoShader = new ShaderProgram(L"GeometryVertexShader.cso", L"GeometryPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
+	ObjectLoader *playerObject = new ObjectLoader(device);
+	ObjectLoader *bulletObject = new ObjectLoader(device);
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
+	playerm = playerObject->LoadModel("ship.obj");
+	bulletm = bulletObject->LoadModel("bullet.obj");
 	ID3D11SamplerState* sample = nullptr;
 
 	// Set up the object loader and load the main menu
@@ -60,7 +64,8 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"goldstar.png", L"staralpha.png", geoShader));
 
 	stars = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(-0.1f, 0.0f), XMFLOAT2(-0.01f, -0.01f), device, deviceContext, materials[4], 20);
-	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid);
+	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, playerm);
+
 	//Set up the two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
 	gameEntities[0]->setPosition(XMFLOAT3(2.5f, 0.0f, 6.0f));
@@ -68,7 +73,7 @@ void Game::initGame(SamplerState *samplerStates){
 	gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
 
 	// Create the particle and asteroid managers
-	projectileManager = new Projectile(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player);
+	projectileManager = new Projectile(device, deviceContext, constantBufferList, samplerStates->sampler, bulletm, player);
 	asteroidManager = new Asteroid(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid, player, this);
 
 	spriteBatch.reset(new DirectX::SpriteBatch(deviceContext));
@@ -98,7 +103,7 @@ void Game::updateGame(float dt, StateManager *stateManager)
 	
 
 		// distance used for determining whether a collision is triggered
-		float distance = 2.0f;
+		float distance = 8.0f;
 
 		// Run through the list of projectiles and check if any of them are colliding with an asteroid
 		if (projectileManager->projectiles.size() > 0)

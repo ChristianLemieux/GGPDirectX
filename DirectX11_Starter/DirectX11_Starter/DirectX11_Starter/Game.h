@@ -54,6 +54,8 @@ private:
 
 	Player* player; // the player character/ship
 	Mesh* asteroid; // basic mesh used for the majority of in-game entities
+	Mesh* playerm;
+	Mesh* bulletm;
 
 	ConstantBufferLayout dataToSendToVSConstantBuffer;
 	ParticleVertexShaderConstantBufferLayout dataToSendToGSConstantBuffer;
