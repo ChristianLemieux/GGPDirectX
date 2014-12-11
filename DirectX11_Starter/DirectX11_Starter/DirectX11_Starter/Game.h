@@ -21,6 +21,7 @@
 #include "Projectile.h"
 #include "GameTimer.h"
 #include "Asteroid.h"
+#include "ParticleSystem.h"
 
 using namespace DirectX;
 
@@ -60,7 +61,7 @@ private:
 	CameraBufferType dataToSendToCameraConstantBuffer;
 
 	std::vector<ConstantBuffer*> constantBufferList;
-	GameEntity *testGeo;
+	ParticleSystem *particle;
 
 	// The projectile and asteroid managers
 	Projectile* projectileManager;
