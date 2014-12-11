@@ -50,16 +50,17 @@ void Game::initGame(SamplerState *samplerStates){
 	ObjectLoader *bgObject = new ObjectLoader(device);
 	Mesh *bg = bgObject->LoadModel("Menu.obj");
 
-	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid);
+	
 
 	//Create the matierials used by the myriad game entities
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"asteroid.jpg", geoShader));
+	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"goldstar.png", L"staralpha.png", geoShader));
 
-	particle = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(0.1f, 0.0f), XMFLOAT2(0.0f, 0.0f), device, deviceContext, geoShader, materials[4], 10);
+	stars = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(-0.1f, 0.0f), XMFLOAT2(-0.01f, -0.01f), device, deviceContext, materials[4], 20);
+	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, asteroid);
 	//Set up the two backgrounds
 	gameEntities.push_back(new GameEntity(bg, materials[2]));
 	gameEntities[0]->setPosition(XMFLOAT3(2.5f, 0.0f, 6.0f));
@@ -221,9 +222,9 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 	}
 
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
-	player->draw(viewMatrix, projectionMatrix, camPos);
+	//player->draw(viewMatrix, projectionMatrix, camPos);
 
-	particle->drawParticleSystem(viewMatrix, projectionMatrix, time);
+	stars->drawParticleSystem(viewMatrix, projectionMatrix, time);
 
 	// Call the corresponding draw methods for the different entity managers
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);

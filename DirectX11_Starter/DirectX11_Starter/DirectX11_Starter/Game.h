@@ -62,6 +62,7 @@ private:
 
 	std::vector<ConstantBuffer*> constantBufferList;
 	ParticleSystem *particle;
+	ParticleSystem *stars;
 
 	// The projectile and asteroid managers
 	Projectile* projectileManager;
