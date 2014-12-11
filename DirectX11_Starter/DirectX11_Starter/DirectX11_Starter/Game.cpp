@@ -40,7 +40,7 @@ void Game::initGame(SamplerState *samplerStates){
 	
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
-	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList);
+	shaderProgram = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", device, constantBufferList);
 	ShaderProgram* geoShader = new ShaderProgram(L"GeometryVertexShader.cso", L"GeometryPixelShader.cso", L"GeometryShader.cso", device, constantBufferList);
 	ObjectLoader *asteroidObject = new ObjectLoader(device);
 	asteroid = asteroidObject->LoadModel("asteroid.obj");
@@ -256,6 +256,7 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 	deviceContext->IASetVertexBuffers(0, 1, &testGeo->g_mesh->v_buffer, &stride, &offset);
 	deviceContext->IASetIndexBuffer(testGeo->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+	deviceContext->SOSetTargets(1, &testGeo->g_mesh->so_buffer, 0);
 
 	deviceContext->PSSetSamplers(0, 1, &testGeo->g_mat->samplerState);
 	deviceContext->PSSetShaderResources(0, 1, &testGeo->g_mat->resourceView);

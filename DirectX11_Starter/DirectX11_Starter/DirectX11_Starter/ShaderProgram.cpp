@@ -30,10 +30,18 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_fil
 	dev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &pixelShader);
 	ReleaseMacro(psBlob);
 
+	D3D11_SO_DECLARATION_ENTRY desc[] =
+	{
+		{0, "SV_POSITION", 0, 0, 4, 0}
+	};
+
 	ID3DBlob* gsBlob;
 	D3DReadFileToBlob(gs_file, &gsBlob);
 	HRESULT hr_geometry = this->CreateInputLayoutDescFromShaderSignature(gsBlob, dev, &gsInputLayout);
-	dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader);
+	HRESULT hr_geometryShader = dev->CreateGeometryShaderWithStreamOutput(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), desc, sizeof(desc), NULL, 0, 0, NULL, &geometryShader);
+	if (FAILED(hr_geometryShader)){ 
+		dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader); 
+	}
 	ReleaseMacro(gsBlob);
 
 	ConstantBuffers = constantBufferList;
