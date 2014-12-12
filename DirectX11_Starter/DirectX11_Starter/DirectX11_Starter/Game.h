@@ -44,7 +44,7 @@ private:
 
 	//sound engine for the project
 	irrklang::ISoundEngine* engine;
-	
+
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	ShaderProgram* shaderProgram;

@@ -28,7 +28,7 @@ void Game::initGame(SamplerState *samplerStates){
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	lighting.specularColor = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
 	lighting.specularPower = 5.0f;
-	
+
 	// Set initial hull integrity to full (100%)
 	hullIntegrity = 100;
 	shootingScore = 0;
@@ -37,7 +37,7 @@ void Game::initGame(SamplerState *samplerStates){
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToLightConstantBuffer, device));//create light constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToCameraConstantBuffer, device)); //create camera constant buffer
 	constantBufferList.push_back(new ConstantBuffer(dataToSendToGSConstantBuffer, device)); //create geometry constant buffer
-	
+
 
 	//create shader program-Params(vertex shader, pixel shader, device, constant buffers)
 	shaderProgram = new ShaderProgram(L"FlatVertexShader.cso", L"FlatPixelShader.cso", device, constantBufferList);
@@ -54,7 +54,7 @@ void Game::initGame(SamplerState *samplerStates){
 	ObjectLoader *bgObject = new ObjectLoader(device);
 	Mesh *bg = bgObject->LoadModel("Menu.obj");
 
-	
+
 
 	//Create the matierials used by the myriad game entities
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"spaceShipTexture.jpg", shaderProgram));
@@ -84,60 +84,61 @@ void Game::initGame(SamplerState *samplerStates){
 // Main update function for the game
 void Game::updateGame(float dt, StateManager *stateManager)
 {
-		// Call the different entity manager's update functions
-		player->update(dt);
-		projectileManager->update(dt);
-		asteroidManager->update(dt, stateManager);
+	// Call the different entity manager's update functions
+	player->update(dt);
+	projectileManager->update(dt);
+	asteroidManager->update(dt, stateManager);
 
-		//Parralax 
-		gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
-		gameEntities[1]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
-		if (gameEntities[0]->getPosition()._41 < -14)
-		{
-			gameEntities[0]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
-		}
-		if (gameEntities[1]->getPosition()._41 < -14)
-		{
-			gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
-		}
-	
+	//Parralax 
+	gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
+	gameEntities[1]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
+	if (gameEntities[0]->getPosition()._41 < -14)
+	{
+		gameEntities[0]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
+	}
+	if (gameEntities[1]->getPosition()._41 < -14)
+	{
+		gameEntities[1]->setPosition(XMFLOAT3(15.0f, 0.0f, 6.0f));
+	}
 
-		// distance used for determining whether a collision is triggered
-		float distance = 8.0f;
 
-		// Run through the list of projectiles and check if any of them are colliding with an asteroid
-		if (projectileManager->projectiles.size() > 0)
+	// distance used for determining whether a collision is triggered
+	float distance = 8.0f;
+
+	// Run through the list of projectiles and check if any of them are colliding with an asteroid
+	if (projectileManager->projectiles.size() > 0)
+	{
+		for (int x = projectileManager->projectiles.size() - 1; x >= 0; x--)
 		{
-			for (int x = projectileManager->projectiles.size() - 1; x >= 0; x--)
+			for (int i = 0; i < 29; i++)
 			{
-				for (int i = 0; i < 29; i++)
-				{
-					float testDistX = pow(projectileManager->projectiles[x]->getPosition()._41 - asteroidManager->asteroids[i]->getPosition()._41, 2);
-					float testDistY = pow(projectileManager->projectiles[x]->getPosition()._42 - asteroidManager->asteroids[i]->getPosition()._42, 2);
+				float testDistX = pow(projectileManager->projectiles[x]->getPosition()._41 - asteroidManager->asteroids[i]->getPosition()._41, 2);
+				float testDistY = pow(projectileManager->projectiles[x]->getPosition()._42 - asteroidManager->asteroids[i]->getPosition()._42, 2);
 
-					if (distance >= testDistX + testDistY)
-					{
-						// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
-						projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
-						asteroidManager->asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
-						engine->play2D("Crumble.wav", false);
-						shootingScore += 1000;
-						break;
-					}
+				if (distance >= testDistX + testDistY)
+				{
+					// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
+					projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
+					asteroidManager->asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+					engine->play2D("Crumble.wav", false);
+					shootingScore += 100;
+					break;
 				}
 			}
 		}
+	}
 }
 
 // Handles collisions between the player and an asteroid
 void Game::handleCollision(StateManager *stateManager)
 {
+
 	// Drop the hull integrity by 10% due to the collision
 	hullIntegrity -= 10;
 
 	// start the sound engine with default parameters
 	engine->play2D("Explosion.wav", false);
-	
+
 	//Trigger a game loss
 	if (hullIntegrity <= 0)
 	{
@@ -161,11 +162,11 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//set values that get passed to matrix constant buffer
-		
+
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = gameEntities[i]->getWorld();
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
-		
+
 		//set values that get passed to lighting constant buffer
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.ambientColor = lighting.ambientColor;
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[1]->dataToSendToLightBuffer.diffuseColor = lighting.diffuseColor;
@@ -176,7 +177,7 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.cameraPosition = camPos;
 		gameEntities[i]->g_mat->shaderProgram->ConstantBuffers[2]->dataToSendToCameraBuffer.padding = 1.0f;
 
-		
+
 
 		//matrix constant buffer
 		deviceContext->UpdateSubresource(
@@ -247,7 +248,7 @@ void Game::DrawUI(float time, wchar_t* state)
 		std::wstring pi = std::to_wstring(hullIntegrity);
 		const WCHAR* szName = pi.c_str();
 
-		std::wstring score = std::to_wstring(int(time * 100.0) + shootingScore);
+		std::wstring score = std::to_wstring(int(time / 2) + shootingScore);
 		const WCHAR* szScore = score.c_str();
 
 		//Draw Sprites and fonts
@@ -265,7 +266,7 @@ void Game::DrawUI(float time, wchar_t* state)
 		if (state == L"Pause")
 		{
 			spriteFont->DrawString(spriteBatch.get(), L"Pause", DirectX::SimpleMath::Vector2(800 - 225, 25));
-			
+
 		}
 	}
 	spriteBatch->End();
@@ -278,7 +279,7 @@ void Game::reset()
 	// reset hull integrity to full
 	hullIntegrity = 100;
 	shootingScore = 0;
-	
+
 	//reset player 
 	player->reset();
 

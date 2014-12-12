@@ -47,10 +47,56 @@ Asteroid::~Asteroid(){
 	}
 }
 
+bool Asteroid::BoundingBoxCollision(XMVECTOR& firstObjBoundingBoxMinVertex, XMVECTOR& firstObjBoundingBoxMaxVertex,
+	XMVECTOR& secondObjBoundingBoxMinVertex, XMVECTOR& secondObjBoundingBoxMaxVertex)
+{
+	for (unsigned int i = 0; i < 29; i++)
+	{
+		//change the info in memory and save it
+		float numberMin = asteroids[i]->getPosition()._41 - 6.0f;
+		float* numMin = &numberMin;
+
+		float numberMax = asteroids[i]->getPosition()._41 + 6.0f;
+		float* numMax = &numberMax;
+
+		//store it into a vector
+		XMStoreFloat(numMin, firstObjBoundingBoxMinVertex);
+		XMStoreFloat(numMax, firstObjBoundingBoxMaxVertex);
+
+		//Is obj1's max X greater than obj2's min X? If not, obj1 is to the LEFT of obj2
+		if (XMVectorGetX(firstObjBoundingBoxMaxVertex) > XMVectorGetX(secondObjBoundingBoxMinVertex))
+
+			//Is obj1's min X less than obj2's max X? If not, obj1 is to the RIGHT of obj2
+			if (XMVectorGetX(firstObjBoundingBoxMinVertex) < XMVectorGetX(secondObjBoundingBoxMaxVertex))
+
+				//Is obj1's max Y greater than obj2's min Y? If not, obj1 is UNDER obj2
+				if (XMVectorGetY(firstObjBoundingBoxMaxVertex) > XMVectorGetY(secondObjBoundingBoxMinVertex))
+
+					//Is obj1's min Y less than obj2's max Y? If not, obj1 is ABOVE obj2
+					if (XMVectorGetY(firstObjBoundingBoxMinVertex) < XMVectorGetY(secondObjBoundingBoxMaxVertex))
+
+						//Is obj1's max Z greater than obj2's min Z? If not, obj1 is IN FRONT OF obj2
+						if (XMVectorGetZ(firstObjBoundingBoxMaxVertex) > XMVectorGetZ(secondObjBoundingBoxMinVertex))
+
+							//Is obj1's min Z less than obj2's max Z? If not, obj1 is BEHIND obj2
+							if (XMVectorGetZ(firstObjBoundingBoxMinVertex) < XMVectorGetZ(secondObjBoundingBoxMaxVertex))
+
+								//If we've made it this far, then the two bounding boxes are colliding
+								collided = true;
+		return collided;
+
+		//If the two bounding boxes are not colliding, then return false
+
+
+		collided = false;
+		return collided;
+	}
+}
+
 
 //Update asteroid positions each frame
 void Asteroid::update(float dt, StateManager *stateManager){
-	
+
 	// double boolean system used to ensure the same collision isn't registered multiple times.
 	collision = L"Not Colliding";
 	notColliding = false;
@@ -95,6 +141,8 @@ void Asteroid::update(float dt, StateManager *stateManager){
 		canTakeDamage = true;
 	}
 }
+
+
 
 //draw asteroids
 void Asteroid::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){

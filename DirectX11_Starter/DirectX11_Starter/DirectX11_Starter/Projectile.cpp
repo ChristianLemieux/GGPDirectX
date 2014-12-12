@@ -13,7 +13,7 @@ Projectile::Projectile(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<Co
 	deviceContext = devCtx;
 	sampler = samplerState;
 	shaderProgram = new ShaderProgram(L"MultiTexVertexShader.cso", L"MultiTexPixelShader.cso", device, constantBufferList);
-	projectileMaterial = new Material(device, deviceContext, sampler, L"bullet.jpg", shaderProgram);
+	projectileMaterial = new Material(device, deviceContext, sampler, L"bullet.png", shaderProgram);
 	player = playerReference;
 	mesh = meshReference;
 }
@@ -38,11 +38,11 @@ Projectile::~Projectile(){
 
 //Update projectile position each frame, check for user input that fires a projectile
 void Projectile::update(float dt){
-	
+
 	// fires a projectile in response to the 'q' key
 	if (GetAsyncKeyState('Q') & 0x8000){
 		if (projectiles.size() < 1)
-		fireProjectile();
+			fireProjectile();
 	}
 
 	// moves the projectile, cleans it up if it moves off screen
@@ -66,12 +66,12 @@ void Projectile::update(float dt){
 // Creates a new projectile at the player's position, scales it to 1/10th the original mesh size, and adds it to the list of active projectiles.
 void Projectile::fireProjectile()
 {
-		float playerX = player->player->getPosition()._41;
-		float playerY = player->player->getPosition()._42;
-		
-		projectiles.push_back(new GameEntity(mesh, projectileMaterial));
-		projectiles[projectiles.size() - 1]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
-		projectiles[projectiles.size() - 1]->setPosition(XMFLOAT3(playerX, playerY, 0.0f));
+	float playerX = player->player->getPosition()._41;
+	float playerY = player->player->getPosition()._42;
+
+	projectiles.push_back(new GameEntity(mesh, projectileMaterial));
+	projectiles[projectiles.size() - 1]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+	projectiles[projectiles.size() - 1]->setPosition(XMFLOAT3(playerX, playerY, 0.0f));
 
 }
 
@@ -132,8 +132,7 @@ void Projectile::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOA
 		deviceContext->IASetIndexBuffer(projectiles[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
 
 		deviceContext->PSSetSamplers(0, 1, &projectiles[i]->g_mat->samplerState);
-		deviceContext->PSSetShaderResources(0, 1, &projectiles[i]->g_mat->resourceView);
-		deviceContext->PSSetShaderResources(1, 1, &projectiles[i]->g_mat->resourceView2);
+		deviceContext->PSSetShaderResources(1, 1, &projectiles[i]->g_mat->resourceView);
 
 
 

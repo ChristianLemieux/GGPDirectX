@@ -27,6 +27,8 @@ public:
 	~Asteroid(void);
 	void update(float dt, StateManager *stateManager);
 	void draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos);
+	bool BoundingBoxCollision(XMVECTOR& firstObjBoundingBoxMinVertex, XMVECTOR& firstObjBoundingBoxMaxVertex,
+		XMVECTOR& secondObjBoundingBoxMinVertex, XMVECTOR& secondObjBoundingBoxMaxVertex);
 	GameEntity* getAsteroid();
 
 	// list of asteroids present in the game
@@ -44,6 +46,7 @@ private:
 	// reference to the game necesary for handling the non-asteroid results of a player-asteroid collision
 	Game* gameReference;
 
+	bool collided;
 	wchar_t* collision;
 	bool notColliding;
 	bool canTakeDamage;
