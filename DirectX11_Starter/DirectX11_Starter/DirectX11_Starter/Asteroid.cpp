@@ -47,55 +47,13 @@ Asteroid::~Asteroid(){
 	}
 }
 
-bool Asteroid::BoundingBoxCollision(XMVECTOR& firstObjBoundingBoxMinVertex, XMVECTOR& firstObjBoundingBoxMaxVertex,
-	XMVECTOR& secondObjBoundingBoxMinVertex, XMVECTOR& secondObjBoundingBoxMaxVertex)
-{
-	for (unsigned int i = 0; i < 29; i++)
-	{
-		//change the info in memory and save it
-		float numberMin = asteroids[i]->getPosition()._41 - 6.0f;
-		float* numMin = &numberMin;
-
-		float numberMax = asteroids[i]->getPosition()._41 + 6.0f;
-		float* numMax = &numberMax;
-
-		//store it into a vector
-		XMStoreFloat(numMin, firstObjBoundingBoxMinVertex);
-		XMStoreFloat(numMax, firstObjBoundingBoxMaxVertex);
-
-		//Is obj1's max X greater than obj2's min X? If not, obj1 is to the LEFT of obj2
-		if (XMVectorGetX(firstObjBoundingBoxMaxVertex) > XMVectorGetX(secondObjBoundingBoxMinVertex))
-
-			//Is obj1's min X less than obj2's max X? If not, obj1 is to the RIGHT of obj2
-			if (XMVectorGetX(firstObjBoundingBoxMinVertex) < XMVectorGetX(secondObjBoundingBoxMaxVertex))
-
-				//Is obj1's max Y greater than obj2's min Y? If not, obj1 is UNDER obj2
-				if (XMVectorGetY(firstObjBoundingBoxMaxVertex) > XMVectorGetY(secondObjBoundingBoxMinVertex))
-
-					//Is obj1's min Y less than obj2's max Y? If not, obj1 is ABOVE obj2
-					if (XMVectorGetY(firstObjBoundingBoxMinVertex) < XMVectorGetY(secondObjBoundingBoxMaxVertex))
-
-						//Is obj1's max Z greater than obj2's min Z? If not, obj1 is IN FRONT OF obj2
-						if (XMVectorGetZ(firstObjBoundingBoxMaxVertex) > XMVectorGetZ(secondObjBoundingBoxMinVertex))
-
-							//Is obj1's min Z less than obj2's max Z? If not, obj1 is BEHIND obj2
-							if (XMVectorGetZ(firstObjBoundingBoxMinVertex) < XMVectorGetZ(secondObjBoundingBoxMaxVertex))
-
-								//If we've made it this far, then the two bounding boxes are colliding
-								collided = true;
-		return collided;
-
-		//If the two bounding boxes are not colliding, then return false
-
-
-		collided = false;
-		return collided;
-	}
-}
-
 
 //Update asteroid positions each frame
 void Asteroid::update(float dt, StateManager *stateManager){
+
+	//make bounding boxes
+	BoundingBox *playerbb = new BoundingBox(XMFLOAT3(player->player->getPosition()._41, player->player->getPosition()._42, player->player->getPosition()._43),
+		XMFLOAT3(2.8f, 1.0f, 0.0f));
 
 	// double boolean system used to ensure the same collision isn't registered multiple times.
 	collision = L"Not Colliding";
@@ -104,25 +62,35 @@ void Asteroid::update(float dt, StateManager *stateManager){
 	//moves asteroids across screen (right to left) and respawns them when they leave the screen
 	for (unsigned int i = 0; i < 29; i++)
 	{
+		BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(asteroids[i]->getPosition()._41, asteroids[i]->getPosition()._42, asteroids[i]->getPosition()._43),
+			XMFLOAT3(2.8f, 1.0f, 2.0f));
 		asteroids[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
 
 		//._41 is the x value for the position matrix of game entities
 		if (asteroids[i]->getPosition()._41 < -30)
 		{
 			asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+
+			//helps elimate overlap
+			for (int g = 0; g < 29; g++)
+			{
+				BoundingBox *asteriodbb2 = new BoundingBox(XMFLOAT3(asteroids[g]->getPosition()._41, asteroids[g]->getPosition()._42, asteroids[g]->getPosition()._43),
+					XMFLOAT3(3.5f, 2.0f, 2.0f));
+				if (asteriodbb2->Intersects(*asteriodbb))
+				{
+					asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+				}
+			}
 		}
 	}
 
 	// Tests for collisions between the asteroids and the player, tells the game to handle the collision (for non-asteroid consequences) if one is found
-	float distance = 12.0f;
-	float playerX = player->player->getPosition()._41;
-	float playerY = player->player->getPosition()._42;
 	for (int i = 0; i < 29; i++)
 	{
-		float testDistX = pow(playerX - asteroids[i]->getPosition()._41, 2);
-		float testDistY = pow(playerY - asteroids[i]->getPosition()._42, 2);
-
-		if (distance >= testDistX + testDistY)
+		BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(asteroids[i]->getPosition()._41, asteroids[i]->getPosition()._42, asteroids[i]->getPosition()._43),
+			XMFLOAT3(2.8f, 1.0f, 0.0f));
+		//check for intersections
+		if (asteriodbb->Intersects(*playerbb))
 		{
 			notColliding = true;
 			if (canTakeDamage && notColliding)
@@ -130,6 +98,18 @@ void Asteroid::update(float dt, StateManager *stateManager){
 				asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 				canTakeDamage = false;
 				gameReference->handleCollision(stateManager);
+
+				//elimate spawning on each other
+				for (int g = 0; g < 29; g++)
+				{
+					BoundingBox *asteriodbb2 = new BoundingBox(XMFLOAT3(asteroids[g]->getPosition()._41, asteroids[g]->getPosition()._42, asteroids[g]->getPosition()._43),
+						XMFLOAT3(2.8f, 1.0f, 0.0f));
+					if (asteriodbb2->Intersects(*asteriodbb))
+					{
+						asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+					}
+				}
+
 			}
 
 			collision = L"Colliding";
