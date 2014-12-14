@@ -112,10 +112,12 @@ void Game::updateGame(float dt, StateManager *stateManager)
 		{
 			for (int i = 0; i < 29; i++)
 			{
-				float testDistX = pow(projectileManager->projectiles[x]->getPosition()._41 - asteroidManager->asteroids[i]->getPosition()._41, 2);
-				float testDistY = pow(projectileManager->projectiles[x]->getPosition()._42 - asteroidManager->asteroids[i]->getPosition()._42, 2);
+				BoundingBox *projectile = new BoundingBox(XMFLOAT3(projectileManager->projectiles[x]->getPosition()._41, projectileManager->projectiles[x]->getPosition()._42, projectileManager->projectiles[x]->getPosition()._43),
+					XMFLOAT3(1.0f, 0.5f, 0.0f));
+				BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(asteroidManager->asteroids[i]->getPosition()._41, asteroidManager->asteroids[i]->getPosition()._42, asteroidManager->asteroids[i]->getPosition()._43),
+					XMFLOAT3(2.5f, 1.0f, 2.0f));
 
-				if (distance >= testDistX + testDistY)
+				if (projectile->Intersects(*asteriodbb))
 				{
 					// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
 					projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);

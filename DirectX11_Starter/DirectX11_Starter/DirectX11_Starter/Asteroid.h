@@ -41,6 +41,7 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	LightBufferType lighting;
+	XMMATRIX asteroidRot;
 
 	// reference to the game necesary for handling the non-asteroid results of a player-asteroid collision
 	Game* gameReference;

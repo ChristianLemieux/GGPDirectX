@@ -51,6 +51,7 @@ void Projectile::update(float dt){
 		for (int x = projectiles.size() - 1; x >= 0; x--)
 		{
 			projectiles[x]->translate(XMFLOAT3(10.0f * dt, 0.0f, 0.0f));
+			projectiles[x]->rotate(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 			//._41 is the x value for the position matrix of game entities
 			if (projectiles[x]->getPosition()._41 > 30)

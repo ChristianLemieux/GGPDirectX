@@ -65,6 +65,7 @@ void Asteroid::update(float dt, StateManager *stateManager){
 		BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(asteroids[i]->getPosition()._41, asteroids[i]->getPosition()._42, asteroids[i]->getPosition()._43),
 			XMFLOAT3(2.8f, 1.0f, 2.0f));
 		asteroids[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
+		asteroids[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		//._41 is the x value for the position matrix of game entities
 		if (asteroids[i]->getPosition()._41 < -30)
@@ -75,7 +76,7 @@ void Asteroid::update(float dt, StateManager *stateManager){
 			for (int g = 0; g < 29; g++)
 			{
 				BoundingBox *asteriodbb2 = new BoundingBox(XMFLOAT3(asteroids[g]->getPosition()._41, asteroids[g]->getPosition()._42, asteroids[g]->getPosition()._43),
-					XMFLOAT3(3.5f, 2.0f, 2.0f));
+					XMFLOAT3(4.0f, 4.0f, 4.0f));
 				if (asteriodbb2->Intersects(*asteriodbb))
 				{
 					asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
@@ -88,7 +89,7 @@ void Asteroid::update(float dt, StateManager *stateManager){
 	for (int i = 0; i < 29; i++)
 	{
 		BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(asteroids[i]->getPosition()._41, asteroids[i]->getPosition()._42, asteroids[i]->getPosition()._43),
-			XMFLOAT3(2.8f, 1.0f, 0.0f));
+			XMFLOAT3(2.6f, 1.0f, 0.0f));
 		//check for intersections
 		if (asteriodbb->Intersects(*playerbb))
 		{
@@ -103,7 +104,7 @@ void Asteroid::update(float dt, StateManager *stateManager){
 				for (int g = 0; g < 29; g++)
 				{
 					BoundingBox *asteriodbb2 = new BoundingBox(XMFLOAT3(asteroids[g]->getPosition()._41, asteroids[g]->getPosition()._42, asteroids[g]->getPosition()._43),
-						XMFLOAT3(2.8f, 1.0f, 0.0f));
+						XMFLOAT3(4.0f, 4.0f, 4.0f));
 					if (asteriodbb2->Intersects(*asteriodbb))
 					{
 						asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
