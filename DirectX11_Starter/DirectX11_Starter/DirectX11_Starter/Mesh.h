@@ -15,6 +15,7 @@ public:
 	ID3D11Buffer* v_buffer;
 	ID3D11Buffer* so_buffer;
 	ID3D11Buffer* i_buffer;
+	ID3D11Buffer* init_buffer;
 	int sizeofvertex;
 	Mesh(Vertex* vertices, UINT* indices, int size, ID3D11Device* device);
 	Mesh(Vertex2* vertices, UINT* indices, int size, ID3D11Device* device);
@@ -23,6 +24,7 @@ public:
 	~Mesh(void);
 	void createVertexBuffer();
 	void createIndexBuffer();
+	void createInitBuffer();
 	void drawMesh(ID3D11DeviceContext* deviceContext);
 };
 

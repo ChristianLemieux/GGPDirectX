@@ -20,5 +20,6 @@ private:
 	std::vector<GameEntity*> particles;
 	GameEntity* object;
 	bool initialized;
+	int numParticles;
 };
 #endif

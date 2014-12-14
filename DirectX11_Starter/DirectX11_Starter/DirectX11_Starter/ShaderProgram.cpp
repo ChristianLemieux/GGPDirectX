@@ -32,9 +32,7 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_fil
 
 	D3D11_SO_DECLARATION_ENTRY desc[] =
 	{
-		{0, "SV_POSITION", 0, 0, 4, 0},
-		{ 0, "TEXCOORD", 2, 0, 2, 0 },
-		{ 0, "TEXCOORD", 3, 0, 2, 0 }
+		{0, "SV_POSITION", 0, 0, 4, 0}
 	};
 
 	ID3DBlob* gsBlob;
