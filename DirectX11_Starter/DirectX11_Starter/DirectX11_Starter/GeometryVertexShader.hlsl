@@ -20,12 +20,13 @@ struct VertexShaderInput
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
+	float2 velocity		: TEXCOORD2;
+	float2 acceleration	: TEXCOORD3;
 };
 
-float3 calculatePosition(float2 vel, float2 acceleration, float3 position)
+float3 calculatePosition(float2 velocity, float2 acceleration, float3 position)
 {
-	float2 velocity = float2(acceleration.x * age + vel.x, acceleration.y * age + vel.y);
-	return float3(age * velocity.x, age* velocity.y, position.z);
+	return float3(0.5f * age * acceleration.x + age * velocity.x + position.x, 0.5f * age * acceleration.y + age * velocity.y + position.y, position.z);
 }
 
 VertexToPixel main(VertexShaderInput input)
@@ -34,8 +35,9 @@ VertexToPixel main(VertexShaderInput input)
 
 	// Calculate output position
 	matrix worldViewProj = mul(mul(world, view), projection);
-	float3 position = input.position + calculatePosition(input.velocity, input.acceleration, input.position);
+	float3 position = calculatePosition(input.velocity, input.acceleration, input.position);
 	output.position = mul(float4(position, 1.0f), worldViewProj);
-
+	output.velocity = input.velocity;
+	output.acceleration = input.acceleration;
 	return output;
 }

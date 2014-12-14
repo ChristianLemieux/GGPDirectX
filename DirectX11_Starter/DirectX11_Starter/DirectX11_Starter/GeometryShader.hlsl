@@ -1,6 +1,8 @@
 struct VSOutput
 {
 	float4 position		: SV_POSITION;
+	float2 velocity		: TEXCOORD2;
+	float2 acceleration	: TEXCOORD3;
 };
 
 struct GSOutput
@@ -39,4 +41,5 @@ void main(
 		element.uv = quadUVs[i];
 		output.Append(element);
 	}
+	output.RestartStrip();
 }

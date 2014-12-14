@@ -4,15 +4,14 @@ ParticleSystem::ParticleSystem(XMFLOAT3 position, XMFLOAT2 velocity, XMFLOAT2 ac
 {
 	device = dev;
 	deviceContext = devCtx;
+	initialized = false;
 
-	Particle* point = new Particle;
-	for (int i = 0; i < num_particles; i++)
-	{
-		point->Position = XMFLOAT3(position.x + (float)i , position.y + (float)i, position.z);
-		point->velocity = velocity;
-		point->acceleration = acceleration;
-		particles.push_back(new GameEntity(new Mesh(point, 0, 1, device), mat));
-	}
+	Particle point[] = {
+		position,
+		velocity,
+		acceleration,
+	};
+	object = new GameEntity(new Mesh(point, 0, 1, device), mat);
 }
 
 
@@ -32,57 +31,70 @@ void ParticleSystem::drawParticleSystem(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projec
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	HRESULT hr_blend = device->CreateBlendState(&blendDesc, &blendState);
-
-	for (int i = 0; i < particles.size(); i++){
-		UINT offset = 0;
-		UINT stride = particles[i]->g_mesh->sizeofvertex;
-
-		deviceContext->IASetInputLayout(particles[i]->g_mat->shaderProgram->vsInputLayout);
-		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	ID3D11Buffer* bufferArray[1] = { 0 };
 
 
-		particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = particles[i]->getWorld();
-		particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
-		particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
-		particles[i]->g_mat->shaderProgram->ConstantBuffers[3]->dataToSendToGSBuffer.age = time;
+	UINT offset = 0;
+	UINT stride = object->g_mesh->sizeofvertex;
+
+	deviceContext->IASetInputLayout(object->g_mat->shaderProgram->vsInputLayout);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	object->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.world = object->getWorld();
+	object->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.view = viewMatrix;
+	object->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer.projection = projectionMatrix;
+	object->g_mat->shaderProgram->ConstantBuffers[3]->dataToSendToGSBuffer.age = time;
 
 
-		//matrix constant buffer
-		deviceContext->UpdateSubresource(
-			particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
-			0,
-			NULL,
-			&particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
-			0,
-			0);
+	//matrix constant buffer
+	deviceContext->UpdateSubresource(
+		object->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer,
+		0,
+		NULL,
+		&object->g_mat->shaderProgram->ConstantBuffers[0]->dataToSendToConstantBuffer,
+		0,
+		0);
 
-		deviceContext->UpdateSubresource(
-			particles[i]->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer,
-			0,
-			NULL,
-			&particles[i]->g_mat->shaderProgram->ConstantBuffers[3]->dataToSendToGSBuffer,
-			0,
-			0);
+	deviceContext->UpdateSubresource(
+		object->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer,
+		0,
+		NULL,
+		&object->g_mat->shaderProgram->ConstantBuffers[3]->dataToSendToGSBuffer,
+		0,
+		0);
 
-		deviceContext->IASetVertexBuffers(0, 1, &particles[i]->g_mesh->v_buffer, &stride, &offset);
-		deviceContext->IASetIndexBuffer(particles[i]->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-		//deviceContext->SOSetTargets(1, &particles[i]->g_mesh->so_buffer, 0);
-		deviceContext->OMSetBlendState(blendState, NULL, 0xffffffff);
-		
-		deviceContext->PSSetSamplers(0, 1, &particles[i]->g_mat->samplerState);
-		deviceContext->PSSetShaderResources(0, 1, &particles[i]->g_mat->resourceView);
-
-		deviceContext->VSSetShader(particles[i]->g_mat->shaderProgram->vertexShader, NULL, 0);
-		deviceContext->VSSetConstantBuffers(0, 1, &particles[i]->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
-		deviceContext->VSSetConstantBuffers(1, 1, &particles[i]->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer);
-		deviceContext->PSSetShader(particles[i]->g_mat->shaderProgram->pixelShader, NULL, 0);
-		deviceContext->GSSetShader(particles[i]->g_mat->shaderProgram->geometryShader, NULL, 0);
-
-		deviceContext->DrawIndexed(
-			particles[i]->g_mesh->m_size,	// The number of indices we're using in this draw
-			0,
-			0);
-
-		deviceContext->GSSetShader(NULL, NULL, 0);
+	deviceContext->IASetVertexBuffers(0, 1, &object->g_mesh->v_buffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(object->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
+	if (!initialized){
+		deviceContext->SOSetTargets(1, &object->g_mesh->so_buffer, 0);
+		//initialized = true;
 	}
+	else{
+		deviceContext->IASetVertexBuffers(0, 1, &object->g_mesh->so_buffer, &stride, &offset);
+	}
+	deviceContext->OMSetBlendState(blendState, NULL, 0xffffffff);
+
+	deviceContext->PSSetSamplers(0, 1, &object->g_mat->samplerState);
+	deviceContext->PSSetShaderResources(0, 1, &object->g_mat->resourceView);
+
+	deviceContext->VSSetShader(object->g_mat->shaderProgram->vertexShader, NULL, 0);
+	deviceContext->VSSetConstantBuffers(0, 1, &object->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer); //set first constant vertex buffer-matrix
+	deviceContext->VSSetConstantBuffers(1, 1, &object->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer);
+	deviceContext->PSSetShader(object->g_mat->shaderProgram->pixelShader, NULL, 0);
+	deviceContext->GSSetShader(object->g_mat->shaderProgram->geometryShader, NULL, 0);
+	
+	if (initialized){
+		deviceContext->DrawAuto();
+		initialized = false;
+	}
+	else{ initialized = true; }
+
+	deviceContext->DrawIndexed(
+		object->g_mesh->m_size,	// The number of indices we're using in this draw
+		0,
+		0);
+
+	deviceContext->GSSetShader(NULL, NULL, 0);
+	deviceContext->SOSetTargets(1, bufferArray, 0);
+
 }

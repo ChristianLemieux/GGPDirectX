@@ -18,7 +18,7 @@ Game::~Game(void){
 }
 
 void Game::initGame(SamplerState *samplerStates){
-
+	p_time = 0;
 	//sound effect engine
 	engine = irrklang::createIrrKlangDevice();
 
@@ -63,7 +63,7 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"goldstar.png", geoShader));
 
-	stars = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(-0.1f, 0.0f), XMFLOAT2(-0.01f, -0.01f), device, deviceContext, materials[4], 20);
+	stars = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(-0.01f, 0.0f), XMFLOAT2(-0.001f, 0.001f), device, deviceContext, materials[4], 20);
 	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, playerm);
 
 	//Set up the two backgrounds
@@ -152,9 +152,10 @@ void Game::handleCollision(StateManager *stateManager)
 // Method where all the actual drawing occurs
 void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos, float time, wchar_t* state)
 {
+	c_time = time;
 	UINT offset = 0;
 	UINT stride = sizeof(Vertex);
-	for (unsigned int i = 0; i < gameEntities.size(); i++)
+	/*for (unsigned int i = 0; i < gameEntities.size(); i++)
 	{
 		stride = gameEntities[i]->g_mesh->sizeofvertex;
 		// Set up the input assembler
@@ -225,12 +226,16 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 			gameEntities.at(i)->g_mesh->m_size,	// The number of indices we're using in this draw
 			0,
 			0);
+	}*/
+	float age = time - p_time;
+	if (age > 1.2)
+	{
+		p_time = time;
 	}
-
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 	//player->draw(viewMatrix, projectionMatrix, camPos);
 
-	stars->drawParticleSystem(viewMatrix, projectionMatrix, time);
+	stars->drawParticleSystem(viewMatrix, projectionMatrix, age);
 
 	// Call the corresponding draw methods for the different entity managers
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
