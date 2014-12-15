@@ -1,9 +1,9 @@
-﻿Build started 12/14/2014 10:30:31 PM.
-     1>Project "C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" on node 2 (Build target(s)).
+﻿Build started 12/15/2014 5:30:04 PM.
+     1>Project "\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" on node 2 (Build target(s)).
      1>Lib:
-         DirectXTK_Desktop_2013.vcxproj -> C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
-     1>Done Building Project "C:\Users\Christian\Desktop\GGPDirectX\GGPDirectX\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" (Build target(s)).
+         DirectXTK_Desktop_2013.vcxproj -> \\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
+     1>Done Building Project "\\banner.main.ad.rit.edu\students\pco1853\IGMProfile\Desktop\GGPDirectX\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.10
+Time Elapsed 00:00:00.47

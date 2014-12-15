@@ -347,6 +347,7 @@ void MyDemoGame::DrawScene()
 	if (state == L"Pause")
 	{
 		renderTarget.SetRenderTarget(deviceContext, depthStencilView);
+		renderTarget.ClearRenderTarget(deviceContext, depthStencilView, 0.0, 0.0, 0.0, 0.0);
 	}
 
 	if (state == L"Game")
@@ -451,6 +452,7 @@ void MyDemoGame::PostProcessDraw()
 			0,
 			0);
 	}
+
 
 }
 
