@@ -14,7 +14,7 @@ Asteroid::Asteroid(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<Consta
 	device = dev;
 	deviceContext = devCtx;
 	sampler = samplerState;
-	shaderProgram = new ShaderProgram(L"NormalVertexShader.cso", L"NormalPixelShader.cso", device, constantBufferList);
+	shaderProgram = new ShaderProgram(L"NewNormalVertexShader.cso", L"NewNormalPixelShader.cso", device, constantBufferList);
 	asteroidMaterial = new Material(device, deviceContext, sampler, L"asteroid.jpg", L"asteroid_norm.jpg", shaderProgram);
 	player = playerReference;
 	mesh = meshReference;

@@ -19,6 +19,11 @@ struct Vertex2{
 	XMFLOAT3 Position;
 	XMFLOAT3 Normal;
 	XMFLOAT2 UVs;
+	XMFLOAT3 Tangent;
+};
+
+struct Triangle{
+	int index[3];
 };
 
 struct Phong{

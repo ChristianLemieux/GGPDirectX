@@ -26,4 +26,6 @@ public:
 	UINT GetIndex(Vertex2 v);
 	Mesh* LoadModel(std::string file);
 	Vertex2* VecToArray();
+	XMFLOAT3* CalculateTangent(Triangle& triangle);
+	float XMFLOATDotProduct(XMFLOAT3 first, XMFLOAT3 second);
 };
