@@ -26,7 +26,7 @@ class healthPickup
 public:
 	healthPickup(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<ConstantBuffer*> constantBufferList, ID3D11SamplerState* samplerState, Mesh* meshReference, Player* playerReference, Game* gameReferencePassed);
 	~healthPickup(void);
-	void update(float dt, StateManager *stateManager);
+	void update(float dt);
 	void draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos);
 	GameEntity* getHPup();
 

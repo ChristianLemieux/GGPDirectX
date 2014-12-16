@@ -49,7 +49,7 @@ Collectable::~Collectable(){
 
 
 //Update collectables positions each frame
-void Collectable::update(float dt, StateManager *stateManager){
+void Collectable::update(float dt){
 
 	//make bounding boxes
 	BoundingBox *playerbb = new BoundingBox(XMFLOAT3(player->player->getPosition()._41, player->player->getPosition()._42, player->player->getPosition()._43),
@@ -71,7 +71,7 @@ void Collectable::update(float dt, StateManager *stateManager){
 		if (collectablebb->Intersects(*playerbb))
 		{
 				collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
-				gameReference->pickUp(stateManager);
+				gameReference->pickUp();
 
 				//elimate spawning on each other
 				for (int g = 0; g < 1; g++)

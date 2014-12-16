@@ -96,8 +96,8 @@ void Game::updateGame(float dt, StateManager *stateManager)
 	player->update(dt);
 	projectileManager->update(dt);
 	asteroidManager->update(dt, stateManager);
-	HPManager->update(dt, stateManager);
-	collManager->update(dt, stateManager);
+	HPManager->update(dt);
+	collManager->update(dt);
 
 	//Parralax 
 	gameEntities[0]->translate(XMFLOAT3(-0.5f * dt, 0.0f, 0.0f));
@@ -191,7 +191,7 @@ void Game::handleCollision(StateManager *stateManager)
 }
 
 // Handles collisions between the player and an HPUp
-void Game::getHealth(StateManager *stateManager)
+void Game::getHealth()
 {
 	// Raise the hull intergerty by 30 due to pick up
 	hullIntegrity += 30;
@@ -206,7 +206,7 @@ void Game::getHealth(StateManager *stateManager)
 	}
 }
 
-void Game::pickUp(StateManager *stateManager)
+void Game::pickUp()
 {
 
 	shootingScore += 500;
@@ -241,16 +241,25 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 
 void Game::DrawUI(float time, wchar_t* state)
 {
+
+	std::wstring pi = std::to_wstring(hullIntegrity);
+	const WCHAR* szName = pi.c_str();
+
+	score = int(time / 2) + shootingScore;
+	scorep = std::to_wstring(score);
+	const WCHAR* szScore = scorep.c_str();
+
+	//hs1
+	score1 = std::to_wstring(highScore1);
+	const WCHAR* szScore1 = score1.c_str();
+
+	//hs2
+	score2 = std::to_wstring(highScore2);
+	const WCHAR* szScore2 = score2.c_str();
+
 	spriteBatch->Begin();
-	if (state == L"Game" || state == L"Pause" || state == L"Win")
+	if (state == L"Game")
 	{
-
-		std::wstring pi = std::to_wstring(hullIntegrity);
-		const WCHAR* szName = pi.c_str();
-
-		std::wstring score = std::to_wstring(int(time / 2) + shootingScore);
-		const WCHAR* szScore = score.c_str();
-
 		//Draw Sprites and fonts
 		spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
 		spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::LawnGreen);
@@ -262,13 +271,63 @@ void Game::DrawUI(float time, wchar_t* state)
 		{
 			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25), Colors::Red);
 		}
+	}
 
 		if (state == L"Pause")
 		{
-			spriteFont->DrawString(spriteBatch.get(), L"Pause", DirectX::SimpleMath::Vector2(800 - 225, 25));
+			spriteFont->DrawString(spriteBatch.get(), L"Health: ", DirectX::SimpleMath::Vector2(15, 25));
+			spriteFont->DrawString(spriteBatch.get(), szName, DirectX::SimpleMath::Vector2(160, 25));
+
+			spriteFont->DrawString(spriteBatch.get(), L"Score: ", DirectX::SimpleMath::Vector2(15, 55));
+			spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(144, 55));
+
+			spriteFont->DrawString(spriteBatch.get(), L"Pause", DirectX::SimpleMath::Vector2(800 - 150, 25));
+
+			spriteFont->DrawString(spriteBatch.get(), L"High Scores:", DirectX::SimpleMath::Vector2(300, 25));
+
+			if (highScore1 >= highScore2 && highScore2 >= score)
+			{
+				spriteFont->DrawString(spriteBatch.get(), szScore1, DirectX::SimpleMath::Vector2(400, 50));
+				spriteFont->DrawString(spriteBatch.get(), szScore2, DirectX::SimpleMath::Vector2(400, 75));
+				spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 100), Colors::Gold);
+			}
+
+			if (highScore2 >= highScore1 && highScore1 >= score)
+			{
+				spriteFont->DrawString(spriteBatch.get(), szScore2, DirectX::SimpleMath::Vector2(400, 50));
+				spriteFont->DrawString(spriteBatch.get(), szScore1, DirectX::SimpleMath::Vector2(400, 75));
+				spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 100), Colors::Gold);
+			}
+
+			if (highScore1 >= score && score >= highScore2)
+			{
+				spriteFont->DrawString(spriteBatch.get(), szScore1, DirectX::SimpleMath::Vector2(400, 50));
+				spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 75), Colors::Gold);
+				spriteFont->DrawString(spriteBatch.get(), szScore2, DirectX::SimpleMath::Vector2(400, 100));
+			}
+
+			if (highScore2 >= score && score >= highScore1)
+			{
+				spriteFont->DrawString(spriteBatch.get(), szScore2, DirectX::SimpleMath::Vector2(400, 50));
+				spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 75), Colors::Gold);
+				spriteFont->DrawString(spriteBatch.get(), szScore1, DirectX::SimpleMath::Vector2(400, 100));
+			}
+
+			if (score >= highScore2 && highScore2 >= highScore1)
+			{
+				spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 50), Colors::Gold);
+				spriteFont->DrawString(spriteBatch.get(), szScore2, DirectX::SimpleMath::Vector2(400, 75));
+				spriteFont->DrawString(spriteBatch.get(), szScore1, DirectX::SimpleMath::Vector2(400, 100));
+			}
+
+			if (score >= highScore1 && highScore1 >= highScore2)
+			{
+				spriteFont->DrawString(spriteBatch.get(), szScore, DirectX::SimpleMath::Vector2(400, 50), Colors::Gold);
+				spriteFont->DrawString(spriteBatch.get(), szScore1, DirectX::SimpleMath::Vector2(400, 75));
+				spriteFont->DrawString(spriteBatch.get(), szScore2, DirectX::SimpleMath::Vector2(400, 100));
+			}
 
 		}
-	}
 	spriteBatch->End();
 
 }
@@ -276,6 +335,11 @@ void Game::DrawUI(float time, wchar_t* state)
 //resets the game after lose condition
 void Game::reset()
 {
+	if (highScore2 > score)
+		highScore1 = score;
+	if (highScore2 < score)
+		highScore2 = score;
+
 	// reset hull integrity to full
 	hullIntegrity = 100;
 	shootingScore = 0;
@@ -309,6 +373,5 @@ void Game::reset()
 			projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
 		}
 	}
-
 }
 

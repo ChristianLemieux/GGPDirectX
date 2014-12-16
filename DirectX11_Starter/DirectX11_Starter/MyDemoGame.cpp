@@ -358,6 +358,7 @@ void MyDemoGame::DrawScene()
 	{
 		game->drawGame(viewMatrix, projectionMatrix, camPos, timer->TotalTime(), state);
 		PostProcessDraw();
+		game->DrawUI(timer->TotalTime(), state);
 	}
 	else if (state == L"Menu")
 	{
@@ -371,6 +372,7 @@ void MyDemoGame::DrawScene()
 	else if (state == L"Lose")
 	{
 		gameStates[2]->draw(viewMatrix, projectionMatrix);
+
 	}
 
 	// Present the buffer

@@ -73,6 +73,9 @@ wchar_t* StateManager::changeState()
 		if (adj[currentState][3]){
 			currentState = 3;
 		}
+		if (adj[currentState][3]){
+			currentState = 1;
+		}
 	}
 	else if (GetAsyncKeyState('4') & 0x8000){
 		if (adj[currentState][4]){

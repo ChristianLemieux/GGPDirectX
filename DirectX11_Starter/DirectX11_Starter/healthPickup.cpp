@@ -49,7 +49,7 @@ healthPickup::~healthPickup()
 }
 
 //Update HPUp positions each frame
-void healthPickup::update(float dt, StateManager *stateManager){
+void healthPickup::update(float dt){
 
 	//make bounding boxes
 	BoundingBox *playerbb = new BoundingBox(XMFLOAT3(player->player->getPosition()._41, player->player->getPosition()._42, player->player->getPosition()._43),
@@ -72,7 +72,7 @@ void healthPickup::update(float dt, StateManager *stateManager){
 		if (healthbb->Intersects(*playerbb))
 		{
 				HPUp[i]->setPosition(XMFLOAT3(150.0f, (rand() % 40) - 30.0f, 0.0f));
-				gameReference->getHealth(stateManager);
+				gameReference->getHealth();
 				break;
 		}
 	}

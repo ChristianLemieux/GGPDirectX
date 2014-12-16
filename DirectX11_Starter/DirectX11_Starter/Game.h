@@ -40,8 +40,8 @@ public:
 	void DrawUI(float time, wchar_t* state);
 	void reset(); // resets the game to the default state
 	void handleCollision(StateManager *stateManager); // handles collisions between the player and an asteroid
-	void getHealth(StateManager *stateManager); //for health pickups
-	void pickUp(StateManager *stateManager); // for star pickups
+	void getHealth(); //for health pickups
+	void pickUp(); // for star pickups
 	int hullIntegrity; // the current hull integrity (out of 100)
 private:
 	LightBufferType lighting;
@@ -80,6 +80,12 @@ private:
 	Collectable* collManager;
 	
 	int shootingScore;
+	int highScore1 = 0;
+	int highScore2 = 0;
+	int score;
+	std::wstring scorep;
+	std::wstring score1;
+	std::wstring score2;
 
 	std::vector<Particle*> particles; // Container for all the particles currently in the game
 };
