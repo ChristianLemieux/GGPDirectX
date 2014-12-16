@@ -41,38 +41,18 @@ VertexToPixel main(VertexShaderInput vin)
 {
 	// Set up output
 	VertexToPixel vout;
-	/*float4 worldPosition;
-
-	// Calculate output position
-	matrix worldViewProj = mul(mul(world, view), projection);
-	output.position = mul(float4(input.position, 1.0f), worldViewProj);
-	output.uv = input.uv;
-
-	worldPosition = mul(input.position, world);
-	output.viewDirection = normalize(cameraPosition.xyz - worldPosition.xyz);
-
-	// Calculate the normal vector against the world matrix only and then normalize the final value.
-	output.normal = normalize(mul(input.normal, (float3x3)world));
-
-	// Calculate the tangent vector against the world matrix only and then normalize the final value.
-	output.tangent = normalize(mul(input.tangent, (float3x3)world));
-
-	//Calculate the binormal vector against the world matrix only and then normalize the final value.
-	//output.binormal = normalize(mul(input.binormal, (float3x3)world));
-
-	output.uv = input.uv;*/
 
 	matrix worldViewProj = mul(mul(world, view), projection);
 
 	// Transform to world space space.
 	vout.posW = mul(float4(vin.position, 1.0f), world).xyz;
 	vout.normal = normalize(mul(vin.normal, (float3x3)world));
-	vout.tangent = mul(vin.tangent, (float3x3)world);
+	vout.tangent = normalize(mul(vin.tangent, (float3x3)world));
 
 	// Transform to homogeneous clip space.
 	vout.position = mul(float4(vin.position, 1.0f), worldViewProj);
 	// Output vertex attributes for interpolation across triangle.
-	//vout.uv = mul(float4(vin.uv, 0.0f, 1.0f), gTexTransform).xy;
+
 	vout.uv = vin.uv;
 	return vout;
 }

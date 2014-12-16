@@ -4,12 +4,12 @@
 //Constructor for Asteroid object
 Asteroid::Asteroid(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<ConstantBuffer*> constantBufferList, ID3D11SamplerState* samplerState, Mesh* meshReference, Player* playerReference, Game* gameReferencePassed){
 
-	// set up the lighting parameters
+	//set up the lighting parameters
 	lighting.ambientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	lighting.diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lighting.lightDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	lighting.specularColor = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
-	lighting.specularPower = 5.0f;
+	lighting.specularColor = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	lighting.specularPower = 2.0f;
 
 	device = dev;
 	deviceContext = devCtx;

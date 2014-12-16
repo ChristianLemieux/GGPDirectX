@@ -48,57 +48,21 @@ cbuffer LightBuffer
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	/*float3 reflection = reflect(-lightDirection, input.normal);
-	float4 textureColor = myTexture.Sample(mySampler, input.uv);
-	float4 specular = pow(saturate(dot(reflection, -input.viewDirection)), specularPower) * specularColor;
-	float4 diffuse = lerp(diffuseColor, textureColor, 0.85f) * saturate(dot(input.normal, -lightDirection)) * 0.8f;
-
-
 	// Interpolating normal can unnormalize it, so normalize it.
 	input.normal = normalize(input.normal);
-	float3 toEye = lightDirection - input.viewDirection;
-	// Cache the distance to the eye from this surface point.
-	float distToEye = length(toEye);
-	// Normalize.
-	toEye /= distToEye;
 
-	// Default to multiplicative identity.
-	float4 texColor = float4(1, 1, 1, 1);
-	// Sample texture.
-	texColor = bumps.Sample(samLinear, input.normal);
-
-	//Normal Mappign
-	float3 normalMapSample = bumps.Sample(samLinear, input.normal).rgb;
-	float3 bumpedNormalW = NormalSampleToWorldSpace(
-	normalMapSample, input.normal, input.tangent);
-
-	float4 color = saturate(diffuse + ambientColor + specular);
-	return color;*/
-	float3 reflection = reflect(-lightDirection, input.normal);
-	float4 textureColor = myTexture.Sample(mySampler, input.uv);
-	float4 specular = pow(saturate(dot(reflection, -input.posW)), specularPower) * specularColor;
-	float4 diffuse = lerp(diffuseColor, textureColor, 0.85f) * saturate(dot(input.normal, -lightDirection)) * 0.8f;
-
-
-	// Interpolating normal can unnormalize it, so normalize it.
-	input.normal = normalize(input.normal);
-	float3 toEye = lightDirection - input.posW;
-		// Cache the distance to the eye from this surface point. 
-		float distToEye = length(toEye);
-	// Normalize.
-	toEye /= distToEye;
-
-	// Default to multiplicative identity.
-	float4 texColor = float4(1, 1, 1, 1);
-		// Sample texture.
-		texColor = bumps.Sample(mySampler, input.normal);
-
-	//Normal Mappign
+	//Normal Mapping
 	float3 normalMapSample = bumps.Sample(mySampler, input.normal).rgb;
 		float3 bumpedNormalW = NormalSampleToWorldSpace(
 		normalMapSample, input.normal, input.tangent);
 
-	float4 color = saturate(diffuse + ambientColor + specular);
+	float3 reflection = reflect(-lightDirection, bumpedNormalW);
+		float4 textureColor = myTexture.Sample(mySampler, input.uv);
+		//float4 texturecolor = float4(1.0f,1.0f,1.0f,1.0f);
+		float4 specular = pow(saturate(dot(reflection, -input.posW)), specularPower) * specularColor;
+		float4 diffuse = lerp(diffuseColor, textureColor, 0.85f) * saturate(dot(bumpedNormalW, -lightDirection)) * 0.8f;
+
+		float4 color = saturate(diffuse + ambientColor + specular);
 		return color;
 }
 
