@@ -47,7 +47,7 @@ Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
 	m_device = device;
 
 	sizeofvertex = sizeof(Particle);
-	
+
 	D3D11_BUFFER_DESC sobd;
 	sobd.Usage = D3D11_USAGE_DEFAULT;
 	sobd.ByteWidth = 640;
@@ -58,7 +58,7 @@ Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
 	D3D11_SUBRESOURCE_DATA initialVertexData;
 	initialVertexData.pSysMem = m_vertices;
 	m_device->CreateBuffer(&sobd, &initialVertexData, &so_buffer);
-	
+
 	createVertexBuffer();
 	createIndexBuffer();
 	createInitBuffer();
@@ -96,19 +96,6 @@ void Mesh::createVertexBuffer(){
 
 }
 
-void Mesh::createIndexBuffer(){
-	D3D11_BUFFER_DESC ibd;
-	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(UINT) * m_size; // Number of indices in the "model" you want to draw
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0;
-	ibd.MiscFlags = 0;
-	ibd.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA initialIndexData;
-	initialIndexData.pSysMem = m_indices;
-	m_device->CreateBuffer(&ibd, &initialIndexData, &i_buffer);
-}
-
 void Mesh::createInitBuffer(){
 	D3D11_BUFFER_DESC initbd;
 	initbd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -121,5 +108,18 @@ void Mesh::createInitBuffer(){
 	D3D11_SUBRESOURCE_DATA initialVertexData;
 	initialVertexData.pSysMem = m_vertices;
 	m_device->CreateBuffer(&initbd, &initialVertexData, &init_buffer);
+}
+
+void Mesh::createIndexBuffer(){
+	D3D11_BUFFER_DESC ibd;
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.ByteWidth = sizeof(UINT) * m_size; // Number of indices in the "model" you want to draw
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA initialIndexData;
+	initialIndexData.pSysMem = m_indices;
+	m_device->CreateBuffer(&ibd, &initialIndexData, &i_buffer);
 }
 

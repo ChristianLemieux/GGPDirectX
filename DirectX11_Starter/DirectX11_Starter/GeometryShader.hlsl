@@ -9,7 +9,12 @@ struct GSOutput
 	float2 uv			: TEXCOORD0;
 };
 
-
+cbuffer perModel		: register(b0)
+{
+	matrix world;
+	matrix view;
+	matrix projection;
+};
 
 [maxvertexcount(4)]
 void main(
@@ -17,8 +22,9 @@ void main(
 	inout TriangleStream< GSOutput > output
 	)
 {
-	float4 v[4];
+	matrix worldViewProj = mul(mul(world, view), projection);
 
+	float4 v[4];
 	v[0] = dataIn[0].position + float4(0.1f, -0.1f, 0.0f, 0);
 	v[1] = dataIn[0].position + float4(-0.1f, -0.1f, 0.0f, 0);
 	v[2] = dataIn[0].position + float4(0.1f, 0.1f, 0.0f, 0);
@@ -35,7 +41,7 @@ void main(
 	[unroll]
 	for (uint i = 0; i < 4; i++)
 	{
-		element.position = v[i];
+		element.position = mul(v[i], worldViewProj);
 		element.uv = quadUVs[i];
 		output.Append(element);
 	}

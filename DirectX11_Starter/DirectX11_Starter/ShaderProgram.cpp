@@ -17,7 +17,7 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, ID3D11Device* d
 	ConstantBuffers = constantBufferList;
 }
 
-ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_file, ID3D11Device* dev, std::vector<ConstantBuffer*> constantBufferList){
+ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_file, wchar_t* so_file, ID3D11Device* dev, std::vector<ConstantBuffer*> constantBufferList){
 	ID3DBlob* vsBlob;
 	D3DReadFileToBlob(vs_file, &vsBlob);
 	HRESULT hr_vertex = this->CreateInputLayoutDescFromShaderSignature(vsBlob, dev, &vsInputLayout);
@@ -35,14 +35,18 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_fil
 		{ 0, "SV_POSITION", 0, 0, 4, 0 }
 	};
 
+	ID3DBlob* soBlob;
+	D3DReadFileToBlob(so_file, &soBlob);
+	HRESULT hr_geometry = this->CreateInputLayoutDescFromShaderSignature(soBlob, dev, &gsInputLayout);
+	HRESULT hr_geometryShader = dev->CreateGeometryShaderWithStreamOutput(soBlob->GetBufferPointer(), soBlob->GetBufferSize(), desc, 1, NULL, 0, 0, NULL, &streamOutputShader);
+	if (FAILED(hr_geometryShader)){
+		//		dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader); 
+	}
+	ReleaseMacro(soBlob);
+
 	ID3DBlob* gsBlob;
 	D3DReadFileToBlob(gs_file, &gsBlob);
-	HRESULT hr_geometry = this->CreateInputLayoutDescFromShaderSignature(gsBlob, dev, &gsInputLayout);
-	HRESULT hr_geometryShader = dev->CreateGeometryShaderWithStreamOutput(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), desc, 1, NULL, 0, 0, NULL, &geometryShader);
-	if (FAILED(hr_geometryShader)){ 
-//		dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader); 
-	}
-	ReleaseMacro(gsBlob);
+	dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader);
 
 	ConstantBuffers = constantBufferList;
 }

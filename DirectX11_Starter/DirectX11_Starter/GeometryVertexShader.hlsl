@@ -1,11 +1,4 @@
-cbuffer perModel : register(b0)
-{
-	matrix world;
-	matrix view;
-	matrix projection;
-};
-
-cbuffer geoBuffer : register(b1)
+cbuffer geoBuffer : register(b0)
 {
 	float age;
 };
@@ -32,8 +25,9 @@ VertexToPixel main(VertexShaderInput input)
 	VertexToPixel output;
 
 	// Calculate output position
-	matrix worldViewProj = mul(mul(world, view), projection);
-	float3 position = calculatePosition(input.velocity, input.acceleration, input.position);
-	output.position = mul(float4(position, 1.0f), worldViewProj);
+	//matrix worldViewProj = mul(mul(world, view), projection);
+	//float3 
+	output.position = float4(calculatePosition(input.velocity, input.acceleration, input.position), 1.0);
+	//output.position = mul(float4(position, 1.0f), worldViewProj);
 	return output;
 }
