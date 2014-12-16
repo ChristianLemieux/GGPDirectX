@@ -24,7 +24,7 @@ healthPickup::healthPickup(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vecto
 	for (int i = 0; i < 1; i++)
 	{
 		HPUp.push_back(new GameEntity(meshReference, healthMaterial));
-		HPUp[i]->scale(XMFLOAT3(0.03f, 0.03f, 0.03f));
+		HPUp[i]->scale(XMFLOAT3(0.09f, 0.09f, 0.09f));
 		HPUp[i]->setPosition(XMFLOAT3(((rand() % 60) + 150), ((rand() % 40) - 30.0f), 0.0f));
 	}
 }
@@ -53,11 +53,11 @@ void healthPickup::update(float dt, StateManager *stateManager){
 
 	//make bounding boxes
 	BoundingBox *playerbb = new BoundingBox(XMFLOAT3(player->player->getPosition()._41, player->player->getPosition()._42, player->player->getPosition()._43),
-		XMFLOAT3(5.0f, 5.0f, 0.0f));
+		XMFLOAT3(2.0f, 2.0f, 0.0f));
 
 	//moves HPUp across screen (right to left) and respawns them when they leave the screen
 	for (unsigned int i = 0; i < 1; i++){
-	HPUp[i]->translate(XMFLOAT3(-20.0f * dt, 0.0f, 0.0f));
+	HPUp[i]->translate(XMFLOAT3(-15.0f * dt, 0.0f, 0.0f));
 
 		//._41 is the x value for the position matrix of game entities
 	if (HPUp[i]->getPosition()._41 < -300)
@@ -67,7 +67,7 @@ void healthPickup::update(float dt, StateManager *stateManager){
 	for (int i = 0; i < 1; i++)
 	{
 		BoundingBox *healthbb = new BoundingBox(XMFLOAT3(HPUp[i]->getPosition()._41, HPUp[i]->getPosition()._42, HPUp[i]->getPosition()._43),
-			XMFLOAT3(19.0f, 10.0f, 0.0f));
+			XMFLOAT3(2.0f, 2.0f, 0.0f));
 		//check for intersections
 		if (healthbb->Intersects(*playerbb))
 		{

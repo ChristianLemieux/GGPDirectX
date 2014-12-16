@@ -117,12 +117,13 @@ void Game::updateGame(float dt, StateManager *stateManager)
 	{
 		for (int x = projectileManager->projectiles.size() - 1; x >= 0; x--)
 		{
+			BoundingBox *projectile = new BoundingBox(XMFLOAT3(projectileManager->projectiles[x]->getPosition()._41, projectileManager->projectiles[x]->getPosition()._42, projectileManager->projectiles[x]->getPosition()._43),
+				XMFLOAT3(1.0f, 0.5f, 0.0f));
 			for (int i = 0; i < 29; i++)
 			{
-				BoundingBox *projectile = new BoundingBox(XMFLOAT3(projectileManager->projectiles[x]->getPosition()._41, projectileManager->projectiles[x]->getPosition()._42, projectileManager->projectiles[x]->getPosition()._43),
-					XMFLOAT3(1.0f, 0.5f, 0.0f));
 				BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(asteroidManager->asteroids[i]->getPosition()._41, asteroidManager->asteroids[i]->getPosition()._42, asteroidManager->asteroids[i]->getPosition()._43),
 					XMFLOAT3(2.5f, 1.0f, 2.0f));
+
 
 				if (projectile->Intersects(*asteriodbb))
 				{
@@ -131,6 +132,38 @@ void Game::updateGame(float dt, StateManager *stateManager)
 					asteroidManager->asteroids[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 					engine->play2D("Crumble.wav", false);
 					shootingScore += 100;
+					break;
+				}
+			}
+
+			BoundingBox *HPbb = new BoundingBox(XMFLOAT3(HPManager->HPUp[0]->getPosition()._41, HPManager->HPUp[0]->getPosition()._42, HPManager->HPUp[0]->getPosition()._43),
+				XMFLOAT3(2.0f, 2.0f, 0.0f));
+			if (projectile->Intersects(*HPbb))
+			{
+				// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
+				projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
+				HPManager->HPUp[0]->setPosition(XMFLOAT3(150.0f, (rand() % 40) - 30.0f, 0.0f));
+				engine->play2D("energy.wav", false);
+				hullIntegrity += 30;
+				//Make sure health doesn't exceed 100
+				if (hullIntegrity >= 100)
+				{
+					hullIntegrity = 100;
+				}
+				break;
+			}
+			for (size_t i = 0; i < 1; i++)
+			{
+				BoundingBox *collBB = new BoundingBox(XMFLOAT3(collManager->collectables[i]->getPosition()._41, collManager->collectables[i]->getPosition()._42, collManager->collectables[i]->getPosition()._43),
+					XMFLOAT3(2.5f, 1.0f, 2.0f));
+				if (projectile->Intersects(*collBB))
+				{
+					// Erase the projectile and move the asteroid back off the right side of the screen (more efficient to recycle then destroy and re-create)
+					projectileManager->projectiles.erase(projectileManager->projectiles.begin() + x);
+					collManager->collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+					engine->play2D("coin.wav", false);
+					shootingScore += 30;
+
 					break;
 				}
 			}
@@ -176,7 +209,8 @@ void Game::getHealth(StateManager *stateManager)
 void Game::pickUp(StateManager *stateManager)
 {
 
-	shootingScore += 50;
+	shootingScore += 500;
+	engine->play2D("Laser_Shot.mp3", false);
 
 }
 
@@ -262,7 +296,7 @@ void Game::reset()
 	}
 
 	//reset HP to a random area off the right side of the screen
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		collManager->collectables[i]->setPosition(XMFLOAT3(((rand() % 60) + 30), ((rand() % 40) - 19.0f), 0.0f));
 	}

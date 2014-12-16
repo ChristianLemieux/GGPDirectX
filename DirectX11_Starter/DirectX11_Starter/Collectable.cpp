@@ -22,7 +22,7 @@ Collectable::Collectable(ID3D11Device* dev, ID3D11DeviceContext* devCtx, vector<
 	gameReference = gameReferencePassed;
 
 	// populate the list of collectables, scale them to one tenth the size of the mesh and randomize their position (off the right side of the screen)
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		collectables.push_back(new GameEntity(meshReference, collectableMaterial));
 		collectables[i]->scale(XMFLOAT3(0.1f, 0.1f, 0.1f));
@@ -48,56 +48,37 @@ Collectable::~Collectable(){
 }
 
 
-//Update asteroid positions each frame
+//Update collectables positions each frame
 void Collectable::update(float dt, StateManager *stateManager){
 
 	//make bounding boxes
 	BoundingBox *playerbb = new BoundingBox(XMFLOAT3(player->player->getPosition()._41, player->player->getPosition()._42, player->player->getPosition()._43),
-		XMFLOAT3(4.0f, 4.0f, 0.0f));
+		XMFLOAT3(2.0f, 2.0f, 0.0f));
 
-	//moves asteroids across screen (right to left) and respawns them when they leave the screen
-	for (unsigned int i = 0; i < 9; i++)
-	{
-		BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(collectables[i]->getPosition()._41, collectables[i]->getPosition()._42, collectables[i]->getPosition()._43),
-			XMFLOAT3(4.0f, 4.0f, 2.0f));
+	//moves collectables across screen (right to left) and respawns them when they leave the screen
+	for (unsigned int i = 0; i < 1; i++){
 		collectables[i]->translate(XMFLOAT3(-8.0f * dt, 0.0f, 0.0f));
-		collectables[i]->rotate(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		//._41 is the x value for the position matrix of game entities
 		if (collectables[i]->getPosition()._41 < -30)
-		{
-			collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
+			collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));}
 
-			//helps elimate overlap
-			for (int g = 0; g < 9; g++)
-			{
-				BoundingBox *asteriodbb2 = new BoundingBox(XMFLOAT3(collectables[g]->getPosition()._41, collectables[g]->getPosition()._42, collectables[g]->getPosition()._43),
-					XMFLOAT3(4.0f, 4.0f, 0.0f));
-				if (asteriodbb2->Intersects(*asteriodbb))
-				{
-					collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
-				}
-			}
-		}
-	}
-
-	// Tests for collisions between the asteroids and the player, tells the game to handle the collision (for non-asteroid consequences) if one is found
-	for (int i = 0; i < 9; i++)
-	{
-		BoundingBox *asteriodbb = new BoundingBox(XMFLOAT3(collectables[i]->getPosition()._41, collectables[i]->getPosition()._42, collectables[i]->getPosition()._43),
-			XMFLOAT3(4.0f, 4.0f, 0.0f));
+	// Tests for collisions between the collectables and the player
+	for (int i = 0; i < 1; i++){
+		BoundingBox *collectablebb = new BoundingBox(XMFLOAT3(collectables[i]->getPosition()._41, collectables[i]->getPosition()._42, collectables[i]->getPosition()._43),
+			XMFLOAT3(2.0f, 2.0f, 0.0f));
 		//check for intersections
-		if (asteriodbb->Intersects(*playerbb))
+		if (collectablebb->Intersects(*playerbb))
 		{
 				collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 				gameReference->pickUp(stateManager);
 
 				//elimate spawning on each other
-				for (int g = 0; g < 9; g++)
+				for (int g = 0; g < 1; g++)
 				{
-					BoundingBox *asteriodbb2 = new BoundingBox(XMFLOAT3(collectables[g]->getPosition()._41, collectables[g]->getPosition()._42, collectables[g]->getPosition()._43),
-						XMFLOAT3(4.0f, 4.0f, 0.0f));
-					if (asteriodbb2->Intersects(*asteriodbb))
+					BoundingBox *collectablebb2 = new BoundingBox(XMFLOAT3(collectables[g]->getPosition()._41, collectables[g]->getPosition()._42, collectables[g]->getPosition()._43),
+						XMFLOAT3(2.0f, 2.0f, 0.0f));
+					if (collectablebb2->Intersects(*collectablebb))
 					{
 						collectables[i]->setPosition(XMFLOAT3(30.0f, (rand() % 40) - 19.0f, 0.0f));
 					}
@@ -111,7 +92,7 @@ void Collectable::update(float dt, StateManager *stateManager){
 
 
 
-//draw asteroids
+//draw collectables
 void Collectable::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3 camPos){
 	UINT offset = 0;
 	UINT stride = sizeof(Vertex);
@@ -172,7 +153,6 @@ void Collectable::draw(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLO
 
 		deviceContext->PSSetSamplers(0, 1, &collectables[i]->g_mat->samplerState);
 		deviceContext->PSSetShaderResources(0, 1, &collectables[i]->g_mat->resourceView);
-		deviceContext->PSSetShaderResources(1, 1, &collectables[1]->g_mat->resourceView2);
 
 
 
