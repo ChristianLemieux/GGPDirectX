@@ -32,7 +32,9 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_fil
 
 	D3D11_SO_DECLARATION_ENTRY desc[] =
 	{
-		{ 0, "SV_POSITION", 0, 0, 4, 0 }
+		{ 0, "SV_POSITION", 0, 0, 4, 0 },
+		{ 0, "TEXCOORD0", 0, 0, 2, 0 },
+		{ 0, "TEXCOORD1", 1, 0, 2, 0 }
 	};
 
 	ID3DBlob* soBlob;
@@ -47,6 +49,7 @@ ShaderProgram::ShaderProgram(wchar_t* vs_file, wchar_t* ps_file, wchar_t* gs_fil
 	ID3DBlob* gsBlob;
 	D3DReadFileToBlob(gs_file, &gsBlob);
 	dev->CreateGeometryShader(gsBlob->GetBufferPointer(), gsBlob->GetBufferSize(), NULL, &geometryShader);
+	ReleaseMacro(gsBlob);
 
 	ConstantBuffers = constantBufferList;
 }
@@ -56,6 +59,7 @@ ShaderProgram::~ShaderProgram(void)
 	ReleaseMacro(pixelShader);
 	ReleaseMacro(vertexShader);
 	ReleaseMacro(geometryShader);
+	ReleaseMacro(streamOutputShader);
 	ReleaseMacro(vsInputLayout);
 	ReleaseMacro(psInputLayout);
 	ReleaseMacro(gsInputLayout);

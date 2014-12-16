@@ -5,29 +5,29 @@ cbuffer geoBuffer : register(b0)
 
 struct VertexShaderInput
 {
-	float3 position		: POSITION;
-	float2 velocity		: TEXCOORD2;
-	float2 acceleration	: TEXCOORD3;
+	float4 position		: POSITION;
+	float2 velocity		: TEXCOORD0;
+	float2 acceleration	: TEXCOORD1;
 };
 
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
+	float2 velocity : TEXCOORD0;
+	float2 acceleration : TEXCOORD1;
 };
 
-float3 calculatePosition(float2 velocity, float2 acceleration, float3 position)
+float4 calculatePosition(float2 velocity, float2 acceleration, float4 position)
 {
-	return float3(0.5f * age * acceleration.x + age * velocity.x + position.x, 0.5f * age * acceleration.y + age * velocity.y + position.y, position.z);
+	return float4(0.5f * age * acceleration.x + age * velocity.x + position.x, 0.5f * age * acceleration.y + age * velocity.y + position.y, position.z, 1.0f);
 }
 
 VertexToPixel main(VertexShaderInput input)
 {
 	VertexToPixel output;
 
-	// Calculate output position
-	//matrix worldViewProj = mul(mul(world, view), projection);
-	//float3 
-	output.position = float4(calculatePosition(input.velocity, input.acceleration, input.position), 1.0);
-	//output.position = mul(float4(position, 1.0f), worldViewProj);
+	output.position = calculatePosition(input.velocity, input.acceleration, input.position);
+	output.velocity = input.velocity;
+	output.acceleration = input.acceleration;
 	return output;
 }

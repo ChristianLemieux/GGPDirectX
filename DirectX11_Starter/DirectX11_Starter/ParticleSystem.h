@@ -12,7 +12,7 @@
 
 class ParticleSystem{
 public:
-	ParticleSystem(XMFLOAT3 position, XMFLOAT2 velocity, XMFLOAT2 acceleration, ID3D11Device* dev, ID3D11DeviceContext* devCtx, Material* mat, int num_particles = 1);
+	ParticleSystem(XMFLOAT4 position, XMFLOAT2 velocity, XMFLOAT2 acceleration, ID3D11Device* dev, ID3D11DeviceContext* devCtx, Material* mat, int num_particles = 20);
 	void drawParticleSystem(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, float time);
 private:
 	ID3D11Device * device;
@@ -20,6 +20,7 @@ private:
 	std::vector<GameEntity*> particles;
 	GameEntity* object;
 	bool initialized;
+	bool firstPass;
 	int numParticles;
 };
 #endif

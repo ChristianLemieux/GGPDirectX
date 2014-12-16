@@ -50,7 +50,7 @@ Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
 
 	D3D11_BUFFER_DESC sobd;
 	sobd.Usage = D3D11_USAGE_DEFAULT;
-	sobd.ByteWidth = 640;
+	sobd.ByteWidth = 32 * 100;
 	sobd.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
 	sobd.CPUAccessFlags = 0;
 	sobd.MiscFlags = 0;
@@ -70,6 +70,8 @@ Mesh::Mesh(Particle* vertices, UINT* indices, int size, ID3D11Device* device){
 Mesh::~Mesh(void){
 	ReleaseMacro(v_buffer);
 	ReleaseMacro(i_buffer);
+	ReleaseMacro(init_buffer);
+	ReleaseMacro(so_buffer);
 	ReleaseMacro(m_device);
 	if (m_indices){
 		delete m_indices;

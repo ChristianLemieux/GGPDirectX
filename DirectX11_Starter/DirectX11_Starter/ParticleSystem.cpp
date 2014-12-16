@@ -1,11 +1,12 @@
 #include "ParticleSystem.h"
 
-ParticleSystem::ParticleSystem(XMFLOAT3 position, XMFLOAT2 velocity, XMFLOAT2 acceleration, ID3D11Device* dev, ID3D11DeviceContext* devCtx, Material* mat, int num_particles)
+ParticleSystem::ParticleSystem(XMFLOAT4 position, XMFLOAT2 velocity, XMFLOAT2 acceleration, ID3D11Device* dev, ID3D11DeviceContext* devCtx, Material* mat, int num_particles)
 {
 	device = dev;
 	deviceContext = devCtx;
 	initialized = false;
-	numParticles = num_particles;
+	firstPass = true;
+	
 
 	Particle point[] = {
 		position,
@@ -18,6 +19,7 @@ ParticleSystem::ParticleSystem(XMFLOAT3 position, XMFLOAT2 velocity, XMFLOAT2 ac
 
 void ParticleSystem::drawParticleSystem(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, float time)
 {
+	
 	ID3D11BlendState* blendState = nullptr;
 	D3D11_BLEND_DESC blendDesc;
 	blendDesc.AlphaToCoverageEnable = 0;
@@ -65,52 +67,55 @@ void ParticleSystem::drawParticleSystem(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projec
 		0,
 		0);
 
-	ID3D11Buffer* vertexBuffer = initialized ? object->g_mesh->v_buffer : object->g_mesh->init_buffer;
-	ID3D11PixelShader* pixelShader = initialized ? object->g_mat->shaderProgram->pixelShader : NULL;
+	//bind stream output shader
+	deviceContext->GSSetShader(object->g_mat->shaderProgram->streamOutputShader, NULL, 0);
 
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	deviceContext->SOSetTargets(1, &object->g_mesh->so_buffer, 0);
-	deviceContext->IASetIndexBuffer(object->g_mesh->i_buffer, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->PSSetShader(pixelShader, NULL, 0);
+	
+	
+	
+
+	
 
 	deviceContext->OMSetBlendState(blendState, NULL, 0xffffffff);
 	ID3D11DepthStencilState* depthState;
 	deviceContext->OMGetDepthStencilState(&depthState, 0);
 
-	//unbind depth stencil state
-	deviceContext->OMSetDepthStencilState(NULL, 0);
+	
 
 
 	deviceContext->VSSetShader(object->g_mat->shaderProgram->vertexShader, NULL, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &object->g_mat->shaderProgram->ConstantBuffers[3]->constantBuffer);
-
-	//bind stream output shader
-	deviceContext->GSSetShader(object->g_mat->shaderProgram->streamOutputShader, NULL, 0);
-
-
-	if (!initialized)
-	{
-		deviceContext->Draw(1, 0);
-		initialized = true;
+	
+	deviceContext->SOSetTargets(1, &object->g_mesh->so_buffer, 0);
+	deviceContext->OMSetDepthStencilState(NULL, 0);
+	deviceContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+	deviceContext->PSSetShader(NULL, NULL, 0);
+	
+	if (firstPass){ 
+		
+		deviceContext->IASetVertexBuffers(0, 1, &object->g_mesh->init_buffer, &stride, &offset);
+		deviceContext->Draw(1, 0); 
+		//unbind depth stencil state
+		
+		firstPass = false;
 	}
 	else{
-		deviceContext->GSSetConstantBuffers(0, 1, &object->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer);
-		deviceContext->DrawAuto();
-		initialized = false;
-	}
+		deviceContext->IASetVertexBuffers(0, 1, &object->g_mesh->v_buffer, &stride, &offset);
+		deviceContext->DrawAuto(); 
+	}	
 
+	//initialized = initialized ? false : true;
+	
 	//unbind stream output buffer
 	ID3D11Buffer* bufferArray[1] = { 0 };
 	deviceContext->SOSetTargets(1, bufferArray, 0);
 
 	//swap vertex buffer and stream output buffer
-	ID3D11Buffer *temp = object->g_mesh->v_buffer;
-	object->g_mesh->v_buffer = object->g_mesh->so_buffer;
-	object->g_mesh->so_buffer = temp;
+	std::swap(object->g_mesh->v_buffer, object->g_mesh->so_buffer);
 
 	//bind depth stencil state
 	deviceContext->OMSetDepthStencilState(depthState, 0);
-
+	 
 	//bind geometry shader
 	deviceContext->GSSetShader(object->g_mat->shaderProgram->geometryShader, NULL, 0);
 	deviceContext->GSSetConstantBuffers(0, 1, &object->g_mat->shaderProgram->ConstantBuffers[0]->constantBuffer);

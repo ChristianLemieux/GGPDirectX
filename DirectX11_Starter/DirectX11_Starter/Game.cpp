@@ -67,9 +67,11 @@ void Game::initGame(SamplerState *samplerStates){
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"energy.png", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"background.jpg", shaderProgram));
 	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"bullet.jpg", shaderProgram));
-	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"goldstar.png", geoShader));
+	materials.push_back(new Material(device, deviceContext, samplerStates->sampler, L"particle.png", geoShader));
 
-	stars = new ParticleSystem(XMFLOAT3(0, 0, 0), XMFLOAT2(-0.01f, 0.0f), XMFLOAT2(-0.001f, 0.001f), device, deviceContext, materials[6], 20);
+	for (float i = 0; i < 50; i++){
+		stars.push_back(new ParticleSystem(XMFLOAT4((i - 50.0f) / 10, -1.5f, 0, 0), XMFLOAT2(0.1f, 0.0f), XMFLOAT2(0.1f, 0.1f), device, deviceContext, materials[6], 20));
+	}
 	player = new Player(device, deviceContext, constantBufferList, samplerStates->sampler, playerm);
 
 	//Set up the two backgrounds
@@ -228,7 +230,9 @@ void Game::drawGame(XMFLOAT4X4 viewMatrix, XMFLOAT4X4 projectionMatrix, XMFLOAT3
 	}
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);
 
-	stars->drawParticleSystem(viewMatrix, projectionMatrix, age);
+	for (int i = 0; i < stars.size(); i++){
+		stars[i]->drawParticleSystem(viewMatrix, projectionMatrix, age);
+	}
 
 	// Call the corresponding draw methods for the different entity managers
 	projectileManager->draw(viewMatrix, projectionMatrix, camPos);

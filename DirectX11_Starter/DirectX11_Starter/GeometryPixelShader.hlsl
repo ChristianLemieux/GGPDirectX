@@ -4,7 +4,7 @@ SamplerState mySampler: register(s0);
 struct VertexToPixel
 {
 	float4 position		: SV_POSITION;
-	float2 uv			: TEXCOORD0;
+	float2 uv			: TEXCOORD2;
 };
 
 float opacity(float4 color)

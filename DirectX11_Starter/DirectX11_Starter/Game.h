@@ -71,7 +71,7 @@ private:
 
 	std::vector<ConstantBuffer*> constantBufferList;
 	ParticleSystem *particle;
-	ParticleSystem *stars;
+	std::vector<ParticleSystem*>stars;
 
 	// The list of managers
 	Projectile* projectileManager;

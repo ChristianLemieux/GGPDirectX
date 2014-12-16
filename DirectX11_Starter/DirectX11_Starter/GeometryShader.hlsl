@@ -1,12 +1,14 @@
 struct VSOutput
 {
 	float4 position		: SV_POSITION;
+	float2 velocity : TEXCOORD0;
+	float2 acceleration : TEXCOORD1;
 };
 
 struct GSOutput
 {
 	float4 position		: SV_POSITION;
-	float2 uv			: TEXCOORD0;
+	float2 uv			: TEXCOORD2;
 };
 
 cbuffer perModel		: register(b0)
@@ -25,10 +27,11 @@ void main(
 	matrix worldViewProj = mul(mul(world, view), projection);
 
 	float4 v[4];
-	v[0] = dataIn[0].position + float4(0.1f, -0.1f, 0.0f, 0);
-	v[1] = dataIn[0].position + float4(-0.1f, -0.1f, 0.0f, 0);
-	v[2] = dataIn[0].position + float4(0.1f, 0.1f, 0.0f, 0);
-	v[3] = dataIn[0].position + float4(-0.1f, 0.1f, 0.0f, 0);
+	v[0] = dataIn[0].position + float4(0.05f, -0.05f, 0.0f, 0);
+	v[1] = dataIn[0].position + float4(-0.05f, -0.05f, 0.0f, 0);
+	v[2] = dataIn[0].position + float4(0.05f, 0.05f, 0.0f, 0);
+	v[3] = dataIn[0].position + float4(-0.05f, 0.05f, 0.0f, 0);
+
 
 	float2 quadUVs[4] = {
 		float2(1, 1),
